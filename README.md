@@ -10,5 +10,5 @@ hybridmodules provides a tool `sh/make-modular-jar.sh` that takes a non-modular 
 compiles the latter and updates the JAR to contain it, making it a modular JAR. Example:
 
 ```
-sh/make-modular-jar.sh -u -f commons-lang-2.5.jar --module-info src/module-info.java --module-version 2.5
+sh/make-modular-jar.sh -u -f commons-lang-2.5.jar --module-info src --module-version 2.5
 ```
