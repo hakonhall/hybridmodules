@@ -26,9 +26,9 @@ class HybridModuleResolver {
     /**
      * Resolve the hybrid module with the given name and version.
      *
-     * A HybridModule may be in the middle of its resolution when it needs to resolve the given moduleName/version
+     * A HybridModule may be in the middle of its resolution when it needs to resolve the given hybridModuleName/version
      * that it reads, and calls this method. It passes all the hybrid modules it has read so far (not including itself)
-     * such that moduleName/version can reuse those hybrid modules for whatever hybrid modules it also needs to resolve
+     * such that hybridModuleName/version can reuse those hybrid modules for whatever hybrid modules it also needs to resolve
      * (if it has some transitive dependencies).
      *
      * @param moduleName
