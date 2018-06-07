@@ -1,0 +1,187 @@
+#!/bin/bash
+
+set -e
+
+declare VERBOSE=false
+
+declare TEMPORARY_DIRECTORY=""
+
+function PrintArguments {
+    if (( $# > 0 ))
+    then
+        printf "%s" "$1"
+        shift
+        # bash(1): "The format is re-used as necessary to consume all of the
+        # arguments."
+        printf "%s" "$@"
+        printf "\n"
+    fi
+}
+
+function Usage {
+    PrintArguments "$@"
+    cat <<EOF
+Usage: ${0##*/} [OPTION...]
+Update an existing jar to become a modular jar
+
+Set JAVA_HOME to override the location of javac and jar.
+
+Options:
+  -f, --file FILE            The archive file name [required]
+      --main-class CLASSNAME The application entry point for stand-alone
+                             applications bundled into a modular, or executable,
+                             jar arhive
+      --module-version VERSION    The module version
+      --module-info FILE     The module-info.java file or its parent directory,
+                             defaulting to current directory (.).
+  -u, --update               Update an existing jar archive [required]
+EOF
+
+    # Verify & do: Add --module-path to get compiled versions correct?
+
+    exit 0
+}
+
+function Fail {
+    if (( $# > 0 ))
+    then
+        printf "%s" "$1"
+        shift
+        # bash(1): "The format is re-used as necessary to consume all of the
+        # arguments."
+        printf "%s" "$@"
+    fi
+
+    exit 1
+}
+
+function Run {
+    local command="$1"
+    shift
+
+    if $VERBOSE
+    then
+        printf "%q" "$command"
+        printf " %q" "$@"
+        printf "\n"
+    fi
+
+    "$command" "$@"
+}
+
+function Javac {
+    if test "$JAVA_HOME" == ""
+    then
+        Run javac "$@"
+    else
+        Run "$JAVA_HOME"/bin/javac "$@"
+    fi
+}
+
+function Jar {
+    if test "$JAVA_HOME" == ""
+    then
+        Run jar "$@"
+    else
+        Run "$JAVA_HOME"/bin/jar "$@"
+    fi
+}
+
+function RemoveTemporaryDirectory {
+    Run rm -rf "$TEMPORARY_DIRECTORY"
+}
+
+function Main {
+    local action=""
+    local jarfile=""
+    local module_info="."
+    local -a extra_jar_arguments=()
+
+    while (( $# > 0 ))
+    do
+        case "$1" in
+            -u|--update)
+                action=update
+                extra_jar_arguments+=("$1")
+                shift
+                ;;
+            -f|--file)
+                if ! test -r "$2"
+                then
+                    Usage "jar archive '$2' not found"
+                fi
+                jarfile=$(realpath "$2")
+                if ! test -r "$jarfile"
+                then
+                    Usage "jar archive '$2' not found"
+                fi
+                extra_jar_arguments+=("$1" "$jarfile")
+                shift 2
+                ;;
+            -h|--help)
+                Usage
+                ;;
+            --main-class)
+                extra_jar_arguments+=(--main-class "$2")
+                shift 2
+                ;;
+            --module-info)
+                module_info="$2"
+                shift 2
+                ;;
+            --module-version)
+                extra_jar_arguments+=(--module-version "$2")
+                shift 2
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    if (( $# != 0 ))
+    then
+        Usage "Extraneous arguments found: $*"
+    elif test -z "$action"
+    then
+        Usage "No action specified"
+    elif test -z "$jarfile"
+    then
+        Usage "No jar archive specified"
+    fi
+
+    # module-info
+    if test -d "$module_info"
+    then
+        module_info+=/module-info.java
+    fi
+    if ! test -r "$module_info"
+    then
+        Usage "Module info file '$module_info' not found"
+    fi
+    module_info=$(realpath "$module_info")
+    if ! test -r "$module_info"
+    then
+        Usage "Module info file '$module_info' not found"
+    fi
+
+    if ! TEMPORARY_DIRECTORY=$(mktemp -d)
+    then
+        Fail "Failed to create temporary directory with 'mktemp -d'"
+    fi
+
+    trap RemoveTemporaryDirectory EXIT
+
+    cd "$TEMPORARY_DIRECTORY"
+    Jar -x -f "$jarfile"
+
+    # This allows --module-info to refer to a file not named module-info.java,
+    # which can be useful if a directory contains a bunch of JAR files, and one
+    # needs one module-info.java for each.
+    cp "$module_info" module-info.java
+
+    Javac --module-path /home/hakon/src/hybrid-modules/test/modularizing/httpclient -d . module-info.java
+    Jar "${extra_jar_arguments[@]}" module-info.class
+}
+
+Main "$@"

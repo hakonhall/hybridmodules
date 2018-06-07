@@ -1,0 +1,7 @@
+**/*.class
+
+# IntelliJ files
+**/*.iml
+
+# Maven output
+**/target/

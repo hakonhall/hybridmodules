@@ -70,7 +70,8 @@ public class Main {
             } else {
                 Class<?> klass = container.loadClass(mainClass);
                 Method main = klass.getMethod("main", String[].class);
-                main.invoke(null, mainArgs);
+                // Without the cast to Object, it interprets mainArgs as a varargs argument Object[].
+                main.invoke(null, (Object) mainArgs);
             }
         }
     }

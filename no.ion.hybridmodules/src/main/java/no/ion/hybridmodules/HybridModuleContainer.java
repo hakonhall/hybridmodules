@@ -6,28 +6,30 @@ import java.util.*;
 
 public class HybridModuleContainer implements AutoCloseable {
     private final HybridModuleFinder finder;
-    private final HybridModule hybridModule;
+    private final HybridModule root;
 
     public static class ResolveParams {
-        final String moduleName;
+        final String hybridModuleName;
         final Path[] hybridModulePath;
 
         Optional<ModuleDescriptor.Version> version = null;
 
         /**
-         * @param hybridModuleName  The name of the hybrid module to resolve.
-         * @param paths             The hybrid module path specifying which paths to look for JARs.
+         * @param hybridModuleName  The name of the root hybrid module to resolve.
+         * @param paths             The hybrid module path specifying where to look for hybrid modules.
          */
         public ResolveParams(String hybridModuleName, Path... paths) {
             Objects.requireNonNull(hybridModuleName);
-            this.moduleName = hybridModuleName;
+            this.hybridModuleName = hybridModuleName;
             Objects.requireNonNull(paths);
             this.hybridModulePath = paths;
         }
 
         /**
-         * Require a particular version of the hybrid module. If version is empty, the hybrid module must be
-         * without a version.
+         * Require a particular version of the hybrid module.
+         *
+         * <p>If there are multiple hybrid modules with the given name in path, {@code setVersion} must be called
+         * to pick the wanted version. If empty, the hybrid module without version is picked.
          */
         public void setVersion(Optional<ModuleDescriptor.Version> version) {
             Objects.requireNonNull(version);
@@ -38,9 +40,10 @@ public class HybridModuleContainer implements AutoCloseable {
     public static HybridModuleContainer resolve(ResolveParams params) {
         HybridModuleFinder finder = HybridModuleFinder.of(params.hybridModulePath);
         try {
-            HybridModule module = new HybridModuleResolver(finder).resolve(params.moduleName, params.version);
+            HybridModuleResolver resolver = new HybridModuleResolver(finder);
+            HybridModule module = resolver.resolve(params.hybridModuleName, params.version);
             HybridModuleContainer container = new HybridModuleContainer(finder, module);
-            finder = null;
+            finder = null; // finder object is owned by container
             return container;
         } finally {
             if (finder != null) {
@@ -49,19 +52,19 @@ public class HybridModuleContainer implements AutoCloseable {
         }
     }
 
-    private HybridModuleContainer(HybridModuleFinder finder, HybridModule hybridModule) {
+    private HybridModuleContainer(HybridModuleFinder finder, HybridModule root) {
         this.finder = finder;
-        this.hybridModule = hybridModule;
+        this.root = root;
     }
 
-    /** Load class from hybrid module. */
+    /** Load class from the hybrid module. */
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        return hybridModule.getClassLoader().loadInternalClass(name);
+        return root.getClassLoader().loadInternalClass(name);
     }
 
-    /** Load exported class from hybrid module. */
+    /** Load exported class from the hybrid module. */
     public Class<?> loadExportedClass(String name) throws ClassNotFoundException {
-        return hybridModule.getClassLoader().loadExportedClass(name);
+        return root.getClassLoader().loadExportedClass(name);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class HybridModuleContainer implements AutoCloseable {
     public String getDependencyGraphDescription() {
         StringBuilder builder = new StringBuilder();
         Set<String> processedHybridModules = new HashSet<>();
-        appendDependencyDescription(builder, processedHybridModules, hybridModule);
+        appendDependencyDescription(builder, processedHybridModules, root);
         return builder.toString();
     }
 
