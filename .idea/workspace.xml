@@ -1,0 +1,1071 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d040ab9d-0afb-472d-9f68-f8731351f97c" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/modularizing/modularizing.iml" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/no.ion.hybridmodules/target/" />
+    <ignored path="$PROJECT_DIR$/tools/bundle/target/" />
+    <ignored path="$PROJECT_DIR$/bundle/target/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="MAKE_PROJECT_ON_SAVE" value="true" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/modularizing/src/main/java/no/ion/hybridmodules/modularizing/one/Main.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="8" selection-start-line="8" selection-end-line="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Main.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="423">
+              <caret line="59" column="9" selection-start-line="59" selection-start-column="9" selection-end-line="59" selection-end-column="9" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ExceptionUtil.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/ExceptionUtil.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="13" column="5" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/Main.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="114">
+              <caret line="15" column="4" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ExportPackage.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/ExportPackage.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="19" column="40" selection-start-line="19" selection-start-column="40" selection-end-line="19" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JUnit5 Test Class" />
+        <option value="module-info" />
+        <option value="JUnit4 Test Class" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>moduleReaderFor</find>
+      <find>system</find>
+      <find>String module</find>
+      <find>getplatformclassloader</find>
+      <find>of(</find>
+      <find>loadModule</find>
+      <find>loadmodule</find>
+      <find>PLATFORM_LOADER</find>
+      <find>packageToModule</find>
+      <find>loadMo</find>
+      <find>loadModule(</find>
+      <find>initPhase2</find>
+      <find>VM</find>
+      <find>VM;</find>
+      <find>bootLayer</find>
+      <find>module</find>
+      <find>public</find>
+      <find>jar.</find>
+      <find>STACK_WALKER</find>
+      <find>parent</find>
+      <find>surefire</find>
+      <find>index(</find>
+      <find>without</find>
+      <find>getName()</find>
+      <find>Public</find>
+      <find>findClass(</find>
+      <find>finding</find>
+      <find>loadClass(</find>
+      <find>getManife</find>
+      <find>attr</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>InvalidHybridModuleException</replace>
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/internal/HybridModuleClassLoader.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/internal/HybridModuleFinder.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/internal/DependencyResolver.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/internal/HybridModuleReadsResolver.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/internal/ModuleId2.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/internal/HybridModule.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/internal/HybridModuleDependencyResolver.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/internal/ModuleId.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/internal/HybridModuleResolver.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/ExceptionUtil.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/HybridModuleClassLoader.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/InvalidHybridModuleException.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/Jar.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/ModuleId.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/PackageUtil.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/Main.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/HybridModuleImpl.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/ResolvedHybridModule.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/HybridModuleResolver.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/HybridModule.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/HybridModuleContainer.java" />
+        <option value="$PROJECT_DIR$/src/no/ion/hybridmodules/HybridModuleFinder.java" />
+        <option value="$PROJECT_DIR$/hybmod/pom.xml" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Jar.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/ModuleId.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleId.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/JarTest.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleFinder.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleFinderTest.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/SetUtil.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleResolver.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleTest.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleResolverTest.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModule.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleClassLoader.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/pom.xml" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleContainerTest.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleContainer.java" />
+        <option value="$PROJECT_DIR$/tools/bundle/pom.xml" />
+        <option value="$PROJECT_DIR$/tools/bundle/src/main/java/no/ion/hybridmodules/tools/bundle/ExportPackage.java" />
+        <option value="$PROJECT_DIR$/tools/bundle/src/test/java/no/ion/hybridmodules/tools/bundle/ExportPackageTest.java" />
+        <option value="$PROJECT_DIR$/tools/bundle/src/main/java/no/ion/hybridmodules/tools/bundle/Main.java" />
+        <option value="$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/ExportPackage.java" />
+        <option value="$PROJECT_DIR$/bundle/src/test/java/no/ion/hybridmodules/bundle/ExportPackageTest.java" />
+        <option value="$PROJECT_DIR$/bundle/pom.xml" />
+        <option value="$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/Main.java" />
+        <option value="$PROJECT_DIR$/bundle/src/test/java/no/ion/hybridmodules/bundle/MainTest.java" />
+        <option value="$PROJECT_DIR$/test/modularizing/src/module-info.java" />
+        <option value="$PROJECT_DIR$/test/modularizing/src/no/ion/hybridmodules/modularizing/one/Foo.java" />
+        <option value="$PROJECT_DIR$/test/modularizing/src/no/ion/hybridmodules/modularizing/one/Main.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Main.java" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$USER_HOME$/share/apache-maven-3.5.3" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="downloadSourcesAutomatically" value="true" />
+        <option name="importAutomatically" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="y" value="-4" />
+    <option name="width" value="1920" />
+    <option name="height" value="1084" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <autoscrollToSource ProjectPane="true" />
+      <autoscrollFromSource ProjectPane="true" />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="hybrid-modules" type="58d84e3e:PackageViewProjectNode" />
+              <item name="hybrid-modules" type="616d4139:PackageViewModuleNode" />
+            </path>
+            <path>
+              <item name="hybrid-modules" type="58d84e3e:PackageViewProjectNode" />
+              <item name="hybrid-modules" type="616d4139:PackageViewModuleNode" />
+              <item name="Libraries" type="5c3f07af:PackageViewLibrariesNode" />
+            </path>
+            <path>
+              <item name="hybrid-modules" type="58d84e3e:PackageViewProjectNode" />
+              <item name="hybrid-modules" type="616d4139:PackageViewModuleNode" />
+              <item name="Libraries" type="5c3f07af:PackageViewLibrariesNode" />
+              <item name="java" type="1f31426a:PackageElementNode" />
+            </path>
+            <path>
+              <item name="hybrid-modules" type="58d84e3e:PackageViewProjectNode" />
+              <item name="hybrid-modules" type="616d4139:PackageViewModuleNode" />
+              <item name="Libraries" type="5c3f07af:PackageViewLibrariesNode" />
+              <item name="java" type="1f31426a:PackageElementNode" />
+              <item name="lang" type="1f31426a:PackageElementNode" />
+            </path>
+            <path>
+              <item name="hybrid-modules" type="58d84e3e:PackageViewProjectNode" />
+              <item name="hybrid-modules" type="616d4139:PackageViewModuleNode" />
+              <item name="Libraries" type="5c3f07af:PackageViewLibrariesNode" />
+              <item name="java" type="1f31426a:PackageElementNode" />
+              <item name="lang" type="1f31426a:PackageElementNode" />
+              <item name="module" type="1f31426a:PackageElementNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SearchEverywhereHistoryKey" value="loadModule&#9;PSI&#9;JAVA://jdk.internal.module.Modules#loadModule" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/test/src" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/test/modularizing" />
+    <property name="project.structure.last.edited" value="Global Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="no.ion.hybridmodules.bundle" />
+      <recent name="no.ion.hybridmodules.tools.bundle" />
+      <recent name="no.ion.hybridmodules" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="no.ion.hybridmodules.bundle" />
+      <recent name="no.ion.hybridmodules" />
+      <recent name="no.ion.hakon.hybridmodules" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/bundle/src/test/resources" />
+      <recent name="$PROJECT_DIR$/" />
+      <recent name="$PROJECT_DIR$/test/src" />
+      <recent name="$PROJECT_DIR$/test/mod1/src" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="JUnit.All in no.ion.hybridmodules">
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    </configuration>
+    <configuration name="All in bundle (2)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="bundle" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="package" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="All in bundle (3)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="bundle" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="package" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="All in bundle (4)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="bundle" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="package" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="All in bundle" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="bundle" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="All in bundle" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="bundle" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration name="All in no.ion.hybridmodules" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="no.ion.hybridmodules" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="package" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <module name="hybrid-modules" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <properties />
+      <listeners />
+    </configuration>
+    <configuration name="&lt;template&gt;" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" default="true" selected="false">
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+    </configuration>
+    <list>
+      <item itemvalue="JUnit.All in bundle" />
+      <item itemvalue="JUnit.All in bundle (2)" />
+      <item itemvalue="JUnit.All in bundle (3)" />
+      <item itemvalue="JUnit.All in bundle (4)" />
+      <item itemvalue="JUnit.All in no.ion.hybridmodules" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.All in no.ion.hybridmodules" />
+        <item itemvalue="JUnit.All in bundle" />
+        <item itemvalue="JUnit.All in bundle (4)" />
+        <item itemvalue="JUnit.All in bundle (3)" />
+        <item itemvalue="JUnit.All in bundle (2)" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TestHistory">
+    <history-entry file="All_in_bundle - 2018.06.07 at 23h 19m 29s.xml">
+      <configuration name="All in bundle" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_bundle_(1) - 2018.06.07 at 23h 22m 42s.xml">
+      <configuration name="All in bundle (1)" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_bundle_(1) - 2018.06.07 at 23h 27m 23s.xml">
+      <configuration name="All in bundle (1)" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_bundle_(1) - 2018.06.07 at 23h 28m 51s.xml">
+      <configuration name="All in bundle (1)" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_bundle_(2) - 2018.06.07 at 23h 31m 12s.xml">
+      <configuration name="All in bundle (2)" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_bundle_(3) - 2018.06.07 at 23h 31m 20s.xml">
+      <configuration name="All in bundle (3)" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_bundle_(4) - 2018.06.07 at 23h 39m 27s.xml">
+      <configuration name="All in bundle (4)" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_bundle_(4) - 2018.06.07 at 23h 39m 58s.xml">
+      <configuration name="All in bundle (4)" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_bundle - 2018.06.08 at 01h 52m 34s.xml">
+      <configuration name="All in bundle" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_no_ion_hybridmodules - 2018.06.08 at 01h 52m 48s.xml">
+      <configuration name="All in no.ion.hybridmodules" configurationId="JUnit" />
+    </history-entry>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="-4" width="1920" height="1084" extended-state="6" />
+    <layout>
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.3297561" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5005208" side_tool="true" visible="true" weight="0.398167" />
+      <window_info anchor="right" id="Maven Projects" order="3" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="7" />
+      <window_info id="Designer" order="2" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info anchor="bottom" id="Problems" order="8" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49947917" weight="0.398167" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3287805" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/.." />
+    </ignored-roots>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints-dialog>
+        <breakpoints-dialog />
+      </breakpoints-dialog>
+      <option name="time" value="32" />
+    </breakpoint-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>systemModules.moduleDescriptors()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>parentFinder.findAll()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>path.endsWith(&quot;.jar&quot;)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>path.toString()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/jdk/internal/module/SystemModuleFinders.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="232">
+          <caret line="146" column="33" lean-forward="true" selection-start-line="146" selection-start-column="33" selection-end-line="146" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/find-hybrid-module/src/no/ion/hybridmodules/test/find-hybrid-module/Foo.java" />
+    <entry file="file://$PROJECT_DIR$/Makefile" />
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/jdk/internal/reflect/NativeMethodAccessorImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="61" selection-start-line="61" selection-end-line="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/lang/module/ModuleDescriptor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="1457" column="22" selection-start-line="1457" selection-start-column="22" selection-end-line="1457" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/JarTest.java" />
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleId.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="45" column="28" selection-start-line="45" selection-start-column="28" selection-end-line="45" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/PackageUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/lang/Class.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="166" column="23" selection-start-line="166" selection-start-column="23" selection-end-line="166" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12-sources.jar!/org/junit/Assert.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="143" selection-start-line="143" selection-end-line="143" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleResolver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/SetUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="16" selection-start-line="9" selection-start-column="16" selection-end-line="9" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="262">
+          <caret line="48" column="17" selection-start-line="48" selection-start-column="17" selection-end-line="48" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleFinder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="501">
+          <caret line="121" selection-start-line="121" selection-end-line="121" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/lang/ClassLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="1269" column="29" selection-start-line="1269" selection-start-column="29" selection-end-line="1269" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleFinderTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="35" column="8" selection-start-line="35" selection-start-column="8" selection-end-line="35" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleResolverTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="24" column="131" selection-start-line="24" selection-start-column="56" selection-end-line="24" selection-end-column="131" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleClassLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="113" column="13" selection-start-line="113" selection-start-column="13" selection-end-line="113" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="30" column="31" selection-start-line="30" selection-start-column="31" selection-end-line="30" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Jar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="42" selection-start-line="42" selection-end-line="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/util/TreeMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="146" column="11" selection-start-line="146" selection-start-column="11" selection-end-line="146" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleContainerTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="51" selection-start-line="13" selection-start-column="51" selection-end-line="13" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleContainer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="625">
+          <caret line="88" column="45" selection-start-line="88" selection-start-column="45" selection-end-line="88" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/InvalidHybridModuleException.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/util/HashMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="556" selection-start-line="556" selection-end-line="556" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/util/jar/Manifest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="125" selection-start-line="125" selection-end-line="125" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bundle/src/test/java/no/ion/hybridmodules/bundle/ExportPackageTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="101" selection-start-line="17" selection-start-column="101" selection-end-line="17" selection-end-column="101" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12-sources.jar!/org/junit/runners/BlockJUnit4ClassRunner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="79" selection-start-line="79" selection-end-line="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12-sources.jar!/org/junit/runners/ParentRunner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="295" selection-start-line="295" selection-end-line="295" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/util/zip/ZipFile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="232">
+          <caret line="822" column="8" selection-start-line="822" selection-start-column="8" selection-end-line="822" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12-sources.jar!/org/junit/internal/runners/model/ReflectiveCallable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="13" column="31" lean-forward="true" selection-start-line="13" selection-start-column="31" selection-end-line="13" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/io/FileSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="51" column="27" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.instrument/sun/instrument/InstrumentationImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="401" selection-start-line="401" selection-end-line="401" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/lang/InternalError.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="52" selection-start-line="52" selection-end-line="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/jdk/internal/loader/URLClassPath.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="245" selection-start-line="245" selection-end-line="245" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/io/File.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="274" selection-start-line="274" selection-end-line="274" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/share/jdk-10.0.1/lib/src.zip!/java.base/java/util/jar/JarFile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="340" column="11" lean-forward="true" selection-start-line="340" selection-start-column="11" selection-end-line="340" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/modularizing/src/module-info.java" />
+    <entry file="file://$PROJECT_DIR$/test/modularizing/src/no/ion/hybridmodules/modularizing/one/Main.java" />
+    <entry file="file://$PROJECT_DIR$/bundle/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="392">
+          <caret line="29" column="19" selection-start-line="29" selection-start-column="19" selection-end-line="29" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/test/modularizing/mods/org.apache.commons.collections4@4.1.0.jar!/org/apache/commons/collections4/list/UnmodifiableList.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="7" column="19" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/modularizing/src/main/java/module-info.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="1" lean-forward="true" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bundle/src/test/java/no/ion/hybridmodules/bundle/MainTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/modularizing/src/main/java/no/ion/hybridmodules/modularizing/one/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="423">
+          <caret line="59" column="9" selection-start-line="59" selection-start-column="9" selection-end-line="59" selection-end-column="9" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/ExceptionUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="13" column="5" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="15" column="4" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/ExportPackage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="19" column="40" selection-start-line="19" selection-start-column="40" selection-end-line="19" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="hg4idea.settings">
+    <option name="CHECK_INCOMING_OUTGOING" value="true" />
+    <option name="RECENT_HG_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>10</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>bundle</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Maven: org.hamcrest:hamcrest-core:1.3</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
