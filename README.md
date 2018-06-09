@@ -27,6 +27,8 @@ to contain it, making it a modular JAR. Example:
 sh/make-modular-jar.sh -u -f commons-lang-2.5.jar --module-info src --module-version 2.5
 ```
 
+TODO: The above will probably not set the compiled version for the dependencies? Perhaps if they're included with -p?
+
 ### OSGi bundles
 
 OSGi bundle JARs contains meta information that can be used to make a hybrid modular JAR:
