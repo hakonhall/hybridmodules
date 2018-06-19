@@ -33,7 +33,7 @@ TODO: The above will probably not set the compiled version for the dependencies?
 
 OSGi bundle JARs contains meta information that can be used to make a hybrid modular JAR:
 
-* `Bundle-SymbolicName` may be suitable as the hybrid module name.
+* `Bundle-SymbolicName` may be suitable as the hybrid module name. Note that a valid module name must consist of valid Java identifiers separated by dots (.).
 * `Bundle-Version` may be suitable as the hybrid module version.
 * `Export-Package` lists the packages the JAR exports, and should match the `exports` in a `module-info.java`.
 * `Import-Package` lists the packages the JAR depends on, and can be used to find which bundles it depends on, which may map 1:1 with dependent hybrid modules.
