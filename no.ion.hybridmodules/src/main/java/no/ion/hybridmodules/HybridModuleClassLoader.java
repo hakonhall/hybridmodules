@@ -34,9 +34,9 @@ class HybridModuleClassLoader extends ClassLoader {
         this.readsByPackage = hybridModulesByPackage;
 
         ModuleDescriptor descriptor = jar.descriptor();
-        if (descriptor.isOpen()) {
+        if (!descriptor.isOpen()) {
             // todo: support open module
-            throw new InvalidHybridModuleException("Module at " + jar.uri() + " is open, which is not yet supported");
+            throw new InvalidHybridModuleException("Module at " + jar.uri() + " is not open, which is not supported");
         }
 
         if (!descriptor.opens().isEmpty()) {
