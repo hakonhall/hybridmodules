@@ -4,5 +4,5 @@
 **/target/
 
 .idea/
-test/find-hybrid-module/one/src/module-info.java
-test/find-hybrid-module/two/src/module-info.java
+test/find-hybrid-module/one/lib/find.hybrid.module.one-1.2.3.jar
+test/find-hybrid-module/two/lib/find.hybrid.module.two-1.2.3.jar
