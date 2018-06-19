@@ -2,3 +2,7 @@
 
 # Maven output
 **/target/
+
+.idea/
+test/find-hybrid-module/one/src/module-info.java
+test/find-hybrid-module/two/src/module-info.java

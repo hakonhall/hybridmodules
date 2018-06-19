@@ -49,7 +49,11 @@ class HybridModuleResolver {
 
         ModuleDescriptor descriptor = jar.descriptor();
         if (descriptor.isAutomatic()) {
-            throw new InvalidHybridModuleException("Automatic hybrid modules is not supported");
+            throw new InvalidHybridModuleException("Hybrid module " + id + " is automatic");
+        }
+
+        if (!descriptor.isOpen()) {
+            throw new InvalidHybridModuleException("Hybrid module " + id + " is not open");
         }
 
         Map<HybridModuleId, HybridModule> readsById = new HashMap<>();

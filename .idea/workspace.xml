@@ -2,15 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d040ab9d-0afb-472d-9f68-f8731351f97c" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_12.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/modularizing/modularizing.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleClassLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleClassLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleResolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleResolver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no.ion.hybridmodules/src/test/resources/find.hybrid.module.one-1.2.3.jar" beforeDir="false" afterPath="$PROJECT_DIR$/no.ion.hybridmodules/src/test/resources/find.hybrid.module.one-1.2.3.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/no.ion.hybridmodules/src/test/resources/find.hybrid.module.two-1.2.3.jar" beforeDir="false" afterPath="$PROJECT_DIR$/no.ion.hybridmodules/src/test/resources/find.hybrid.module.two-1.2.3.jar" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/no.ion.hybridmodules/target/" />
     <ignored path="$PROJECT_DIR$/tools/bundle/target/" />
@@ -30,27 +26,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/modularizing/src/main/java/no/ion/hybridmodules/modularizing/one/Main.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="8" selection-start-line="8" selection-end-line="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Main.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="423">
-              <caret line="59" column="9" selection-start-line="59" selection-start-column="9" selection-end-line="59" selection-end-column="9" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="ExceptionUtil.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/ExceptionUtil.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -79,7 +54,52 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ExportPackage.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="HybridModuleContainer.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleContainer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="512">
+              <caret line="88" column="45" selection-start-line="88" selection-start-column="45" selection-end-line="88" selection-end-column="45" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HybridModuleFinder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleFinder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="501">
+              <caret line="121" selection-start-line="121" selection-end-line="121" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HybridModuleResolver.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleResolver.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="285">
+              <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Jar.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Jar.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="405">
+              <caret line="42" selection-start-line="42" selection-end-line="42" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HybridModuleClassLoader.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleClassLoader.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="285">
+              <caret line="36" selection-start-line="36" selection-end-line="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ExportPackage.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/ExportPackage.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="225">
@@ -173,11 +193,9 @@
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleFinder.java" />
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleFinderTest.java" />
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/SetUtil.java" />
-        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleResolver.java" />
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleTest.java" />
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleResolverTest.java" />
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModule.java" />
-        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleClassLoader.java" />
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/pom.xml" />
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/HybridModuleContainerTest.java" />
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleContainer.java" />
@@ -194,6 +212,8 @@
         <option value="$PROJECT_DIR$/test/modularizing/src/no/ion/hybridmodules/modularizing/one/Foo.java" />
         <option value="$PROJECT_DIR$/test/modularizing/src/no/ion/hybridmodules/modularizing/one/Main.java" />
         <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Main.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleResolver.java" />
+        <option value="$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleClassLoader.java" />
       </list>
     </option>
   </component>
@@ -211,9 +231,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="y" value="-4" />
-    <option name="width" value="1920" />
-    <option name="height" value="1084" />
+    <option name="x" value="-1" />
+    <option name="y" value="-1084" />
+    <option name="width" value="1922" />
+    <option name="height" value="1085" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
@@ -225,6 +246,97 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="hybridmodules" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
+              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="bundle" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="PackagesPane">
         <subPane>
           <expand>
@@ -263,71 +375,6 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
-            </path>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
-              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
-              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="no.ion" type="9c53a853:ProjectViewModuleGroupNode" />
-              <item name="no.ion.hybridmodules" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bundle" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bundle" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bundle" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bundle" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bundle" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="bundle" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="hybridmodules" type="b2602c69:ProjectViewProjectNode" />
-              <item name="bundle" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -556,12 +603,6 @@
     <configuration />
   </component>
   <component name="TestHistory">
-    <history-entry file="All_in_bundle - 2018.06.07 at 23h 19m 29s.xml">
-      <configuration name="All in bundle" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="All_in_bundle_(1) - 2018.06.07 at 23h 22m 42s.xml">
-      <configuration name="All in bundle (1)" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="All_in_bundle_(1) - 2018.06.07 at 23h 27m 23s.xml">
       <configuration name="All in bundle (1)" configurationId="JUnit" />
     </history-entry>
@@ -586,25 +627,32 @@
     <history-entry file="All_in_no_ion_hybridmodules - 2018.06.08 at 01h 52m 48s.xml">
       <configuration name="All in no.ion.hybridmodules" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="All_in_no_ion_hybridmodules - 2018.06.19 at 23h 40m 19s.xml">
+      <configuration name="All in no.ion.hybridmodules" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="All_in_no_ion_hybridmodules - 2018.06.19 at 23h 41m 54s.xml">
+      <configuration name="All in no.ion.hybridmodules" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-4" width="1920" height="1084" extended-state="6" />
+    <frame x="-1" y="-4" width="1922" height="1085" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Messages" order="7" weight="0.3297561" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5005208" side_tool="true" visible="true" weight="0.398167" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50104165" side_tool="true" weight="0.398167" />
       <window_info anchor="right" id="Maven Projects" order="3" />
-      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Designer" order="2" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
       <window_info anchor="bottom" id="Problems" order="8" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49947917" weight="0.398167" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.49895832" visible="true" weight="0.398167" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -706,13 +754,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleResolver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/test/java/no/ion/hybridmodules/SetUtil.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -724,13 +765,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="262">
           <caret line="48" column="17" selection-start-line="48" selection-start-column="17" selection-end-line="48" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleFinder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="501">
-          <caret line="121" selection-start-line="121" selection-end-line="121" />
         </state>
       </provider>
     </entry>
@@ -755,24 +789,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleClassLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="113" column="13" selection-start-line="113" selection-start-column="13" selection-end-line="113" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModule.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="390">
           <caret line="30" column="31" selection-start-line="30" selection-start-column="31" selection-end-line="30" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Jar.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="42" selection-start-line="42" selection-end-line="42" />
         </state>
       </provider>
     </entry>
@@ -794,13 +814,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="14" selection-start-line="14" selection-end-line="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleContainer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="625">
-          <caret line="88" column="45" selection-start-line="88" selection-start-column="45" selection-end-line="88" selection-end-column="45" />
         </state>
       </provider>
     </entry>
@@ -941,7 +954,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="423">
+        <state relative-caret-position="825">
           <caret line="59" column="9" selection-start-line="59" selection-start-column="9" selection-end-line="59" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -962,6 +975,13 @@
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/ExportPackage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="19" column="40" selection-start-line="19" selection-start-column="40" selection-end-line="19" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/Main.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="114">
@@ -969,10 +989,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bundle/src/main/java/no/ion/hybridmodules/bundle/ExportPackage.java">
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleContainer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="19" column="40" selection-start-line="19" selection-start-column="40" selection-end-line="19" selection-end-column="40" />
+        <state relative-caret-position="512">
+          <caret line="88" column="45" selection-start-line="88" selection-start-column="45" selection-end-line="88" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleFinder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="501">
+          <caret line="121" selection-start-line="121" selection-end-line="121" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/Jar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="42" selection-start-line="42" selection-end-line="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleResolver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.ion.hybridmodules/src/main/java/no/ion/hybridmodules/HybridModuleClassLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="36" selection-start-line="36" selection-end-line="36" />
         </state>
       </provider>
     </entry>
