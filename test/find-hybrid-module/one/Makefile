@@ -1,4 +1,5 @@
-JDK_HOME = ~/share/jdk-10.0.1
+# JAVA_HOME must be set
+JDK_HOME = $(JAVA_HOME)
 JAVAC = $(JDK_HOME)/bin/javac
 JAR = $(JDK_HOME)/bin/jar
 

@@ -28,7 +28,7 @@ public class Main {
                 exportPackages = ExportPackage.fromLine(exportPackageLine);
             }
 
-            println("module " + symbolicName + '@' + version + " {");
+            println("open module " + symbolicName + '@' + version + " {");
             for (var exportPackage : exportPackages) {
                 println("  exports " + exportPackage.getClassName() + ";");
             }
