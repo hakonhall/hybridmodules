@@ -6,7 +6,12 @@ HYBRID_MODULE_VERSION = 0.0.1
 
 .PHONY: all
 all:
-	@echo 'Targets: module-info modular-jar package run'
+	@echo 'Targets:'
+	@echo '    Step 1. [module-info] - Make module-info.java from OSGi bundle'
+	@echo '    Step 2. Note and remove version from mods/module-info.java'
+	@echo '    Step 3. [modular-jar] - Make modular JAR w/version from above'
+	@echo '    Step 4. [package] - Package test app depending on the modular JAR'
+	@echo '    Step 5. [run] - Run test app using the modular JAR'
 
 # Example of modularization.
 #
@@ -25,7 +30,8 @@ module-info: $(OUTPUT_DIR)
 	../../bundle/bundle.sh $(JAR) > $(MODULE_INFO)
 
 # Step 2: Remove the @4.1.0 version from the header line of
-# jars/commons-collections4-4.1-info.java. This version will be used in step 3.
+# jars/commons-collections4-4.1-info.java. This version will be used in step 3
+# (--module-version below).
 
 VERSION = 4.1.0
 MODULAR_JAR = $(OUTPUT_DIR)/org.apache.commons.collections4@$(VERSION).jar
@@ -40,15 +46,20 @@ modular-jar: $(OUTPUT_DIR)
 $(OUTPUT_DIR):
 	mkdir $@
 
+# Step 4. Verify the JAR is indeed modular by building a test module that
+# requires it.
+
 .PHONY: package
 package:
 	@mkdir -p classes
 	$(JAVA_HOME)/bin/javac -d classes -p $(MODULAR_JAR) $$(find src/main/java -name '*.java')
 	$(JAVA_HOME)/bin/jar -c -f $(HYBRID_MODULE_JAR) --module-version $(HYBRID_MODULE_VERSION) -C classes .
 
+# Step 5. And run it with hybrid modules.
+
 .PHONY: run
 run:
-	$(JAVA_HOME)/bin/java -jar ../../no.ion.hybridmodules/target/no.ion.hybridmodules-0.1.0.jar --hybrid-module no.ion.hybridmodules.modularizing.one/no.ion.hybridmodules.modularizing.one.Main -p $(HYBRID_MODULE_JAR):$(MODULAR_JAR) -- this should print 4
+	$(JAVA_HOME)/bin/java -jar ../../no.ion.hybridmodules/target/no.ion.hybridmodules-0.1.0.jar --hybrid-module no.ion.hybridmodules.modularizing.one/no.ion.hybridmodules.modularizing.one.Main -p $(HYBRID_MODULE_JAR):$(MODULAR_JAR) -- this should print the number of arguments which is 10
 
 .PHONY: clean
 clean:

@@ -2,7 +2,7 @@
 
 set -e
 
-declare VERBOSE=false
+declare VERBOSE=true
 
 declare TEMPORARY_DIRECTORY=""
 
@@ -29,8 +29,8 @@ Set JAVA_HOME to override the location of javac and jar.
 Options:
   -f, --file FILE            The archive file name [required]
       --main-class CLASSNAME The application entry point for stand-alone
-                             applications bundled into a modular, or executable,
-                             jar arhive
+                             applications bundled into a modular or executable
+                             jar
       --module-version VERSION    The module version
       --module-info FILE     The module-info.java file or its parent directory,
                              defaulting to current directory (.).
@@ -45,11 +45,8 @@ EOF
 function Fail {
     if (( $# > 0 ))
     then
-        printf "%s" "$1"
-        shift
-        # bash(1): "The format is re-used as necessary to consume all of the
-        # arguments."
         printf "%s" "$@"
+        printf "\n"
     fi
 
     exit 1
@@ -88,7 +85,7 @@ function Jar {
 }
 
 function RemoveTemporaryDirectory {
-    Run rm -rf "$TEMPORARY_DIRECTORY"
+    rm -rf "$TEMPORARY_DIRECTORY"
 }
 
 function Main {
@@ -132,6 +129,10 @@ function Main {
             --module-version)
                 extra_jar_arguments+=(--module-version "$2")
                 shift 2
+                ;;
+            --verbose|-v)
+                VERBOSE=true
+                shift
                 ;;
             *)
                 break
@@ -180,7 +181,7 @@ function Main {
     # needs one module-info.java for each.
     cp "$module_info" module-info.java
 
-    Javac --module-path /home/hakon/src/hybrid-modules/test/modularizing/httpclient -d . module-info.java
+    Javac -d . module-info.java
     Jar "${extra_jar_arguments[@]}" module-info.class
 }
 

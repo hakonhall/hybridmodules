@@ -8,7 +8,7 @@ Extract info from OSGi JAR to help make a module-info.java.
 Prints information from the OSGi bundle that makes it easy to create a
 module-info.java, of the format:
 
-    module <Bundle-SymbolicName>@<Bundle-Version> {
+    open module <Bundle-SymbolicName>@<Bundle-Version> {
       exports <Export-Package1>;
       ...
       exports <Export-PackageN>;
