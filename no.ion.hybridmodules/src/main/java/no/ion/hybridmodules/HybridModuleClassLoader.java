@@ -35,23 +35,20 @@ class HybridModuleClassLoader extends ClassLoader {
 
         ModuleDescriptor descriptor = jar.descriptor();
         if (!descriptor.isOpen()) {
-            // todo: support open module
             throw new InvalidHybridModuleException("Module at " + jar.uri() + " is not open");
         }
 
-        if (!descriptor.opens().isEmpty()) {
-            // todo: support open packages
-            throw new InvalidHybridModuleException("Module at " + jar.uri() + " has open packages, which is not yet supported");
-        }
+        // descriptor.opens() is ignored since the whole module is open
 
         if (descriptor.isAutomatic()) {
-            // todo: support automatic modules?
-            throw new InvalidHybridModuleException("Module at " + jar.uri() + " is an automatic module, which is not supoprted");
+            // Impossible since it would mean it had been passed to
+            // --module-path, but we're loading the module ourselves!?
+            throw new InvalidHybridModuleException("Module at " + jar.uri() + " is an automatic module, which is not supported");
         }
 
         for (var exports : descriptor.exports()) {
             if (exports.isQualified()) {
-                // todo: support qualified exports
+                // todo: not yet implemented
                 throw new InvalidHybridModuleException("Module at " + jar.uri() + " has qualified exports, which is not yet supported");
             }
 
