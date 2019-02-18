@@ -1,8 +1,10 @@
 **/*.class
 
-# Maven output
+# Build output
 **/target/
-
-.idea/
 test/find-hybrid-module/one/lib/find.hybrid.module.one-1.2.3.jar
 test/find-hybrid-module/two/lib/find.hybrid.module.two-1.2.3.jar
+
+# IntelliJ files
+**/*.iml
+.idea/
