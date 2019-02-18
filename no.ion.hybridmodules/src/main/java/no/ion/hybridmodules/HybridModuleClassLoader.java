@@ -34,11 +34,9 @@ class HybridModuleClassLoader extends ClassLoader {
         this.readsByPackage = hybridModulesByPackage;
 
         ModuleDescriptor descriptor = jar.descriptor();
-        if (!descriptor.isOpen()) {
-            throw new InvalidHybridModuleException("Module at " + jar.uri() + " is not open");
-        }
 
-        // descriptor.opens() is ignored since the whole module is open
+        // descriptor.isOpen(): Hybrid module spec says to ignore this
+        // descriptor.opens(): HMSpec says to ignore this
 
         if (descriptor.isAutomatic()) {
             // Impossible since it would mean it had been passed to
