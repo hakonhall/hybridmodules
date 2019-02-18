@@ -20,11 +20,11 @@ then you must ensure each is updated with their version. The `make-modular-jar.s
 
 There's a separate section below that deals with OSGi bundle JARs.
 
-For a normal JAR you can use a tool `sh/make-modular-jar.sh` that compiles a `module-info.java`and updates the JAR 
+For a normal JAR you can use a tool `make-modular-jar.sh` that compiles a `module-info.java`and updates the JAR 
 to contain it, making it a modular JAR. Example:
 
 ```
-sh/make-modular-jar.sh -u -f commons-lang-2.5.jar --module-info src --module-version 2.5
+make-modular-jar.sh -u -f commons-lang-2.5.jar --module-info src --module-version 2.5
 ```
 
 TODO: The above will probably not set the compiled version for the dependencies? Perhaps if they're included with -p?
