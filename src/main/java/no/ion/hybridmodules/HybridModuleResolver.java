@@ -52,9 +52,7 @@ class HybridModuleResolver {
             throw new InvalidHybridModuleException("Hybrid module " + id + " is automatic");
         }
 
-        if (!descriptor.isOpen()) {
-            throw new InvalidHybridModuleException("Hybrid module " + id + " is not open");
-        }
+        // descriptor.isOpen() is ignored
 
         Map<HybridModuleId, HybridModule> readsById = new HashMap<>();
 
