@@ -7,18 +7,18 @@ find-hybrid-module: src/test/resources/find.hybrid.module.one-1.2.3.jar \
 	src/test/resources/find.hybrid.module.two-1.2.3.jar
 
 src/test/resources/find.hybrid.module.one-1.2.3.jar: src/test/resources \
-	src/find-hybrid-module/one/lib/find.hybrid.module.one-1.2.3.jar
-	cp src/find-hybrid-module/one/lib/find.hybrid.module.one-1.2.3.jar $@
+	src/test/find-hybrid-module/one/lib/find.hybrid.module.one-1.2.3.jar
+	cp src/test/find-hybrid-module/one/lib/find.hybrid.module.one-1.2.3.jar $@
 
-src/find-hybrid-module/one/lib/find.hybrid.module.one-1.2.3.jar:
-	$(MAKE) -C src/find-hybrid-module/one
+src/test/find-hybrid-module/one/lib/find.hybrid.module.one-1.2.3.jar:
+	$(MAKE) -C src/test/find-hybrid-module/one
 
 src/test/resources/find.hybrid.module.two-1.2.3.jar: src/test/resources \
-	src/find-hybrid-module/two/lib/find.hybrid.module.two-1.2.3.jar
-	cp src/find-hybrid-module/two/lib/find.hybrid.module.two-1.2.3.jar $@
+	src/test/find-hybrid-module/two/lib/find.hybrid.module.two-1.2.3.jar
+	cp src/test/find-hybrid-module/two/lib/find.hybrid.module.two-1.2.3.jar $@
 
-src/find-hybrid-module/two/lib/find.hybrid.module.two-1.2.3.jar:
-	$(MAKE) -C src/find-hybrid-module/two
+src/test/find-hybrid-module/two/lib/find.hybrid.module.two-1.2.3.jar:
+	$(MAKE) -C src/test/find-hybrid-module/two
 
 src/test/resources:
 	mkdir -p $@
@@ -35,5 +35,5 @@ clean:
 	rm -f src/test/resources/find.hybrid.module.one-1.2.3.jar
 	rm -f src/test/resources/find.hybrid.module.two-1.2.3.jar
 	if test -d src/test/resources; then rmdir src/test/resources; fi
-	$(MAKE) -C src/find-hybrid-module/one clean
-	$(MAKE) -C src/find-hybrid-module/two clean
+	$(MAKE) -C src/test/find-hybrid-module/one clean
+	$(MAKE) -C src/test/find-hybrid-module/two clean
