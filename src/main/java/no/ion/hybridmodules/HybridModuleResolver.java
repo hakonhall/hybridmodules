@@ -19,7 +19,6 @@ class HybridModuleResolver {
      * @return The hybrid module of the given name and version, fully resolved and ready to execute code.
      */
     HybridModule resolve(String moduleName, Optional<ModuleDescriptor.Version> version) {
-        // this would have created cycles in the graph. instead, we don't support automatic h.m. just yet.
         return resolve(moduleName, version, new HashMap<>());
     }
 
@@ -30,11 +29,6 @@ class HybridModuleResolver {
      * that it reads, and calls this method. It passes all the hybrid modules it has read so far (not including itself)
      * such that hybridModuleName/version can reuse those hybrid modules for whatever hybrid modules it also needs to resolve
      * (if it has some transitive dependencies).
-     *
-     * @param moduleName
-     * @param version
-     * @param parentReadsById
-     * @return
      */
     private HybridModule resolve(String moduleName,
                                  Optional<ModuleDescriptor.Version> version,

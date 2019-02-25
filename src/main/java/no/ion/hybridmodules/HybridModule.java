@@ -28,7 +28,7 @@ class HybridModule {
             HybridModuleResolver.addToHybridModuleByPackage(id, this.hybridModulesByPackage, packageName, this);
         }
 
-        this.classLoader = new HybridModuleClassLoader(jar, this.hybridModulesByPackage);
+        this.classLoader = new HybridModuleClassLoader(jar, this, this.hybridModulesByPackage);
     }
 
     HybridModuleId getHybridModuleId() {

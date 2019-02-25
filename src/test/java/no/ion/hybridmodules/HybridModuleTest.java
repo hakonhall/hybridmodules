@@ -43,7 +43,15 @@ public class HybridModuleTest {
             Object oneExportedPublic = oneExportedPublicClass.getDeclaredConstructor().newInstance();
             assertEquals("no.ion.hybridmodules.test.FindHybridModule.one.exported.OneExportedPublic", oneExportedPublic.toString());
 
-            // No access to package-private ("exported") class
+            // Package-private class in exported package is not visible
+            try {
+                Class<?> oneExportedClass = classLoader.loadExportedClass("no.ion.hybridmodules.test.FindHybridModule.one.exported.OneExported");
+                fail();
+            } catch (ClassNotFoundException e) {
+                assertEquals("no.ion.hybridmodules.test.FindHybridModule.one.exported.OneExported", e.getMessage());
+            }
+
+            /* If non-public types in exported and unopened packages are visible:
             Class<?> oneExportedClass = classLoader.loadExportedClass("no.ion.hybridmodules.test.FindHybridModule.one.exported.OneExported");
             Constructor<?> constructor = oneExportedClass.getDeclaredConstructor();
             try {
@@ -53,7 +61,7 @@ public class HybridModuleTest {
                 assertEquals(
                         "class no.ion.hybridmodules.HybridModuleTest cannot access a member of class no.ion.hybridmodules.test.FindHybridModule.one.exported.OneExported with modifiers \"\"",
                         e.getMessage());
-            }
+            }*/
 
             // Non-exported class not found
             try {

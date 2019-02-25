@@ -1,6 +1,7 @@
 package no.ion.hybridmodules;
 
 import java.lang.module.ModuleDescriptor;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ class HybridModuleClassLoader extends ClassLoader {
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     private final Jar jar;
+    private final HybridModule hybridModule;
 
     /** The set of packages defined by this module. */
     private final Set<String> packages = new HashSet<>();
@@ -24,13 +26,14 @@ class HybridModuleClassLoader extends ClassLoader {
     /** All packages visible to internal code including transient dependencies of the required hybrid modules. */
     private final Map<String, HybridModule> readsByPackage;
 
-    HybridModuleClassLoader(Jar jar, Map<String, HybridModule> hybridModulesByPackage) {
+    HybridModuleClassLoader(Jar jar, HybridModule hybridModule, Map<String, HybridModule> hybridModulesByPackage) {
         super(jar.moduleId().toString(),
                 // The platform class loader should observe classes exactly 1:1 with the ModuleFinder.ofSystem()
                 // used to find modules not provided by the application, see HybridModuleClassLoader. It's not
                 // known whether this is in fact the case.
                 ClassLoader.getPlatformClassLoader());
         this.jar = jar;
+        this.hybridModule = hybridModule;
         this.readsByPackage = hybridModulesByPackage;
 
         ModuleDescriptor descriptor = jar.descriptor();
@@ -88,14 +91,18 @@ class HybridModuleClassLoader extends ClassLoader {
 
         synchronized (getClassLoadingLock(name)) {
             // The documentation says this will cache only if this class was the initiating class loader,
-            // but I bet it also caches if the defining class loader.
-            // todo: double-check cache
+            // but a test verified my suspicion that it also caches if this class is the defining class loader.
             Class<?> klass = findLoadedClass(name);
             if (klass == null) {
                 klass = defineClassInJar(name);
                 if (klass == null) {
                     throw new ClassNotFoundException(name);
                 }
+            }
+
+            // TODO: only if package is !open
+            if (!Modifier.isPublic(klass.getModifiers())) {
+                throw new ClassNotFoundException(name);
             }
 
             return klass;
@@ -157,13 +164,5 @@ class HybridModuleClassLoader extends ClassLoader {
         }
 
         return defineClass(name, bytes, 0, bytes.length);
-    }
-
-    /**
-     * Called from another modules's {@link #findClass} when it needs to delegate loading (via {@code requires}).
-     */
-    private Class<?> delegatedLoadingOfExportedClass(String name) throws ClassNotFoundException {
-        // todo
-        return null;
     }
 }
