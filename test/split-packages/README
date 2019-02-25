@@ -7,3 +7,11 @@ According to JVMS11 §5.3.6, each hybrid module should have an unnamed module,
 and each such module is open, and each package in each of these are exported to
 the other. Since split packages are disallowed, it would seem it is impossible
 for two hybrid modules to define the same package, even non-exported.
+
+Variants:
+ 1.  case1 requires one and two, and one and two have same unexported packages
+     (and class therein). => Compile OK. JHMS OK. Not allowed with JPMS.
+ 2.  case2 requires one, and case2 and one have same unexported packages
+     (and class therein). => Compile OK. JHMS OK. Not allowed with JPMS.
+ 3.  case3 requires one, and case3 defines the same exported package as one.
+ 
