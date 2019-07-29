@@ -1,16 +1,6 @@
-javaPaths := $(shell find java -name '*.java')
-javaFiles := $(patsubst java/%,%,$(javaPaths))
-classPaths := $(patsubst java/%.java,classes/%.class,$(javaPaths))
-jarPath := jar/no.ion.mii.jar
-
-all: $(jarPath)
-
-$(jarPath): $(classPaths)
+all:
 	mkdir -p jar
-	jar -c -f $@ --module-version 0.0.1 --main-class no.ion.Main -C classes .
-
-$(classPaths): $(javaPaths)
-	javac -d classes $^
+	../../sh/modulec -v 0.0.1 -e no.ion.Main -f jar/no.ion.mii.jar -d classes java
 
 clean:
 	rm -rf classes jar
