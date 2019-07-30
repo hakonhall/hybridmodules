@@ -1,6 +1,5 @@
 all:
-	mkdir -p jar
-	../../sh/modulec -v 0.0.1 -e no.ion.Main -f jar/no.ion.mii.jar -d classes java
+	../../sh/modulec -e no.ion.Main java
 
 clean:
-	rm -rf classes jar
+	rm -f no.ion.moduleinfo.jar
