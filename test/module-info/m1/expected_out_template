@@ -1,0 +1,4 @@
+module no.m1@0.0.1 {
+    requires java.base@JAVAC_VERSION;
+    requires transitive java.net.http@JAVAC_VERSION;
+}

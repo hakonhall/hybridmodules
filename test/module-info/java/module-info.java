@@ -1,2 +1,1 @@
-module no.ion.mii {
-}
+module no.ion.moduleinfo {}

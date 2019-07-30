@@ -21,6 +21,13 @@ public class Main {
     }
 
     public static void main(String... args) {
+        if (args.length != 2) {
+            System.out.println(
+                    "Usage: moduleinfo PATH MODULE\n" +
+                    "Print module descriptor of MODULE at PATH");
+            return;
+        }
+
         ModuleFinder finder = ModuleFinder.of(Paths.get(args[0]));
         ModuleReference reference = finder.find(args[1]).orElseThrow();
         ModuleDescriptor descriptor = reference.descriptor();
