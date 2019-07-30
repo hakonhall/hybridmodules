@@ -1,0 +1,78 @@
+X -> Y     means X requires Y
+X +> Y     means X requires transitive Y
+0          root hybrid module
+A,B,C,...  hybrid modules. A1 is version 1 of A.
+P,Q,R,...  platform modules
+1          java.base platform module. Implicit, not drawn.
+
+Case I:
+
+Is platform module P (observable, visible, and) accessible to the root module?
+
+0 -> P
+
+Answer: P must be made observable if java is launched in module mode
+
+Case II:
+
+A is compiled with module path containing B1 and B2, both module B. A requires
+B. Will it compile?
+
+Answer: If module path is B1:B2, then the requires resolves to B1 only. This is
+true both compile time and run time.
+
+Case III: How does hashing work?
+
+0 -> A
+
+Answer: Compile & package A, then 0. Now package 0 again with --hash-modules
+root -p ../0/jar. Display hash info with --describe-module on A/jar/out.jar.
+It will show a line as follows:
+hashes root SHA-256 43682efaeaf556c95a7e4e5a2890aad7b1cc32925fabafe0ec2f90f8b7eabf66
+And 'shasum -a 256 ../0/jar/out.jar' outputs the above checksum. If 0 is now
+modified, and we run root.Main, it fails with:
+java.lang.module.FindException: Hash of root (0ba1d1bf716f2c497cab8543adbb6da2cd3ea7fa06b7cbfc5e0a0e74d288bb2b) differs to expected hash (43682efaeaf556c95a7e4e5a2890aad7b1cc32925fabafe0ec2f90f8b7eabf66) recorded in a
+The check is done at the end of construction of Configuration, and therefore
+does not apply to hybrid modules.
+
+Case IV:
+
+  -> A +>
+0         C
+  -> B +>
+
+0 requires A and B, and both requires C transitively. Is this allowed?
+
+Answer: JPMS allows it. E.g. 0 can refer to C.var without problems. For JHMS,
+the Cs must be at the same version.
+
+Case V:
+
+jlink produces a runtime image with a user-defined module 0. Is 0 available
+through ModuleFinder.ofSystem()?
+
+Answer: The system module finder finds all modules in the runtime image. The
+runtime image of a jdk installation contains tons of java.* and jdk.*
+modules. With jlink, the runtime image only includes those java modules that
+are added, plus user-defined modules.
+
+jlink is used and a user-defined module is defined with the same name as a
+platform module, e.g. java.logging.
+
+Result: jlink fails with:
+Error: Hash of java.logging (7baf5ef545b14667f5ef6087fad57418029b0987dfd9e3b981d02e41111541a6) differs to expected hash (8c902819ed0d2d645c3359bc8041aff884ded3cb8b29fc78bbb596e79c8392dc) recorded in java.base
+make: *** [all] Error 1
+
+java, on the other hand, seems to ignore a user-defined module with the same
+name:
+
+java -p A/jar/out.jar:0/jar/out.jar --add-modules java.logging --list-modules
+
+does not print out A's module java.logging, but does print out the platform module java.logging.
+
+Case VI:
+
+What are the ModuleDescriptor.packages()?
+
+Answer: All packages with at least one source file, whether opened, exported,
+or not. It's a compile error to open or export a package without a source file.

@@ -4,6 +4,10 @@ See [Java Hybrid Modules Specification](
 https://docs.google.com/document/d/1HJQi3nIEsFpn0IDIDXnNplRoFZEK7fNi4jFB50lvHtM/edit?usp=sharing). 
 This README is implementation specific.
 
+## Relaxations
+
+§4.2 and §4.3, compiling and running with other versions, will likely be allowed in some future version.
+
 ## Non Hybrid Modular Dependencies
 
 In making a hybrid module, you may come across a dependency that is not yet provided as a hybrid module. 

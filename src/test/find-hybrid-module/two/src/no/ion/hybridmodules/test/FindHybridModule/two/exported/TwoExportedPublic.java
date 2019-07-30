@@ -1,7 +1,7 @@
-package no.ion.hybridmodules.test.FindHybridModule.two.exported;
+package no.ion.jhms.test.FindHybridModule.two.exported;
 
-import no.ion.hybridmodules.test.FindHybridModule.one.exported.OneExportedPublic;
-import no.ion.hybridmodules.test.FindHybridModule.TwoInternalPublic;
+import no.ion.jhms.test.FindHybridModule.one.exported.OneExportedPublic;
+import no.ion.jhms.test.FindHybridModule.TwoInternalPublic;
 
 
 public class TwoExportedPublic {

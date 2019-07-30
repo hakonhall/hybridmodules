@@ -4,7 +4,7 @@ m2jarPath := ../m2/jar/no.ion.m2.jar
 all: $(m1jarPath)
 	java -p $(m2jarPath):$(m1jarPath) -m no.ion.m1
 	java -cp $(m1jarPath):$(m2jarPath) no.ion.p1.Main
-	java -jar  ~/github/hakonhall/hybridmodules/target/no.ion.hybridmodules-0.1.0.jar -p $(m1jarPath):$(m2jarPath) -m no.ion.m1/no.ion.p1.Main
+	java -jar  ~/github/hakonhall/hybridmodules/target/no.ion.jhms-2.0.0.jar -p $(m1jarPath):$(m2jarPath) -m no.ion.m1/no.ion.p1.Main
 
 $(m1jarPath): classes/module-info.class classes/no/ion/p1/Main.class
 	mkdir -p jar
