@@ -1,4 +1,3 @@
-// Copyright 2019 Oath Inc. Licensed under the terms of the Apache 2.0 license. See LICENSE in the project root.
 package no.ion;
 
 import java.lang.module.ModuleDescriptor;
@@ -8,9 +7,6 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Paths;
 import java.util.Set;
 
-/**
- * @author hakonhall
- */
 public class Main {
     private final ModuleDescriptor descriptor;
     private int indentation = 0;
@@ -36,8 +32,10 @@ public class Main {
             print("#" + descriptor.rawVersion().get());
         }
         println(" {");
-
         indent();
+
+        descriptor.mainClass().ifPresent(mainClass -> println("// main class: " + mainClass));
+
         for (var requires : descriptor.requires()) {
             print("requires ");
 
@@ -54,8 +52,8 @@ public class Main {
             }
             println(";");
         }
-        dedent();
 
+        dedent();
         println("}");
     }
 

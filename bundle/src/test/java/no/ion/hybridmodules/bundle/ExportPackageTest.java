@@ -1,4 +1,4 @@
-package no.ion.hybridmodules.bundle;
+package no.ion.jhms.bundle;
 
 import org.junit.Test;
 
