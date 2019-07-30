@@ -15,22 +15,23 @@ Make a modular JAR from the module source in SRC.
 
 Options:
   -d CLASSDIR             The directory to write the compiled class files to.
-                          If absent, a temporary directory will be used that
-                          will be cleaned up before program exit.
+                          By default, a temporary directory will be used.
   -e,--main-class CLASS   Specify the main class of the module.
-  -f,--file JARFILE       The name of the modular JAR file. If JARFILE is a 
-                          directory, the modular JAR will be written to that
-                          directory with a filename MODULENAME[-VERSION].jar.
-                          If absent, JARFILE defaults to the current directory.
+  -f,--file JARPATH       The name of the modular JAR file. However, if JARPATH
+                          is a directory, the modular JAR will be written to
+                          that directory with a filename
+                          MODULENAME[-VERSION].jar.  By default JARPATH is the
+                          current directory.
+  -m,--manifest MANIFEST  Include the manifest info from MANIFEST
   -p,--module-path PATH   Set the module path for compilation, empty by default.
   -v,--version VERSION    Set the module version.
 
 Invokes
     javac -p PATH -d CLASSDIR JAVAC_ARG... FILE...
-with FILE... being all *.java files under SRC. Then
-    jar -c -f JARFILE --module-version VERSION -C CLASSDIR .
+with FILE... being all *.java files under SRC, followed by
+    jar -c -f JARPATH --module-version VERSION -C CLASSDIR .
 
-Prefers javac below JAVA_HOME if the latter is defined.
+Prefers javac/jar below JAVA_HOME if set.
 EOF
 
     exit 1
@@ -40,7 +41,7 @@ function Main {
     local src=
     local classdir=
     local -a main_class=()
-    local jarfile=.
+    local jarpath=.
     local -a module_path=()
     local version_suffix=
     local -a module_version=()
@@ -60,7 +61,7 @@ function Main {
                 shift 2
                 ;;
             -f|--file)
-                jarfile="$2"
+                jarpath="$2"
                 shift 2
                 ;;
             --help|-h)
@@ -160,7 +161,7 @@ function Main {
         fi
     fi
 
-    if test -d "$jarfile"
+    if test -d "$jarpath"
     then
         if test "$name" == ""
         then
@@ -183,10 +184,10 @@ function Main {
             fi
         fi
 
-        jarfile+=/"$name$version_suffix".jar
+        jarpath+=/"$name$version_suffix".jar
     fi
 
-    if "$jar" -c -f "$jarfile" "${main_class[@]}" -C "$classdir" .
+    if "$jar" -c -f "$jarpath" "${main_class[@]}" -C "$classdir" .
     then
         local exit_code=$?
     else
