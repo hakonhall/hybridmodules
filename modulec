@@ -23,6 +23,10 @@ Options:
                           MODULENAME[-VERSION].jar.  By default JARPATH is the
                           current directory.
   -m,--manifest MANIFEST  Include the manifest info from MANIFEST
+  -n,--name NAME          The name of the module, by default derived from
+                          module descriptor with javap. However knowing the
+                          name at compile time allows the use of 'javac -m',
+                          which may result in faster compilation (with -d).
   -p,--module-path PATH   Set the module path for compilation, empty by default.
   -v,--version VERSION    Set the module version.
 
