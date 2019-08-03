@@ -1,4 +1,0 @@
-module no.m1@0.0.1 {
-    requires java.base@11.0.3;
-    requires transitive java.net.http@11.0.3;
-}
