@@ -1,14 +1,17 @@
-.PHONY: m1 m2
+test_directories = m1 m2 m3
 
-all: build-jar m1 m2
+.PHONY: $(test_directories)
+
+all: build-jar $(test_directories)
 
 build-jar:
 	../../modulec -e no.ion.Main java
 
-m1 m2:
+$(test_directories):
 	$(MAKE) -C $@
 
 clean:
+	$(MAKE) -C m3 clean
 	$(MAKE) -C m2 clean
 	$(MAKE) -C m1 clean
 	rm -f no.ion.moduleinfo.jar
