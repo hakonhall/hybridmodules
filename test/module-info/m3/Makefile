@@ -1,18 +1,11 @@
-javaPaths := $(shell find java -name '*.java')
-javaFiles := $(patsubst java/%,%,$(javaPaths))
-classPaths := $(patsubst java/%.java,classes/%.class,$(javaPaths))
-module := no.m3
-jarPath := jar/$(module).jar
+version := $(shell javac --version | grep -Eo '[0-9.]+')
 
-all: $(jarPath)
-	java -p ../jar -m no.ion.mii $(jarPath) $(module)
-
-$(jarPath): $(classPaths)
-	mkdir -p jar
-	jar -c -f $@ --module-version 0.0.2 -C classes .
-
-$(classPaths): $(javaPaths)
-	javac -p ../m2/jar:../m1/jar/no.m1.10.jar -d classes $^
+all:
+	../../../modulec -p ../m1:../m2 -v 0.0.2 -f no.m3.jar java
+	../moduleinfo no.m3.jar no.m3 > out
+	sed "s/JAVAC_VERSION/${version}/g" expected_out_template > expected_out
+	diff -Nau expected_out out
+	@echo Success
 
 clean:
-	rm -rf classes jar
+	rm -f expected_out out no.m3.jar
