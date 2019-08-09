@@ -1,37 +1,47 @@
-# Java Hybrid Modules
+# Java Hybrid Modules System reference implementation
 
-See [Java Hybrid Modules Specification](
+This repository contains the reference implementation of the Java Hybrid Module System, 3rd edition. The current specification is [here](
 https://docs.google.com/document/d/1HJQi3nIEsFpn0IDIDXnNplRoFZEK7fNi4jFB50lvHtM/edit?usp=sharing). 
-This README is implementation specific.
 
-## Relaxations
+In short, Java Hybrid Module System (JHMS) is Java Platform Module System (JPMS) with multi-version support.
 
-§4.2 and §4.3, compiling and running with other versions, will likely be allowed in some future version.
+JHMS utilizes JPMS at compile and package time: modules are declared in module-info.java, compiles with module path, and uses the module version.
 
-## Non Hybrid Modular Dependencies
+However unlike JPMS, the dependencies seen at compile time, including the version of these, are also seen at run time. And the only packages *visible* to a (hybrid) module at run time, are those that are are exported to the module from readable modules. The run time behavior is accomplished through class loader techniques similar to OSGi.
+
+The JHMS specification defines a set of relaxations to the strict specification that an implementation MAY implement at their discretion. The choices made in the reference implementation are detailed in the below Relaxation section.
+
+In addition to the reference implementation, this repository also provides tools and tips for migrating plain JARs and OSGi bundles to JHMS in Migration.
+
+## Implementation notes
+
+### Relaxations
+
+Both Version relaxation (§4.1) and Automatic hybrid modules (§4.2) will be implemented by the reference implementation in a future version.
+
+## Migration
 
 In making a hybrid module, you may come across a dependency that is not yet provided as a hybrid module. 
-Such a dependency may be a normal JAR intended to be put on the class path, an OSGi bundle JAR, or a modular JAR.
+Such a dependency may be a plain JAR intended to be put on the class path, an OSGi bundle JAR, or a modular JAR.
 
-Ideally, the dependency should be made a hybrid module of course, and only that would have preserved the guarantees 
-made by a fully hybrid module running application. This is often impractical or impossible and
+Ideally, all application JARs should be hybrid modular JARs. This is often impractical or impossible and
 we will describe a way to make the dependencies appear as hybrid modules. These dependencies will work
 as proper hybrid modules, but only if there are no errors made in their conversion to the hybrid module, 
 which is fragile since the java compiler cannot be used to help upholding the guarantees.
 
 A modular JAR can almost always be taken verbatim as a hybrid modular JAR. But if you have several versions of that module,
-then you must ensure each is updated with their version. The `make-modular-jar.sh` described below can be used for this.
+you must ensure each is updated with their version. The `make-modular-jar.sh` described below can be used for this.
 
 There's a separate section below that deals with OSGi bundle JARs.
 
-For a normal JAR you can use a tool `make-modular-jar.sh` that compiles a `module-info.java`and updates the JAR 
+For a plain JAR you can use a tool `make-modular-jar.sh` that compiles a `module-info.java` and updates the JAR 
 to contain it, making it a modular JAR. Example:
 
 ```
 make-modular-jar.sh -u -f commons-lang-2.5.jar --module-info src --module-version 2.5
 ```
 
-TODO: The above will probably not set the compiled version for the dependencies? Perhaps if they're included with -p?
+TODO: How to update the compiled version of the dependencies? Use --module-path with jar!? Can javac be used with --module-path (i.e. no source files - all .class files)?
 
 ### OSGi bundles
 
