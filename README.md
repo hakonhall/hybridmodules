@@ -11,7 +11,7 @@ However unlike JPMS, the dependencies seen at compile time, including the versio
 
 The JHMS specification defines a set of relaxations to the strict specification that an implementation MAY implement at their discretion. The choices made in the reference implementation are detailed in the below Relaxation section.
 
-In addition to the reference implementation, this repository also provides tools and tips for migrating plain JARs and OSGi bundles to JHMS in Migration.
+In addition to the reference implementation, this repository also provides tools and tips for migrating plain JARs and OSGi bundles to JHMS in the below Migration section.
 
 ## Implementation notes
 
