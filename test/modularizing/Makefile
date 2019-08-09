@@ -59,7 +59,7 @@ package:
 
 .PHONY: run
 run:
-	$(JAVA_HOME)/bin/java -jar ../../target/no.ion.hybridmodules-0.1.0.jar --hybrid-module no.ion.hybridmodules.modularizing.one/no.ion.hybridmodules.modularizing.one.Main -p $(HYBRID_MODULE_JAR):$(MODULAR_JAR) -- this should print the number of arguments which is 10
+	$(JAVA_HOME)/bin/java -jar ../../target/no.ion.hybridmodules-0.1.0.jar --module no.ion.hybridmodules.modularizing.one/no.ion.hybridmodules.modularizing.one.Main -p $(HYBRID_MODULE_JAR):$(MODULAR_JAR) -- this should print the number of arguments which is 10
 
 .PHONY: clean
 clean:

@@ -1,4 +1,4 @@
-package no.ion.hybridmodules.modularizing.one;
+package no.ion.jhms.modularizing.one;
 
 import org.apache.commons.collections4.list.UnmodifiableList;
 

@@ -2,10 +2,31 @@
 
 set -e
 
+declare VERBOSE=false
+
 function Fail {
     printf "$*"
     echo
     exit 1
+}
+
+function Run {
+    local command="$1"
+    shift
+
+    if $VERBOSE
+    then
+        printf "%q" "$command"
+        printf " %q" "$@"
+        printf "\\n"
+    fi
+
+    if "$command" "$@"
+    then
+        return 0
+    else
+        return $?
+    fi
 }
 
 function Help {
@@ -90,6 +111,10 @@ function Main {
                 module_path=("$1" "$2")
                 shift 2
                 ;;
+            --verbose)
+                VERBOSE=true
+                shift
+                ;;
             -v|--version)
                 version_suffix="-$2"
                 module_version=(--module-version "$2")
@@ -110,7 +135,8 @@ function Main {
     if test "$classdir" == ""
     then
         classdir_is_tmp=true
-        classdir=$(mktemp -d)
+        # Will create directory of the form /tmp/modulec-hakon.d7R47C8zIX
+        classdir=$(mktemp -d --tmpdir modulec-"$USER".XXXXXXXXXX)
     fi
 
     test "$src" != "" || Fail "No source directory specified!"
@@ -161,9 +187,9 @@ function Main {
         ln -s "$absolute_src" "$tmpdir"/src/"$name"
         ln -s "$absolute_classdir" "$tmpdir"/classes/"$name"
 
-        if "$javac" -d "$tmpdir"/classes "${module_version[@]}" \
-                    --module-source-path "$tmpdir"/src --module "$name" \
-                    "${module_path[@]}" "${javac_args[@]}"
+        if Run "$javac" -d "$tmpdir"/classes "${module_version[@]}" \
+               --module-source-path "$tmpdir"/src --module "$name" \
+               "${module_path[@]}" "${javac_args[@]}"
         then
             rm -r "$tmpdir"
         else
@@ -172,8 +198,9 @@ function Main {
             exit $exit_code
         fi
     else
-        if "$javac" -d "$classdir" "${module_version[@]}" "${module_path[@]}" \
-                    "${javac_args[@]}" $(find "$src" -name '*.java')
+        if Run "$javac" -d "$classdir" "${module_version[@]}" \
+               "${module_path[@]}" "${javac_args[@]}" \
+               $(find "$src" -name '*.java')
         then
             :
         else
@@ -209,7 +236,7 @@ function Main {
         jarpath+=/"$name$version_suffix".jar
     fi
 
-    if "$jar" -c -f "$jarpath" "${main_class[@]}" -C "$classdir" .
+    if Run "$jar" -c -f "$jarpath" "${main_class[@]}" -C "$classdir" .
     then
         local exit_code=$?
     else

@@ -1,4 +1,4 @@
-package no.ion.hybridmodules.test.FindHybridModule.one.exported;
+package no.ion.jhms.test.FindHybridModule.one.exported;
 
 class OneExported {
     public String toString() {

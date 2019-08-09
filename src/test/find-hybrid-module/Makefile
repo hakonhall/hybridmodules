@@ -2,17 +2,17 @@
 all: one two
 
 .PHONY: one
-one:  ../../src/test/resources
+one:  ../resources
 	$(MAKE) -C $@
-	cp one/lib/find.hybrid.module.one-1.2.3.jar ../../src/test/resources
+	cp one/lib/find.hybrid.module.one-1.2.3.jar ../resources
 
 .PHONY: two
-two:  ../../src/test/resources
+two:  ../resources
 	$(MAKE) -C $@
-	cp two/lib/find.hybrid.module.two-1.2.3.jar ../../src/test/resources
+	cp two/lib/find.hybrid.module.two-1.2.3.jar ../resources
 
-../../src/test/resources:
-	mkdir -p ../../src/test/resources
+../resources:
+	mkdir -p ../resources
 
 re: clean all
 

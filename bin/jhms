@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+function Usage {
+    cat <<EOF
+Usage: ${0##*/} [JAVAOPT]... -- [OPT]... [ARG]...
+Launch java hybrid module system.
+
+OPT
+    --module, -m <main-hybrid-module>[/<main-class>]
+        Specifies the entrypoint of the hybrid module application. If absent,
+        the main class is read from the main-class attribute in the 
+        meta-inf/manifest.mf of the main hybrid module's JAR file.
+    --module-path, -p <path>
+        A : separated list of hybrid modular JAR files, and/or directories 
+        containing hybrd modular JAR files.
+    --help, -h
+        This help text.
+EOF
+
+    exit 0
+}
+
+function Fail {
+    printf "%s" "$@"
+    echo
+    exit 1
+}
+
+function Main {
+    case "$#" in
+	0) Fail "Missing arguments, try --help/-h" ;;
+	1)
+	    if test "$1" == -h || test "$1" == --help
+	    then
+		Usage
+	    fi
+	    ;;
+    esac
+
+    local -a java_opts=()
+
+    while true
+    do
+	if (( $# == 0 ))
+	then
+	    Fail "Missing '--', try --help/-h"
+	fi
+
+	# This isn't perfect: A Java option may take an argument "--".
+	if test "$1" == --
+	then
+	    shift
+	    break
+	fi
+
+	java_opts+=("$1")
+	shift
+    done
+
+    local bin_dir=$(dirname "$0")
+    local jar_dir="$bin_dir"/../target
+
+    if ! test -d "$jar_dir"
+    then
+	Fail "Failed to find jar directory for no.ion.jhms from '$0'"
+    fi
+
+    # Why not launch in module mode? Because then we would need to
+    # --add-modules at least all platform modules required by --module.
+
+    local version=2.0.0
+    local jar_path="$jar_dir"/no.ion.jhms-$version.jar
+    if ! test -f "$jar_path"
+    then
+	Fail "There is no Java Hybrid Module System JAR file: '$jar_path'"
+    fi
+
+    exec java "${java_opts[@]}" --class-path "$jar_path" no.ion.jhms.Main "$@"
+}
+
+Main "$@"
