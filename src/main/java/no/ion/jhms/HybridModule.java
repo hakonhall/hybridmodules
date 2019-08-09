@@ -1,63 +1,172 @@
 package no.ion.jhms;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.lang.module.ResolutionException;
+import java.util.*;
 
-class HybridModule {
+class HybridModule extends BaseModule {
     private final HybridModuleId id;
-    private final Jar jar;
-    private final HybridModuleClassLoader classLoader;
-    private final HashMap<String, HybridModule> hybridModulesByPackage = new HashMap<>();
-    private final HashMap<String, HybridModule> hybridModulesByExportedPackage = new HashMap<>();
+    private final HybridModuleJar jar;
+    private final List<PlatformModule> platformReads;
+    private final List<PlatformModule> platformReadClosure;
+    private final List<HybridModule> hybridReads;
+    private final List<HybridModule> hybridReadClosure;
 
-    HybridModule(Jar jar,
-                 Map<String, HybridModule> hybridModulesByPackage,
-                 Map<String, HybridModule> hybridModulesByExportedPackage) {
-        this.id = jar.moduleId();
+    private HybridModuleClassLoader classLoader;
+
+    private HybridModule(HybridModuleJar jar,
+                         Set<String> packages,
+                         List<PlatformModule> platformReads,
+                         List<PlatformModule> platformReadClosure,
+                         List<HybridModule> hybridReads,
+                         List<HybridModule> hybridReadClosure,
+                         Map<String, Set<String>> exports) {
+        super(jar.hybridModuleId().name(), packages, exports);
+        this.id = jar.hybridModuleId();
         this.jar = jar;
+        this.platformReads = platformReads;
+        this.platformReadClosure = platformReadClosure;
+        this.hybridReads = hybridReads;
+        this.hybridReadClosure = hybridReadClosure;
 
-        this.hybridModulesByExportedPackage.putAll(hybridModulesByExportedPackage);
-        for (var exports : jar.descriptor().exports()) {
-            if (exports.isQualified()) {
-                throw new InvalidHybridModuleException("Qualified exports are not yet supported");
-            }
-
-            HybridModuleResolver.addToHybridModuleByPackage(id, this.hybridModulesByExportedPackage, exports.source(), this);
-        }
-
-        this.hybridModulesByPackage.putAll(hybridModulesByPackage);
-        for (var packageName : jar.descriptor().packages()) {
-            HybridModuleResolver.addToHybridModuleByPackage(id, this.hybridModulesByPackage, packageName, this);
-        }
-
-        this.classLoader = new HybridModuleClassLoader(jar, this, this.hybridModulesByPackage);
+        hybridReads.add(this);
+        hybridReadClosure.add(this);
     }
 
-    Optional<String> getMainClass() {
-        return jar.mainClass();
-    }
+    HybridModuleId id() { return id; }
+    List<PlatformModule> platformReads() { return platformReads; }
+    List<PlatformModule> platformReadClosure() { return platformReadClosure; }
+    List<HybridModule> hybridReads() { return hybridReads; }
+    List<HybridModule> hybridReadClosure() { return hybridReadClosure; }
 
-    HybridModuleId getHybridModuleId() {
-        return id;
-    }
+    Optional<String> getMainClass() { return jar.descriptor().mainClass(); }
 
-    HybridModuleClassLoader getClassLoader() {
-        return classLoader;
-    }
+    HybridModuleClassLoader getClassLoader() { return classLoader; }
 
-    /** Maps each exported package to its hybrid module. */
-    Map<String, HybridModule> getExportedPackages() {
-        return hybridModulesByExportedPackage;
-    }
-
-    /** Maps each package in each hybrid module H this hybrid module reads to the hybrid module H. */
-    Map<String, HybridModule> getReads() {
-        return hybridModulesByPackage;
+    @Override
+    public boolean equals(Object other) {
+        // Normally, equality would be determined by this.id. However if we ever support instantiating more
+        // than one hybrid module for a given hybrid module name and version, we would determine
+        // equality by reference anyways.
+        return other == this;
     }
 
     @Override
-    public String toString() {
-        return id.toString();
+    public int hashCode() {
+        // See equals()
+        return super.hashCode();
+    }
+
+    private void setHybridModuleClassLoader(HybridModuleClassLoader classLoader) { this.classLoader = classLoader; }
+
+    static class Builder {
+        private final HybridModuleJar jar;
+
+        private Set<String> packages = new HashSet<>();
+
+        private final Set<String> requiresNames = new HashSet<>();
+
+        private final List<PlatformModule> platformReads = new ArrayList<>();
+        private final List<PlatformModule> platformReadClosure = new ArrayList<>();
+
+        private final List<HybridModule> hybridReads = new ArrayList<>();
+        private final List<HybridModule> hybridReadClosure = new ArrayList<>();
+
+        private final Map<String, Set<String>> exports = new HashMap<>();
+
+        Builder(HybridModuleJar jar) {
+            this.jar = jar;
+        }
+
+        void setPackages(Set<String> packages) {
+            this.packages.addAll(packages);
+        }
+
+        void addHybridModuleRequires(HybridModule hybridModule, boolean transitive) {
+            if (!requiresNames.add(hybridModule.id().name())) {
+                // JLS 11, 7.7.1 Dependences
+                throw new ResolutionException("Hybrid module " + jar.hybridModuleId() + " requires " + hybridModule.id().name() + " twice");
+            }
+
+            hybridReads.addAll(hybridModule.hybridReadClosure());
+            platformReads.addAll(hybridModule.platformReadClosure());
+
+            if (transitive) {
+                hybridReadClosure.addAll(hybridModule.hybridReadClosure());
+                platformReadClosure.addAll(hybridModule.platformReadClosure());
+            }
+        }
+
+        void addPlatformModuleRequires(PlatformModule platformModule, boolean transitive) {
+            if (!requiresNames.add(platformModule.name())) {
+                // JLS 11, 7.7.1 Dependences
+                throw new ResolutionException("Hybrid module " + jar.hybridModuleId() + " requires " + platformModule.name() + " twice");
+            }
+
+            platformReads.add(platformModule);
+            if (transitive) {
+                platformReadClosure.add(platformModule);
+            }
+        }
+
+        void addExports(String packageName, Set<String> friends) {
+            exports.put(packageName, friends);
+        }
+
+        HybridModule build() {
+            HybridModule module = new HybridModule(
+                    jar,
+                    packages,
+                    platformReads,
+                    platformReadClosure,
+                    hybridReads,
+                    hybridReadClosure,
+                    exports);
+
+            // The hybrid module has a reference to the class loader, and vice versa, which complicates construction.
+
+            TreeMap<String, PlatformModule> platformModuleByPackage = new TreeMap<>();
+            for (var platformModule : platformReads) {
+                for (var packageName : platformModule.packagesVisibleTo(module)) {
+                    PlatformModule previousOwner = platformModuleByPackage.put(packageName, platformModule);
+
+                    if (previousOwner != null) {
+                        throw new InvalidHybridModuleException("Package " + packageName + " visible to hybrid module " +
+                                module.id() + " is exported from two different readable modules (" +
+                                previousOwner.name() + " and " + platformModule.name() + ")");
+                    }
+                }
+            }
+
+            TreeMap<String, HybridModule> hybridModuleByPackage = new TreeMap<>();
+            for (var hybridModule : hybridReads) {
+                for (var packageName : hybridModule.packagesVisibleTo(module)) {
+                    PlatformModule previousPlatformOwner = platformModuleByPackage.get(packageName);
+                    if (previousPlatformOwner != null) {
+                        throw new InvalidHybridModuleException("Package " + packageName + " visible to hybrid module " +
+                                module.id() + " is exported from two different readable modules (" +
+                                previousPlatformOwner.name() + " and " + module.id() + ")");
+                    }
+
+                    HybridModule previousOwner = hybridModuleByPackage.put(packageName, hybridModule);
+                    if (previousOwner != null) {
+                        throw new InvalidHybridModuleException("Package " + packageName + " visible to hybrid module " +
+                                module.id() + " is exported from two different readable modules (" +
+                                previousOwner.id() + " and " + hybridModule.id() + ")");
+                    }
+                }
+            }
+
+            HybridModuleClassLoader classLoader = new HybridModuleClassLoader(
+                    jar,
+                    module,
+                    packages,
+                    hybridModuleByPackage,
+                    platformModuleByPackage,
+                    exports);
+
+            module.setHybridModuleClassLoader(classLoader);
+
+            return module;
+        }
     }
 }

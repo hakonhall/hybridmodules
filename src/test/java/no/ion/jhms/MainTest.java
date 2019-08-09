@@ -28,7 +28,7 @@ public class MainTest {
         Path path = Paths.get("src/test/jars", relativePath);
         if (!Files.exists(path)) {
             throw new IllegalStateException("Failed to find '" + path + "': " +
-                    "Perhaps 'make' has not been run under src/main/jars?");
+                    "Perhaps 'make' has not been run under src/test/jars?");
         }
 
         return path.toString();

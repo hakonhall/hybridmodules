@@ -1,28 +1,47 @@
 package no.ion.jhms;
 
 import java.lang.module.ResolutionException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
-class PlatformModule {
-    private final String moduleName;
-    private final Set<PlatformModule> platformModulesDependencies;
-    private final Set<PlatformModule> transitivePlatformModules;
+class PlatformModule extends BaseModule {
+    private final String name;
+    private final Set<PlatformModule> reads;
+    private final Set<PlatformModule> readClosure;
+
+    private volatile Set<String> packagesVisibleToHybridModules = null;
 
     private PlatformModule(String moduleName,
-                           Set<PlatformModule> platformModulesDependencies,
-                           Set<PlatformModule> transitivePlatformModules) {
-        this.moduleName = moduleName;
-        this.platformModulesDependencies = Collections.unmodifiableSet(platformModulesDependencies);
-        this.transitivePlatformModules = Collections.unmodifiableSet(transitivePlatformModules);
+                           Set<String> packages,
+                           HashSet<PlatformModule> reads,
+                           HashSet<PlatformModule> readClosure,
+                           Map<String, Set<String>> exports) {
+        super(moduleName, packages, exports);
+        this.name = moduleName;
+        this.reads = reads;
+        this.readClosure = readClosure;
+
+        reads.add(this);
+        readClosure.add(this);
     }
 
-    String name() { return moduleName; }
+    String name() { return name; }
 
-    Set<PlatformModule> getAllTransitivePlatformDependencies() {
-        return transitivePlatformModules;
+    Set<PlatformModule> reads() { return reads; }
+    Set<PlatformModule> readClosure() { return readClosure; }
+
+    @Override
+    Set<String> packagesVisibleTo(BaseModule module) {
+        // Assume all hybrid modules have the same visibility of platform modules.
+        // This allows us to cache the result of the calculation.
+
+        Set<String> packages = packagesVisibleToHybridModules;
+        if (packages == null) {
+            packages = super.packagesVisibleTo(module);
+            packagesVisibleToHybridModules = packages;
+        }
+
+        return packages;
     }
 
     @Override
@@ -35,50 +54,41 @@ class PlatformModule {
     public int hashCode() {
         return super.hashCode();
     }
-
     static class Builder {
         private final String moduleName;
-        private final Set<PlatformModule> directPlatformModulesDependencies = new HashSet<>();
-
-        // All modules in requires, plus the transitive dependencies of those, and so on recursively
-        private final Set<PlatformModule> platformModulesDependencies = new HashSet<>();
-
-        // The transitive modules, plus the transitive dependencies of those, and so on recursively
-        private final Set<PlatformModule> transitivePlatformModules = new HashSet<>();
-
+        private final Set<String> packages = new HashSet<>();
+        private final Set<String> requiresNames = new HashSet<>();
+        private final HashSet<PlatformModule> reads = new HashSet<>();
+        private final HashSet<PlatformModule> readClosure = new HashSet<>();
         private final TreeMap<String, Set<String>> exports = new TreeMap<>();
 
         Builder(String moduleName) {
             this.moduleName = moduleName;
         }
 
-        void addRequires(PlatformModule platformModule, boolean transitive, boolean isStatic) {
-            // At run time, a static requires is ignored. Consistent with JPMS.
-            if (isStatic) return;
+        void setPackages(Set<String> packages) { this.packages.addAll(packages); }
 
-            if (!directPlatformModulesDependencies.add(platformModule)) {
+        void addRequires(PlatformModule platformModule, boolean transitive) {
+            if (!requiresNames.add(platformModule.name())) {
                 // JLS 11, 7.7.1 Dependences
-                throw new ResolutionException("Platform module " + moduleName + " requires " +
-                        platformModule.name() + " twice");
+                throw new ResolutionException("Platform module " + moduleName + " requires " + platformModule.name() + " twice");
             }
 
-            if (platformModulesDependencies.add(platformModule)) {
-                platformModulesDependencies.addAll(platformModule.getAllTransitivePlatformDependencies());
-            } else {
-                // transitive dependencies have presumably been added already
-            }
+            reads.addAll(platformModule.readClosure());
 
             if (transitive) {
-                if (transitivePlatformModules.add(platformModule)) {
-                    transitivePlatformModules.addAll(platformModule.getAllTransitivePlatformDependencies());
-                } else {
-                    // transitive dependencies have presumably been added already
-                }
+                readClosure.addAll(platformModule.readClosure());
+            }
+        }
+
+        void addExports(String packageName, Set<String> friends) {
+            if (exports.put(packageName, friends) != null) {
+                throw new ResolutionException("Platform module " + moduleName + " exports " + packageName + " twice");
             }
         }
 
         PlatformModule build() {
-            return new PlatformModule(moduleName, platformModulesDependencies, transitivePlatformModules);
+            return new PlatformModule(moduleName, packages, reads, readClosure, exports);
         }
     }
 }

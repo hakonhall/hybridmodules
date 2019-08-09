@@ -1,16 +1,13 @@
 package no.ion.jhms;
 
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class Main {
-    public static void main(String... args) throws InvocationTargetException {
-        Path[] hybridModulePath = null;
+    public static void main(String... args) {
+        String modulePath = null;
         String hybridModuleName = null;
         String mainClass = null;
-        boolean printGraph = false;
 
         int index = 0;
         for (; index < args.length; ++index) {
@@ -19,11 +16,7 @@ public class Main {
                 case "--module-path":
                 case "-p":
                     ++index;
-                    String[] pathStrings = args[index].split(":");
-                    hybridModulePath = new Path[pathStrings.length];
-                    for (int i = 0; i < pathStrings.length; ++i) {
-                        hybridModulePath[i] = Paths.get(pathStrings[i]);
-                    }
+                    modulePath = args[index];
                     continue;
                 case "--module":
                 case "-m":
@@ -38,9 +31,6 @@ public class Main {
                         mainClass = arg.substring(slashIndex + 1);
                     }
                     continue;
-                case "--graph":
-                    printGraph = true;
-                    continue;
                 case "--":
                     ++index;
                     break;
@@ -52,7 +42,7 @@ public class Main {
 
         String[] mainArgs = Arrays.copyOfRange(args, index, args.length);
 
-        if (hybridModulePath == null) {
+        if (modulePath == null) {
             userError("Missing --module-path");
         }
 
@@ -60,18 +50,12 @@ public class Main {
             userError("Missing --module");
         }
 
-        var params = new HybridModuleContainer.ResolveParams(hybridModuleName, hybridModulePath);
-        try (var container = HybridModuleContainer.resolve(params)) {
-            if (printGraph) {
-                printGraphOf(container);
-            } else {
-                container.main(mainClass, mainArgs);
-            }
-        }
-    }
-
-    private static void printGraphOf(HybridModuleContainer container) {
-        System.out.print(container.getDependencyGraphDescription());
+        // Avoid closing container when returning from main(), since daemon threads may have been spawned.
+        var container = new HybridModuleContainer();
+        container.discoverHybridModulesFromModulePath(modulePath);
+        var params = new HybridModuleContainer.ResolveParams(hybridModuleName);
+        RootHybridModule rootModule = container.resolve(params);
+        rootModule.main(mainClass, mainArgs);
     }
 
     private static void userError(String message) {

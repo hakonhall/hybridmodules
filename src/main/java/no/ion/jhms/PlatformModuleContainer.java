@@ -5,6 +5,9 @@ import java.lang.module.FindException;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -25,11 +28,13 @@ public class PlatformModuleContainer {
         this.systemModuleFinder = systemModuleFinder;
     }
 
+    TreeMap<String, PlatformModule> platformModules() { return new TreeMap<>(platformModules); }
+
     Optional<PlatformModule> resolve(String name) {
         PlatformModule platformModule = platformModules.get(name);
         if (platformModule != null) return Optional.of(platformModule);
 
-        // Because we do not claim relaxation of jlink, the system module finder is 1:1 with "platform" modules:
+        // Because jlink is not supported, the system module finder is 1:1 with platform modules:
         //   1. The Java SE Platform modules that must start with "java.", and
         //   2. the other OpenJDK modules must start with "jdk." (JEP200). But non-OpenJDK may have other modules.
 
@@ -51,16 +56,23 @@ public class PlatformModuleContainer {
     private PlatformModule resolve(ModuleDescriptor descriptor) {
         var builder = new PlatformModule.Builder(descriptor.name());
 
+        builder.setPackages(descriptor.packages());
+
         for (var requires : descriptor.requires()) {
             String requiresName = requires.name();
-            PlatformModule requiredModule = resolve(requiresName).orElseThrow(
-                    () -> new FindException("Failed to find platform module: " + requiresName)
-            );
+            Optional<PlatformModule> requiresModule = resolve(requiresName);
+            if (requiresModule.isPresent()) {
+                builder.addRequires(
+                        requiresModule.get(),
+                        requires.modifiers().contains(ModuleDescriptor.Requires.Modifier.TRANSITIVE));
+            } else if (!requires.modifiers().contains(ModuleDescriptor.Requires.Modifier.STATIC)) {
+                throw new FindException("Platform module " + descriptor.name() + " requires " + requiresName +
+                        ", but it was not found with ModuleFinder.ofSystem()");
+            }
+        }
 
-            builder.addRequires(
-                    requiredModule,
-                    requires.modifiers().contains(ModuleDescriptor.Requires.Modifier.TRANSITIVE),
-                    requires.modifiers().contains(ModuleDescriptor.Requires.Modifier.STATIC));
+        for (var exports : descriptor.exports()) {
+            builder.addExports(exports.source(), exports.targets());
         }
 
         return builder.build();

@@ -1,5 +1,5 @@
 arguments :=
-dirs := $(patsubst %/,%,$(wildcard */))
+dirs := with-main-class required rich-descriptor
 
 .PHONY: all
 all: $(dirs)

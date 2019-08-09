@@ -1,63 +1,51 @@
 package no.ion.jhms;
 
-import java.lang.module.ModuleDescriptor.Version;
 import java.util.Objects;
-import java.util.Optional;
 
-class HybridModuleId {
+/**
+ * Uniquely identifies a hybrid module.
+ */
+// Immutable
+class HybridModuleId implements Comparable<HybridModuleId> {
     private final String name;
-    private final Version version;
+    private final HybridModuleVersion version;
 
-    HybridModuleId(String name, Version version) {
-        this.name = name;
-        this.version = version;
-    }
+    public static HybridModuleId fromId(String id) {
+        int atIndex = id.indexOf('@');
+        if (atIndex == -1) {
+            throw new IllegalArgumentException("Bad hybrid module ID: " + id);
+        }
 
-    HybridModuleId(String name, Optional<Version> version) {
-        this(name, version.orElse(null));
+        return new HybridModuleId(id.substring(0, atIndex), id.substring(atIndex + 1));
     }
 
     HybridModuleId(String name, String version) {
-        this(name, versionFromString(version));
-        validateName();
+        this(name, HybridModuleVersion.from(version));
     }
 
-    HybridModuleId(String id) {
-        int atIndex = id.indexOf('@');
-        if (atIndex == -1) {
-            throw new IllegalArgumentException("No @ found in id: '" + id + "'");
-        }
-
-        this.name = id.substring(0, atIndex);
-        this.version = versionFromString(id.substring(atIndex + 1));
-        validateName();
+    HybridModuleId(String name, HybridModuleVersion version) {
+        this.name = Objects.requireNonNull(name);
+        this.version = Objects.requireNonNull(version);
     }
 
-    String name() {
-        return name;
-    }
-
-    Optional<Version> version() {
-        return Optional.ofNullable(version);
-    }
+    String name() { return name; }
+    HybridModuleVersion version() { return version; }
 
     @Override
-    public String toString() {
-        // This matches getNameAndVersion in ModuleDescriptor
-        if (version == null) {
-            return name;
-        } else {
-            return name + '@' + version;
-        }
+    public int compareTo(HybridModuleId that) {
+        int c = this.name.compareTo(that.name);
+        if (c != 0) return c;
+
+        return this.version.compareTo(that.version);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        HybridModuleId hybridModuleId = (HybridModuleId) o;
-        return Objects.equals(name, hybridModuleId.name) &&
-                Objects.equals(version, hybridModuleId.version);
+        HybridModuleId that = (HybridModuleId) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(version, that.version);
     }
 
     @Override
@@ -65,19 +53,8 @@ class HybridModuleId {
         return Objects.hash(name, version);
     }
 
-    private static Version versionFromString(String version) {
-        if (version == null || version.equals("")) {
-            return null;
-        } else {
-            return Version.parse(version);
-        }
-    }
-
-    private void validateName() {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name must be non-empty");
-        } else if (name.indexOf('@') != -1) {
-            throw new IllegalArgumentException("Name cannot contain @");
-        }
+    @Override
+    public String toString() {
+        return name + "@" + version;
     }
 }
