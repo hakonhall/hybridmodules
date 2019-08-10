@@ -2,7 +2,7 @@
 
 function Usage {
     cat <<EOF
-Usage: ${0##*/} JAR
+Usage: ${0##*/} -d DEST JAR
 Extract info from OSGi JAR to help make a module-info.java.
 
 Prints information from the OSGi bundle that makes it easy to create a
@@ -27,19 +27,6 @@ function Fail {
 }
 
 function Main {
-    while (( $# > 0 ))
-    do
-        case "$1" in
-            -h|--help|help) Usage ;;
-            *) break ;;
-        esac
-    done
-
-    if (( $# == 0 ))
-    then
-        Usage
-    fi
-
     local dir="${0%/*}"
     local jar="$dir"/target/bundle-1.0-SNAPSHOT.jar
     if ! test -r "$jar"
@@ -47,14 +34,13 @@ function Main {
         Fail "Failed to find jar at '$jar'"
     fi
 
-    if (( ${#JAVA_HOME} > 0 ))
+    java="$JAVA_HOME"/bin/java
+    if test "$JAVA_HOME" == "" || ! test -x "$java"
     then
-        local java="$JAVA_HOME"/bin/java
-    else
-        local java=java
+        java=java
     fi
 
-    "$java" -cp "$jar" no.ion.hybridmodules.bundle.Main "$@"
+    "$java" -cp "$jar" no.ion.jhms.bundle.Main "$@"
 }
 
 Main "$@"

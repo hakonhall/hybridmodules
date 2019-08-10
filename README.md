@@ -34,15 +34,15 @@ as proper hybrid modules, but only if there are no errors made in their conversi
 which is fragile since the java compiler cannot be used to help upholding the guarantees.
 
 A modular JAR can almost always be taken verbatim as a hybrid modular JAR. But if you have several versions of that module,
-you must ensure each is updated with their version. The `make-modular-jar.sh` described below can be used for this.
+you must ensure each is updated with their version. The `modularize-jar` described below can be used for this.
 
 There's a separate section below that deals with OSGi bundle JARs.
 
-For a plain JAR you can use a tool `make-modular-jar.sh` that compiles a `module-info.java` and updates the JAR 
+For a plain JAR you can use a tool `modularize-jar` that compiles a `module-info.java` and updates the JAR 
 to contain it, making it a modular JAR. Example:
 
 ```
-make-modular-jar.sh -u -f commons-lang-2.5.jar --module-info src --module-version 2.5
+modularize-jar -u -f commons-lang-2.5.jar --module-info src --module-version 2.5
 ```
 
 TODO: How to update the compiled version of the dependencies? Use --module-path with jar!? Can javac be used with --module-path (i.e. no source files - all .class files)?
@@ -64,9 +64,9 @@ bundle/bundle.sh BUNDLE > module-info.java
 
 The resulting `module-info.java` needs to be fixed:
 
-* The version `@<version>` following the module name should be removed, but the version should be used in the following `make-modular-jar.sh` call.
+* The version `@<version>` following the module name should be removed, but the version should be used in the following `modularize-jar` call.
 * The dependant hybrid modules cannot be deduced by the OSGi metadata. The only time the tool gets this right is when there are no dependencies.
 * If the OSGi bundle JAR contains embedded JAR dependencies, then those needs to be extracted into their own
   independent JAR files, and be made into hybrid modules, and must be referenced in `requires`.
 
-Having made `module-info.java`, you can now call `make-modular-jar.sh`.
+Having made `module-info.java`, you can now call `modularize-jar`.
