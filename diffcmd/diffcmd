@@ -116,8 +116,8 @@ function Main {
                 # 'expected' dir exists, assume nothing written to
                 # stdout/stderr and exit status 0.
                 mkdir "$dir"/expected
-                echo "" > "$dir"/expected/stdout
-                echo "" > "$dir"/expected/stderr
+                touch > "$dir"/expected/stdout
+                touch > "$dir"/expected/stderr
                 echo 0 > "$dir"/expected/exit_status
             fi
 

@@ -35,7 +35,7 @@ public class RootHybridModule {
         if (mainClassName == null) {
             mainClassName = mainClass()
                     .orElseThrow(() -> new IllegalArgumentException("The root hybrid module " +
-                            root.id() + " does not have a main class defined in the module descriptor"));
+                            root.id() + " does not have a main class"));
         }
 
         Class<?> mainClass;
