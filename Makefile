@@ -5,6 +5,7 @@ dirs = bundle diffcmd experiments jar javahms modulec no.ion.jhms \
 
 target =
 all: $(dirs)
+	@echo Success
 
 clean: target = clean
 clean: all

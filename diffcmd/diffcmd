@@ -110,16 +110,12 @@ function Main {
 
         if ! $update
         then
-            if ! test -d "$dir"/expected
-            then
-                # Make it easier to start testing successful commands: If no
-                # 'expected' dir exists, assume nothing written to
-                # stdout/stderr and exit status 0.
-                mkdir "$dir"/expected
-                touch > "$dir"/expected/stdout
-                touch > "$dir"/expected/stderr
+            # Make default expectancies for convenience
+            test -d "$dir"/expected || mkdir "$dir"/expected
+            test -e "$dir"/expected/stdout || touch "$dir"/expected/stdout
+            test -e "$dir"/expected/stderr || touch "$dir"/expected/stderr
+            test -e "$dir"/expected/exit_status || \
                 echo 0 > "$dir"/expected/exit_status
-            fi
 
             # If there is no diff, this returns 0 and this script returns
             # 0. Otherwise, diff returns !=0, which by 'set -e' means the
