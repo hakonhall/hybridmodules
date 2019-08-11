@@ -34,13 +34,7 @@ function Main {
         Fail "Failed to find jar at '$jar'"
     fi
 
-    java="$JAVA_HOME"/bin/java
-    if test "$JAVA_HOME" == "" || ! test -x "$java"
-    then
-        java=java
-    fi
-
-    "$java" -cp "$jar" no.ion.jhms.bundle.Main "$@"
+    java -cp "$jar" no.ion.jhms.bundle.Main "$@"
 }
 
 Main "$@"

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+cat <<EOF
+This text is written to stdout
+The program was invoked as follows:
+EOF
+
+printf "%q" "$0"
+printf " %q" "$@"
+printf "\n"
+
+cat <<EOF >&2
+This test is
+written to
+stderr
+EOF
+
+exit 3

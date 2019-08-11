@@ -52,8 +52,8 @@ $(OUTPUT_DIR):
 .PHONY: package
 package:
 	@mkdir -p classes
-	$(JAVA_HOME)/bin/javac -d classes -p $(MODULAR_JAR) $$(find src/main/java -name '*.java')
-	$(JAVA_HOME)/bin/jar -c -f $(HYBRID_MODULE_JAR) --module-version $(HYBRID_MODULE_VERSION) -C classes .
+	javac -d classes -p $(MODULAR_JAR) $$(find src/main/java -name '*.java')
+	jar -c -f $(HYBRID_MODULE_JAR) --module-version $(HYBRID_MODULE_VERSION) -C classes .
 
 # Step 5. And run it with hybrid modules.
 

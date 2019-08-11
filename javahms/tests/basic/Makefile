@@ -1,10 +1,13 @@
 .PHONY: m1
 
+target =
+
 all: m1
-	../javahms -p m1 -m m1 x y
+	../../../command-test/command-test ../../javahms -p m1 -m m1 x y
 
 m1:
-	$(MAKE) -C $@
+	$(MAKE) -C $@ $(target)
 
-clean:
-	$(MAKE) -C $@ clean
+clean: target = clean
+clean: m1
+	../../../command-test/command-test --clean

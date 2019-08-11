@@ -1,7 +1,7 @@
 all: compile test
 
 compile:
-	../../bin/modulec src
+	../../modulec/modulec src
 
 test:
 	@ # Verify that without --add-opens we get a warning for reflective

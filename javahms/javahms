@@ -98,8 +98,8 @@ function Main {
         esac
     done
 
-    local bin_dir=$(dirname "$0")
-    local jar_dir="$bin_dir"/../jhms/target
+    local javahms_dir=$(dirname "$0")
+    local jar_dir="$javahms_dir"/../no.ion.jhms/target
 
     if ! test -d "$jar_dir"
     then

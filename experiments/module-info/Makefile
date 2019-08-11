@@ -5,7 +5,7 @@ test_directories = m1 m2 m3
 all: build-jar $(test_directories)
 
 build-jar:
-	../../bin/modulec -e no.ion.Main java
+	../../modulec/modulec -e no.ion.Main java
 
 $(test_directories):
 	$(MAKE) -C $@

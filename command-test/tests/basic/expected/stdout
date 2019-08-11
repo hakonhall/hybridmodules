@@ -1,0 +1,3 @@
+This text is written to stdout
+The program was invoked as follows:
+../example-program one t\ w\ o 3
