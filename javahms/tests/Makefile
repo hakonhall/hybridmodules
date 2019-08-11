@@ -1,4 +1,4 @@
-subdirs = basic tutorial
+subdirs = basic tutorial multiversion multiversion-fail
 
 .PHONY: $(subdirs)
 
