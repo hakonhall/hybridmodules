@@ -1,5 +1,6 @@
 package no.ion.jhms;
 
+import java.lang.module.FindException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
@@ -52,10 +53,16 @@ public class Main {
 
         // Avoid closing container when returning from main(), since daemon threads may have been spawned.
         var container = new HybridModuleContainer();
-        container.discoverHybridModulesFromModulePath(modulePath);
-        var params = new HybridModuleContainer.ResolveParams(hybridModuleName);
-        RootHybridModule rootModule = container.resolve(params);
-        rootModule.main(mainClass, mainArgs);
+
+        try {
+            container.discoverHybridModulesFromModulePath(modulePath);
+            var params = new HybridModuleContainer.ResolveParams(hybridModuleName);
+            RootHybridModule rootModule = container.resolve(params);
+            rootModule.main(mainClass, mainArgs);
+        } catch (IllegalArgumentException | FindException | InvalidHybridModuleException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
     }
 
     private static void userError(String message) {

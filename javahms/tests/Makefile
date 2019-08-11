@@ -1,12 +1,12 @@
-subdirs = basic
+subdirs = basic tutorial
 
 .PHONY: $(subdirs)
 
 target =
 
-all: basic
+all: $(subdirs)
 
-basic:
+$(subdirs):
 	$(MAKE) -C $@ $(target)
 
 clean: target = clean
