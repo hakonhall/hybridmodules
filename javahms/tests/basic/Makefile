@@ -3,11 +3,11 @@
 target =
 
 all: m1
-	../../../command-test/command-test ../../javahms -p m1 -m m1 x y
+	../../../diffcmd/diffcmd ../../javahms -p m1 -m m1 x y
 
 m1:
 	$(MAKE) -C $@ $(target)
 
 clean: target = clean
 clean: m1
-	../../../command-test/command-test --clean
+	../../../diffcmd/diffcmd --clean

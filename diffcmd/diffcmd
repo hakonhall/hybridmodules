@@ -1,0 +1,133 @@
+#!/bin/bash
+
+set -e
+
+# nullglob is used below
+shopt -s nullglob
+
+function Usage {
+    cat <<EOF
+Usage: diffcmd [OPTION...] CMD [ARG...]
+Execute command and diff stdout, stderr, and exit status against expectancy.
+
+First the command is executed as follows:
+  CMD [ARG...] < DIR/stdin > DIR/actual/stdout 2> DIR/actual/stderr
+  echo $? > DIR/actual/exit_status
+
+then the 'DIR/actual' directory tree is diffed against the 'DIR/expected'
+directory tree. without differences, 0 is returned.
+
+If DIR/stdin does not exist, stdin will be connected to an empty file.
+
+Options:
+  --          The next argument is taken as CMD.
+  --clean     Remove 'actual' directory.
+  -d DIR      Use DIR as the root directory, by default '.'.
+  -u          Update 'expected' (golden) instead of 'actual' and skip diff.
+EOF
+    exit 0
+}
+
+function Fail {
+    printf "%s" "$@"
+    echo
+    exit 1
+}
+
+function Main {
+    local update=false
+    local clean=false
+    local dir=.
+
+    while (( $# > 0 ))
+    do
+        case "$1" in
+            --)
+                shift
+                break
+                ;;
+            --clean)
+                clean=true
+                shift
+                ;;
+            --dir|-d)
+                test -d "$2" || Fail "'$2' is not a directory"
+                dir="$2"
+                shift 2
+                ;;
+            --help|-h)
+                Usage
+                ;;
+            -u)
+                update=true
+                shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    if $clean
+    then
+        (( $# == 0 )) || Fail "CMD cannot be passed with --clean"
+        ! $update || Fail "-u does not make sense with --clean"
+        
+        # nullglob is set at top
+        local file
+        for file in "$dir"/actual/*
+        do
+            case "$file" in
+                */stdout) : ;;
+                */stderr) : ;;
+                */exit_status) : ;;
+                *) Fail "Unknown file found - refuse to clear actual: $file" ;;
+            esac
+        done
+
+        rm -rf "$dir"/actual
+    else
+        (( $# > 0 )) || Fail "Missing CMD, see --help"
+
+        local outdir="$dir"/actual
+        if $update
+        then
+            outdir="$dir"/expected
+        fi
+
+        mkdir -p "$outdir"
+
+        set +e
+        if test -r stdin
+        then
+            "$@" < "$dir"/stdin > "$outdir"/stdout 2> "$outdir"/stderr
+            echo $? > "$outdir"/exit_status
+        else
+            "$@" <<< "" > "$outdir"/stdout 2> "$outdir"/stderr
+            echo $? > "$outdir"/exit_status
+        fi
+        set -e
+
+        if ! $update
+        then
+            if ! test -d "$dir"/expected
+            then
+                # Make it easier to start testing successful commands: If no
+                # 'expected' dir exists, assume nothing written to
+                # stdout/stderr and exit status 0.
+                mkdir "$dir"/expected
+                echo "" > "$dir"/expected/stdout
+                echo "" > "$dir"/expected/stderr
+                echo 0 > "$dir"/expected/exit_status
+            fi
+
+            # If there is no diff, this returns 0 and this script returns
+            # 0. Otherwise, diff returns !=0, which by 'set -e' means the
+            # script exits with != 0.
+            cd "$dir"
+            diff -Naur expected actual
+        fi
+    fi
+}
+
+Main "$@"
