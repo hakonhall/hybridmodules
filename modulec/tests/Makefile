@@ -1,4 +1,4 @@
-subdirs = tests
+subdirs = trivial
 target =
 
 .PHONY: $(subdirs)
