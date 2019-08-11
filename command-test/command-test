@@ -1,0 +1,112 @@
+#!/bin/bash
+
+set -e
+
+# nullglob is used below
+shopt -s nullglob
+
+function Usage {
+    cat <<EOF
+Usage: command-test [OPTION...] CMD [ARG...]
+Execute command and compare stdout, stderr, and exit status against golden.
+
+Options:
+  --       The next argument is taken as CMD.
+  --clean  Remove 'actual' directory.
+  -C WD    Change directory to WD before executing command, by default $PWD.
+  -u       Update 'expected' (golden) instead of 'actual' and skip diff.
+
+The working directory is changed to WD, then CMD [ARG...] is executed as follows
+  CMD [ARG...] > actual/out 2> actual/err; echo $? > actual exit_status
+Then a textual diff is done comparing the actual and expected directories.
+EOF
+    exit 0
+}
+
+function Fail {
+    printf "%s" "$@"
+    echo
+    exit 1
+}
+
+function Main {
+    local wd=""
+    local update=false
+    local clean=false
+
+    while (( $# > 0 ))
+    do
+        case "$1" in
+            --)
+                shift
+                break
+                ;;
+            --clean)
+                clean=true
+                shift
+                ;;
+            -C)
+                wd="$2"
+                shift 2
+                ;;
+            --help|-h)
+                Usage
+                ;;
+            -u)
+                update=true
+                shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    if test "$wd" != ""
+    then
+        test -d "$wd" || Fail "$wd is not a directory"
+        cd "$wd"
+    fi
+
+    if $clean
+    then
+        (( $# == 0 )) || Fail "CMD cannot be passed with --clean"
+        ! $update || Fail "-u does not make sense with --clean"
+        
+        # nullglob is set at top
+        local file
+        for file in actual/*
+        do
+            case "$file" in
+                */stdout) : ;;
+                */stderr) : ;;
+                */exit_status) : ;;
+                *) Fail "Unknown file found - refuse to clear actual: $file" ;;
+            esac
+        done
+
+        rm -rf actual
+    else
+        (( $# > 0 )) || Fail "Missing CMD, see --help"
+       
+        local output_dir=actual
+        if $update
+        then
+            output_dir=expected
+        fi
+
+        mkdir -p "$output_dir"
+
+        set +e
+        "$@" > "$output_dir"/stdout 2> "$output_dir"/stderr
+        echo "$?" > "$output_dir"/exit_status
+        set -e
+
+        if ! $update
+        then
+            diff -Naur expected actual
+        fi
+    fi
+}
+
+Main "$@"
