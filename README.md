@@ -7,7 +7,7 @@ In short, Java Hybrid Module System (JHMS) is Java Platform Module System (JPMS)
 
 JHMS utilizes JPMS at compile and package time: modules are declared in module-info.java, the module path is used during compilation, and the module version can be set, etc.
 
-However unlike JPMS, the dependencies seen at compile time, including the version of these, are also seen at run time. 
+However the dependencies seen at compile time, including the version of these (unlike JPMS), are also seen at run time. 
 The only packages *visible* to a (hybrid) module at run time, are those that are are exported to the module from readable
 modules. Accessibility in visible packages follows pre-JPMS accessibility, e.g. *setAccessible()* can be used to 
 gain reflective access to non-public fields and method. The run time behavior is accomplished through class loader
