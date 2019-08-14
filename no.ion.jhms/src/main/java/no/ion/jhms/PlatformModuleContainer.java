@@ -53,6 +53,8 @@ public class PlatformModuleContainer {
         }
     }
 
+    Optional<PlatformModule> get(String name) { return Optional.of(platformModules.get(name)); }
+
     private PlatformModule resolve(ModuleDescriptor descriptor) {
         var builder = new PlatformModule.Builder(descriptor.name());
 

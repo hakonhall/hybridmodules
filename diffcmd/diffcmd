@@ -24,20 +24,26 @@ Options:
   --clean     Remove 'actual' directory.
   -d DIR      Use DIR as the root directory, by default '.'.
   -u          Update 'expected' (golden) instead of 'actual' and skip diff.
+  -n NORM     After the completion of CMD, but before the diff is done,
+              execute NORM with one argument, the directory to the actual
+              directory. This allows NORM to normalize the actual output,
+              to e.g. remove/replace timestamps, fix ordering in a
+              randomly ordered list, etc.
 EOF
     exit 0
 }
 
 function Fail {
-    printf "%s" "$@"
-    echo
+    printf "%s" "$@" >&2
+    echo >&2
     exit 1
 }
 
 function Main {
-    local update=false
     local clean=false
     local dir=.
+    local normalizer=""
+    local update=false
 
     while (( $# > 0 ))
     do
@@ -58,6 +64,11 @@ function Main {
             --help|-h)
                 Usage
                 ;;
+            --normalizer|-n)
+                test -x "$2" || Fail "$2 is not executable"
+                normalizer="$2"
+                shift 2
+                ;;
             -u)
                 update=true
                 shift
@@ -71,7 +82,8 @@ function Main {
     if $clean
     then
         (( $# == 0 )) || Fail "CMD cannot be passed with --clean"
-        ! $update || Fail "-u does not make sense with --clean"
+        ! $update || Fail "-u doesn't make sense with --clean"
+        test "$normalizer" == "" || Fail "-n doesn't make sense with --clean"
         
         # nullglob is set at top
         local file
@@ -110,6 +122,16 @@ function Main {
 
         if ! $update
         then
+            if test "$normalizer" != ""
+            then
+                if ! "$normalizer" "$dir"/actual
+                then
+                    local command_line=
+                    printf -v command_line "%q %q" "$normalizer" "$dir"/actual
+                    Fail "Normalizer command failed, aborting: $command_line"
+                fi
+            fi
+
             # Make default expectancies for convenience
             test -d "$dir"/expected || mkdir "$dir"/expected
             test -e "$dir"/expected/stdout || touch "$dir"/expected/stdout

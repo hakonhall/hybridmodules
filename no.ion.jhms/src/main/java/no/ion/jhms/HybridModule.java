@@ -42,6 +42,40 @@ class HybridModule extends BaseModule {
 
     HybridModuleClassLoader getClassLoader() { return classLoader; }
 
+    void fillModuleGraph(ModuleGraph graph) {
+        if (graph.containsHybridModule(id)) {
+            return;
+        }
+
+        if (graph.params().includeExports()) {
+            graph.addHybridModule(id, unqualifiedExports());
+        } else {
+            graph.addHybridModule(id);
+        }
+
+        hybridReads.forEach(readHybridModule -> {
+            readHybridModule.fillModuleGraph(graph);
+
+            if (graph.params().includeExports()) {
+                List<String> qualifiedExports = readHybridModule.qualifiedExportsTo(readHybridModule);
+                graph.addReadEdge(id, readHybridModule.id, qualifiedExports);
+            } else {
+                graph.addReadEdge(id, readHybridModule.id);
+            }
+        });
+
+        platformReads.forEach(readPlatformModule -> {
+            readPlatformModule.fillModuleGraph(graph);
+
+            if (graph.params().includeExports()) {
+                List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
+                graph.addReadEdge(id, readPlatformModule.name(), qualifiedExports);
+            } else {
+                graph.addReadEdge(id, readPlatformModule.name());
+            }
+        });
+    }
+
     @Override
     public boolean equals(Object other) {
         // Normally, equality would be determined by this.id. However if we ever support instantiating more

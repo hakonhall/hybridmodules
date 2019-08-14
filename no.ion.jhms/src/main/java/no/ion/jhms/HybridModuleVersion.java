@@ -56,6 +56,8 @@ class HybridModuleVersion implements Comparable<HybridModuleVersion> {
         return 0;
     }
 
+    boolean isNull() { return versionString.isEmpty(); }
+
     @Override
     public String toString() { return versionString; }
 

@@ -53,6 +53,12 @@ class HybridModuleId implements Comparable<HybridModuleId> {
         return Objects.hash(name, version);
     }
 
+    /** Returns NAME if version is null (absent), and otherwise NAME@VERSION. */
+    String toString2() {
+        return version.isNull() ? name : name + '@' + version;
+    }
+
+    /** Returns NAME@VERSION (VERSION is absent if null). */
     @Override
     public String toString() {
         return name + "@" + version;

@@ -64,6 +64,42 @@ public class HybridModuleContainer implements AutoCloseable {
         return new RootHybridModule(root);
     }
 
+    public ModuleGraph getModuleGraph(ModuleGraph.Params params) {
+        HashSet<HybridModule> hybridRoots = new HashSet<>();
+        HashSet<PlatformModule> platformRoots = new HashSet<>();
+
+        for (var rootId : params.getRoots()) {
+            if (rootId.indexOf('@') == -1) {
+                PlatformModule platformModule = platformModuleContainer.get(rootId)
+                        .orElseThrow(() -> new IllegalArgumentException("There is no module " + rootId));
+                platformRoots.add(platformModule);
+            } else {
+                HybridModuleId id = HybridModuleId.fromId(rootId);
+                HybridModule hybridModule = hybridModules.get(id);
+                if (hybridModule == null) {
+                    throw new IllegalArgumentException("There is no module " + rootId);
+                }
+                hybridRoots.add(hybridModule);
+            }
+        }
+
+        if (hybridRoots.isEmpty() && platformRoots.isEmpty()) {
+            hybridRoots.addAll(roots.stream().map(id -> {
+                var hybridModule = hybridModules.get(id);
+                if (hybridModule == null) {
+                    throw new IllegalStateException("Root has not been resolved: " + hybridModule);
+                }
+                return hybridModule;
+            }).collect(Collectors.toSet()));
+        }
+
+        ModuleGraph graph = new ModuleGraph(params);
+        hybridRoots.forEach(hybridModule -> hybridModule.fillModuleGraph(graph));
+        platformRoots.forEach(platformModule -> platformModule.fillModuleGraph(graph));
+
+        return graph;
+    }
+
     public static class GraphParams {
         private boolean includeReads = true;
         private boolean includeSelfReadEdge = false;
@@ -76,7 +112,7 @@ public class HybridModuleContainer implements AutoCloseable {
         }
     }
 
-    public String moduleGraph(GraphParams params) {
+    public String moduleGraph2(GraphParams params) {
         StringBuilder builder = new StringBuilder(1024);
 
         if (params.includeReads) {

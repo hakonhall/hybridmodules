@@ -6,8 +6,8 @@ target =
 # make clean all doesn't work...
 
 all: $(subdirs)
-	../../../diffcmd/diffcmd ../../javahms -p m-1:m-2:intermediate:main \
-		-m main
+	../../../diffcmd/diffcmd -n ./normalizer ../../javahms \
+		-p m-1:m-2:intermediate:main -m main
 
 m-1:
 m-2:

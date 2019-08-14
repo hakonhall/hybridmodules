@@ -44,6 +44,29 @@ class PlatformModule extends BaseModule {
         return packages;
     }
 
+    void fillModuleGraph(ModuleGraph graph) {
+        if (graph.containsPlatformModule(name)) {
+            return;
+        }
+
+        if (graph.params().includeExports()) {
+            graph.addPlatformModule(name, unqualifiedExports());
+        } else {
+            graph.addPlatformModule(name);
+        }
+
+        readClosure.forEach(readPlatformModule -> {
+            readPlatformModule.fillModuleGraph(graph);
+
+            if (graph.params().includeExports()) {
+                List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
+                graph.addReadEdge(name, readPlatformModule.name, qualifiedExports);
+            } else {
+                graph.addReadEdge(name, readPlatformModule.name);
+            }
+        });
+    }
+
     @Override
     public boolean equals(Object other) {
         // See HybridModule::equals
@@ -54,6 +77,7 @@ class PlatformModule extends BaseModule {
     public int hashCode() {
         return super.hashCode();
     }
+
     static class Builder {
         private final String moduleName;
         private final Set<String> packages = new HashSet<>();
