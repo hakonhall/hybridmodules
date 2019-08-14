@@ -33,7 +33,7 @@ public class GraphvizDigraphTest {
                         List.of();
 
         ModuleGraph graph = new ModuleGraph();
-        graph.addRootHybridModule(mainId);
+        graph.markAsRootHybridModule(mainId);
 
         graph.addHybridModule(mainId);
         graph.addHybridModule(dep1Id);

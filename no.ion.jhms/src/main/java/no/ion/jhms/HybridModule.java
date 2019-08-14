@@ -56,22 +56,26 @@ class HybridModule extends BaseModule {
         hybridReads.forEach(readHybridModule -> {
             readHybridModule.fillModuleGraph(graph);
 
-            if (graph.params().includeExports()) {
-                List<String> qualifiedExports = readHybridModule.qualifiedExportsTo(readHybridModule);
-                graph.addReadEdge(id, readHybridModule.id, qualifiedExports);
-            } else {
-                graph.addReadEdge(id, readHybridModule.id);
+            if (graph.params().includeSelf() || !id.equals(readHybridModule.id)) {
+                if (graph.params().includeExports()) {
+                    List<String> qualifiedExports = readHybridModule.qualifiedExportsTo(readHybridModule);
+                    graph.addReadEdge(id, readHybridModule.id, qualifiedExports);
+                } else {
+                    graph.addReadEdge(id, readHybridModule.id);
+                }
             }
         });
 
         platformReads.forEach(readPlatformModule -> {
-            readPlatformModule.fillModuleGraph(graph);
+            if (!graph.params().excludeJavaBase() || !readPlatformModule.name().equals("java.base")) {
+                readPlatformModule.fillModuleGraph(graph);
 
-            if (graph.params().includeExports()) {
-                List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
-                graph.addReadEdge(id, readPlatformModule.name(), qualifiedExports);
-            } else {
-                graph.addReadEdge(id, readPlatformModule.name());
+                if (graph.params().includeExports()) {
+                    List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
+                    graph.addReadEdge(id, readPlatformModule.name(), qualifiedExports);
+                } else {
+                    graph.addReadEdge(id, readPlatformModule.name());
+                }
             }
         });
     }

@@ -131,7 +131,7 @@ public class ModuleGraph {
     boolean containsHybridModule(HybridModuleId id) { return hybridModules.containsKey(id2String(id)); }
     boolean containsPlatformModule(String name) { return platformModules.containsKey(name); }
 
-    void addRootHybridModule(HybridModuleId module) { rootHybridModules.add(id2String(module)); }
+    void markAsRootHybridModule(HybridModuleId module) { rootHybridModules.add(id2String(module)); }
     void addHybridModule(HybridModuleId module, List<String> unqualifiedExports) { hybridModules.put(id2String(module), new HybridModuleNode(module, unqualifiedExports)); }
     void addHybridModule(HybridModuleId module) { addHybridModule(module, List.of()); }
     void addPlatformModule(String module, List<String> unqualifiedExports) { platformModules.put(module, new PlatformModuleNode(module, unqualifiedExports)); }

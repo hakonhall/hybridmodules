@@ -55,14 +55,19 @@ class PlatformModule extends BaseModule {
             graph.addPlatformModule(name);
         }
 
-        readClosure.forEach(readPlatformModule -> {
-            readPlatformModule.fillModuleGraph(graph);
+        reads.forEach(readPlatformModule -> {
+            if (!graph.params().excludeJavaBase() || !readPlatformModule.name.equals("java.base")) {
+                readPlatformModule.fillModuleGraph(graph);
+            }
 
-            if (graph.params().includeExports()) {
-                List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
-                graph.addReadEdge(name, readPlatformModule.name, qualifiedExports);
-            } else {
-                graph.addReadEdge(name, readPlatformModule.name);
+            if ((graph.params().includeSelf() || !name.equals(readPlatformModule.name)) &&
+                    (!graph.params().excludeJavaBase() || !readPlatformModule.name.equals("java.base"))) {
+                if (graph.params().includeExports()) {
+                    List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
+                    graph.addReadEdge(name, readPlatformModule.name, qualifiedExports);
+                } else {
+                    graph.addReadEdge(name, readPlatformModule.name);
+                }
             }
         });
     }

@@ -94,7 +94,10 @@ public class HybridModuleContainer implements AutoCloseable {
         }
 
         ModuleGraph graph = new ModuleGraph(params);
-        hybridRoots.forEach(hybridModule -> hybridModule.fillModuleGraph(graph));
+        hybridRoots.forEach(hybridModule -> {
+            graph.markAsRootHybridModule(hybridModule.id());
+            hybridModule.fillModuleGraph(graph);
+        });
         platformRoots.forEach(platformModule -> platformModule.fillModuleGraph(graph));
 
         return graph;
