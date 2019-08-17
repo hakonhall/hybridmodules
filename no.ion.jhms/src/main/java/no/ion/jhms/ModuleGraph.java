@@ -51,9 +51,6 @@ public class ModuleGraph {
          *
          * <p>The unqualified exports from a module is shown on the node. Qualified exports shows on the read edge.
          * All unexported packages are shown on the read edge to self (with {@link #includeSelf(boolean) includeSelf(true)}).
-         *
-         * <p>For a requires-edge graph, the unqualified exports of the read closure of a module is shown on the node,
-         * while the qualified exports from the read closure is shown on the required edge.
          */
         public void includeExports(boolean includeExports) { this.includeExports = includeExports; }
 
