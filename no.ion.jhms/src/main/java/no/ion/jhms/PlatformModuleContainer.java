@@ -5,9 +5,6 @@ import java.lang.module.FindException;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -53,7 +50,7 @@ public class PlatformModuleContainer {
         }
     }
 
-    Optional<PlatformModule> get(String name) { return Optional.of(platformModules.get(name)); }
+    Optional<PlatformModule> get(String name) { return Optional.ofNullable(platformModules.get(name)); }
 
     private PlatformModule resolve(ModuleDescriptor descriptor) {
         var builder = new PlatformModule.Builder(descriptor.name());

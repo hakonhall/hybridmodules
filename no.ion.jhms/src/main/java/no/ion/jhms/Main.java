@@ -2,7 +2,9 @@ package no.ion.jhms;
 
 import java.lang.module.FindException;
 import java.util.Arrays;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class Main {
     private String modulePath = null;
@@ -44,10 +46,17 @@ public class Main {
                         hybridModuleName = value.substring(0, slashIndex);
                         mainClass = value.substring(slashIndex + 1);
                     }
-                    continue;
+                    ++index;
+                    break;
                 case "--":
                     ++index;
                     break;
+                default:
+                    if (arg.startsWith("-")) {
+                        userError("Unknown option: " + arg);
+                    } else {
+                        userError("Missing --module");
+                    }
             }
 
             // Use 'continue' to loop around.
@@ -75,6 +84,13 @@ public class Main {
             if (moduleGraphParams == null) {
                 rootModule.main(mainClass, mainArgs);
             } else {
+                for (String id : moduleGraphParams.modulesExcluded()) {
+                    if (!container.isObservable(id)) {
+                        userError("The module " + id + " is not observable");
+                    }
+                }
+
+
                 ModuleGraph moduleGraph = container.getModuleGraph(moduleGraphParams);
                 GraphvizDigraph graph = GraphvizDigraph.fromModuleGraph(moduleGraph);
                 System.out.println(graph.toDot());
@@ -88,19 +104,39 @@ public class Main {
     private static ModuleGraph.Params parseModuleGraphOptionValue(String optionValue) {
         var params = new ModuleGraph.Params();
 
-        if (!optionValue.isEmpty() && optionValue.startsWith("-")) {
-            userError("Bad option value of --graph-module");
-        }
-
-        params.includeExports(true);
-        params.includeSelf(true);
+        Stream.of(optionValue.split(",", -1))
+                .map(String::strip)
+                .filter(Predicate.not(String::isEmpty))
+                .forEach(graphOption -> {
+                    switch (graphOption) {
+                        case "exports":
+                            params.includeExports(true);
+                            break;
+                        case "noplatform":
+                            params.excludePlatformModules(true);
+                            break;
+                        case "self":
+                            params.includeSelf(true);
+                            break;
+                        case "visible":
+                            params.excludeUnreadable(true);
+                            break;
+                        default:
+                            if (graphOption.startsWith("-")) {
+                                String module = graphOption.substring(1);
+                                params.excludeModule(module);
+                            } else {
+                                userError("Unknown --graph-module option: '" + graphOption + "'");
+                            }
+                    }
+                });
 
         return params;
     }
 
     private static void userError(String message) {
-        System.out.println(message);
-        System.exit(0);
+        System.err.println(message);
+        System.exit(1);
     }
 
     private static void failIf(boolean fail, Supplier<String> message) {

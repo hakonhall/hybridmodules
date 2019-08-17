@@ -8,6 +8,8 @@ target =
 all: $(subdirs)
 	../../../diffcmd/diffcmd ../../javahms -p m-1:m-2:intermediate:main \
 		-m main
+	../../../diffcmd/diffcmd -d module-graph ../../javahms -p m-1:m-2:intermediate:main \
+		-g '' -m main
 
 m-1:
 m-2:
@@ -20,3 +22,4 @@ $(subdirs):
 clean: target = clean
 clean:  $(subdirs)
 	../../../diffcmd/diffcmd --clean
+	../../../diffcmd/diffcmd --clean -d module-graph

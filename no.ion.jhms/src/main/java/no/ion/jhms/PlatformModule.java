@@ -48,7 +48,7 @@ class PlatformModule extends BaseModule {
     }
 
     void fillModuleGraph(ModuleGraph graph) {
-        if (graph.containsPlatformModule(name) || !graph.params().platformModuleIncluded(name)) {
+        if (graph.containsPlatformModule(name) || graph.params().excludePlatformModules() || graph.params().moduleExcluded(name)) {
             return;
         }
 

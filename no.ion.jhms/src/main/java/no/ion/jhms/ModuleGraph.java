@@ -24,32 +24,27 @@ public class ModuleGraph {
      * The edges are the read edges.
      */
     public static class Params {
-        private final Set<String> roots = new HashSet<>();
+        private final Set<String> moduleBlacklist = new HashSet<>();
+
         private boolean includeSelf = false;
         private boolean includeExports = false;
-        private boolean excludeUnreadableByRoots = false;
+        private boolean excludeUnreadable = false;
+        private boolean excludePlatformModules = false;
 
-        /** WARNING: null if all platform modules are blacklisted. */
-        private Set<String> platformModuleBlacklist = new HashSet<>();
+        /** Exclude the given module from the module graph (name@version for hybrid module, name for platform module). */
+        public void excludeModule(String module) { moduleBlacklist.add(module); }
+
+        /** Whether to exclude those modules from the graph that are not readable by the roots. */
+        public void excludeUnreadable(boolean excludeUnreadable) { this.excludeUnreadable = excludeUnreadable; }
+
+        /** Whether to exclude all platform modules from the graph, and all edges to/from these. */
+        public void excludePlatformModules(boolean excludePlatformModules) { this.excludePlatformModules = excludePlatformModules; }
 
         /**
          * All modules 1. reads themselves, and 2. (effectively) export all of its own packages to itself.
          * This method can be used to exclude those edges.
          */
         public void includeSelf(boolean includeSelf) { this.includeSelf = includeSelf; }
-
-        /**
-         * All modules implicitly requires the java.base module. This method can be used to exclude the
-         * java.base module from the graph and all edges to/from it.
-         */
-        public void excludeJavaBase(boolean excludeJavaBase) {
-            if (platformModuleBlacklist != null) {
-                platformModuleBlacklist.add("java.base");
-            }
-        }
-
-        /** Whether to exclude all platform modules from the graph, and all edges to/from these. */
-        public void excludePlatformModules(boolean excludePlatformModules) { platformModuleBlacklist = null; }
 
         /**
          * Whether to include information on exported packages (= package visibility).
@@ -62,27 +57,14 @@ public class ModuleGraph {
          */
         public void includeExports(boolean includeExports) { this.includeExports = includeExports; }
 
-        /** Whether to exclude those modules from the graph that are not readable by the roots. */
-        public void excludeUnreadableByRoots(boolean excludeUnreadableByRoots) { this.excludeUnreadableByRoots = excludeUnreadableByRoots; }
-
-        /** Limit the module graph to those reachable through these hybrid modules, instead of the current roots. */
-        public void setRoots(Set<String> modules) {
-            this.roots.clear();
-            this.roots.addAll(modules);
-        }
-
-        public void setRoots(String... moduleNames) { setRoots(Set.of(moduleNames)); }
-
-        Set<String> getRoots() { return roots; }
         boolean includeSelf() { return includeSelf; }
 
-        boolean platformModuleIncluded(String name) {
-            return platformModuleBlacklist != null && !platformModuleBlacklist.contains(name);
-        }
+        boolean moduleExcluded(String name) { return moduleBlacklist.contains(name); }
+        Set<String> modulesExcluded() { return Set.copyOf(moduleBlacklist); }
 
-        boolean excludePlatformModules() { return platformModuleBlacklist == null; }
+        boolean excludePlatformModules() { return excludePlatformModules; }
         boolean includeExports() { return includeExports; }
-        boolean excludeUnreadableByRoots() { return excludeUnreadableByRoots; }
+        boolean excludeUnreadable() { return excludeUnreadable; }
     }
 
     public static class HybridModuleNode implements Comparable<HybridModuleNode> {
@@ -150,12 +132,14 @@ public class ModuleGraph {
     boolean containsPlatformModule(String name) { return platformModules.containsKey(name); }
 
     boolean hybridModuleInUniverse(HybridModuleId id) {
-        return hybridModuleUniverse == null || hybridModuleUniverse.contains(id);
+        return (hybridModuleUniverse == null || hybridModuleUniverse.contains(id)) &&
+                !params.moduleExcluded(id2String(id));
     }
 
     boolean platformModuleInUniverse(String name) {
         return (platformModuleUniverse == null || platformModuleUniverse.contains(name)) &&
-                params.platformModuleIncluded(name);
+                !params.excludePlatformModules() &&
+                !params.moduleExcluded(name);
     }
 
     void setHybridModuleUniverse(Set<HybridModuleId> hybridModuleUniverse) { this.hybridModuleUniverse = hybridModuleUniverse; }
@@ -175,5 +159,5 @@ public class ModuleGraph {
     void addReadEdge(HybridModuleId fromModule, String toModule) { addReadEdge(id2String(fromModule), toModule); }
     void addReadEdge(String fromModule, String toModule) { addReadEdge(fromModule, toModule, List.of()); }
 
-    private static String id2String(HybridModuleId id) { return id.toString2(); }
+    private static String id2String(HybridModuleId id) { return id.toString(); }
 }

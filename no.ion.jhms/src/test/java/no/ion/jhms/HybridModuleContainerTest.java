@@ -128,7 +128,7 @@ public class HybridModuleContainerTest {
             RootHybridModule root = container.resolve(resolveParams);
 
             var graphParams = new ModuleGraph.Params();
-            graphParams.excludeJavaBase(true);
+            graphParams.excludeModule("java.base");
             ModuleGraph moduleGraph = container.getModuleGraph(graphParams);
 
             assertEquals(Set.of("find.hybrid.module.two@1.2.3"), moduleGraph.rootHybridModules());
@@ -417,7 +417,7 @@ public class HybridModuleContainerTest {
     }
 
     @Test
-    public void test() {
+    public void testExcludeUnreadable() {
         try (var container = new HybridModuleContainer()) {
             container.discoverHybridModules(Paths.get("src/test/resources"));
 
@@ -425,7 +425,7 @@ public class HybridModuleContainerTest {
             RootHybridModule root = container.resolve(resolveParams);
 
             var graphParams = new ModuleGraph.Params();
-            graphParams.excludeUnreadableByRoots(true);
+            graphParams.excludeUnreadable(true);
             ModuleGraph moduleGraph = container.getModuleGraph(graphParams);
 
             assertEquals(Set.of("find.hybrid.module.two@1.2.3"), moduleGraph.rootHybridModules());
@@ -449,6 +449,34 @@ public class HybridModuleContainerTest {
                     "find.hybrid.module.two@1.2.3 -> find.hybrid.module.one@1.2.3: []",
                     "find.hybrid.module.two@1.2.3 -> java.base: []"),
                     serializeEdgeList(readEdges.get("find.hybrid.module.two@1.2.3")));
+        }
+    }
+
+    @Test
+    public void testPicks() {
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules(Paths.get("src/test/resources"));
+
+            var resolveParams = new HybridModuleContainer.ResolveParams("find.hybrid.module.two");
+            RootHybridModule root = container.resolve(resolveParams);
+
+            var graphParams = new ModuleGraph.Params();
+            graphParams.excludeModule("java.base");
+            graphParams.excludeModule("find.hybrid.module.one@1.2.3");
+            ModuleGraph moduleGraph = container.getModuleGraph(graphParams);
+
+            assertEquals(Set.of("find.hybrid.module.two@1.2.3"), moduleGraph.rootHybridModules());
+
+            List<ModuleGraph.HybridModuleNode> hybridModuleNodes = moduleGraph.hybridModules();
+            assertEquals(List.of("find.hybrid.module.two@1.2.3"),
+                    hybridModuleNodes.stream().map(ModuleGraph.HybridModuleNode::id).collect(Collectors.toList()));
+
+            List<ModuleGraph.PlatformModuleNode> platformModuleNodes = moduleGraph.platformModules();
+            assertEquals(List.of(),
+                    platformModuleNodes.stream().map(ModuleGraph.PlatformModuleNode::name).collect(Collectors.toList()));
+
+            TreeMap<String, List<ModuleGraph.ReadEdge>> readEdges = moduleGraph.readEdges();
+            assertEquals(Set.of(), readEdges.keySet());
         }
     }
 

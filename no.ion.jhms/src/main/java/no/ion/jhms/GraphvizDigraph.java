@@ -3,6 +3,15 @@ package no.ion.jhms;
 import java.util.List;
 
 class GraphvizDigraph {
+    private static String MODULE_CLUSTER_FONT_FACE = "Helvetica";
+    private static String MODULE_CLUSTER_STYLE = "dotted";
+    private static String HYBRID_MODULE_BORDER_COLOR = "blue";
+    // private static String HYBRID_MODULE_NAME_COLOR = "black";
+    private static String PLATFORM_MODULE_BORDER_COLOR = "red";
+    private static String PACKAGES_COLOR = "dimgray";
+    private static String PACKAGES_BORDER_COLOR = "yellowgreen";
+
+
     private final String name;
     private final ModuleGraph graph;
 
@@ -21,9 +30,14 @@ class GraphvizDigraph {
         dot.setLength(0);
 
         append("digraph ").appendId(name).append(" {").appendLine();
-        appendLine("  subgraph cluster_hybrid {");
-        appendLine("    graph [ style=dotted; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]");
-        appendLine("    node [ color=blue; ]");
+
+        if (graph.platformModules().size() > 0) {
+            appendLine("  subgraph cluster_hybrid {");
+            appendLine("    graph [ style=" + MODULE_CLUSTER_STYLE + "; label=<<font face=\"" + MODULE_CLUSTER_FONT_FACE +
+                    "\">HYBRID MODULES</font>>; ]");
+        }
+
+        appendLine("    node [ color=" + HYBRID_MODULE_BORDER_COLOR + "; ]");
         graph.hybridModules().forEach(hybridModule -> {
             append("    ").appendId(hybridModule.id());
 
@@ -42,11 +56,14 @@ class GraphvizDigraph {
                 }
             }
         });
-        appendLine("  }");
+
         if (graph.platformModules().size() > 0) {
+            appendLine("  }");
+
             appendLine("  subgraph cluster_platform {");
-            appendLine("    graph [ style=dotted; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]");
-            appendLine("    node [ color=red; ]");
+            appendLine("    graph [ style=" + MODULE_CLUSTER_STYLE + "; label=<<font face=\"" +
+                    MODULE_CLUSTER_FONT_FACE + "\">PLATFORM MODULES</font>>; ]");
+            appendLine("    node [ color=" + PLATFORM_MODULE_BORDER_COLOR + "; ]");
             graph.platformModules().forEach(module -> {
                 append("    ").appendId(module.name());
                 List<String> exports = module.unqualifiedExports();
@@ -67,13 +84,7 @@ class GraphvizDigraph {
 
                             List<String> exports = toEdge.exports();
                             if (exports.size() > 0) {
-                                append(" [ label=<<i><font color=\"dimgray\">").appendHtmlEscaped(exports.get(0));
-
-                                for (int i = 1; i < exports.size(); ++i) {
-                                    append("<br/>").appendHtmlEscaped(exports.get(i));
-                                }
-
-                                appendLine("</font></i>>; ]");
+                                append(" [ label=<").appendExportsTable(exports).appendLine(">; ]");
                             } else {
                                 appendLine();
                             }
@@ -88,67 +99,81 @@ class GraphvizDigraph {
     private GraphvizDigraph appendModuleNodeLabelValue(String moduleHtml, List<String> unqualifiedExports) {
         if (unqualifiedExports.size() > 0) {
             append("<<table border=\"0\"><tr><td>")
-                    .appendHtmlEscaped(moduleHtml)
-                    .append("</td></tr><tr><td><i><font color=\"dimgray\">")
-                    .appendHtmlEscaped(unqualifiedExports.get(0));
-            for (int i = 1; i < unqualifiedExports.size(); ++i) {
-                append("<br/>");
-                appendHtmlEscaped(unqualifiedExports.get(i));
-            }
-            append("</font></i></td></tr></table>>");
+                    .append(moduleHtml)
+                    .append("</td></tr><tr><td>")
+                    .appendExportsTable(unqualifiedExports)
+                    .append("</td></tr></table>>");
         } else {
             append("<").append(moduleHtml).append(">");
         }
         return this;
     }
 
-    private GraphvizDigraph appendExportsTable(List<String> unqualifiedExports) {
-        if (unqualifiedExports.size() <= 0) {
-            throw new IllegalArgumentException("unqualifiedExports must have a positive size");
+    /** Pack a long list of packages into a 2-dimensional square-sized table. */
+    private GraphvizDigraph appendExportsTable(List<String> exports) {
+        if (exports.size() <= 0) {
+            throw new IllegalArgumentException("exports must have a positive size");
         }
 
-        // The distance between two characters horizontally (H) and vertically (V) has a physical distance
-        // (and visual ratio) of ... say V/H = 3. To get a circle, we need something like
-        //   V * rows = H * (max # characters in column) * columns
-        // On the other hand, rows * columns ~ unqualifiedExports.size(), therefore
-        //   rows * columns * H * (max # characters in column) * columns = unqualifiedExports.size() * V * rows
-        //   columns^2 = unqualifiedExports.size() * V / (H * (max # characters in column))
-        //   columns = sqrt( unqualifiedExports.size() * (V/H) / (max # characters in column) )
+        // We will try to make a table which is about twice as wide as it is high, which is a typical shape
+        // for a node of just a text string.
+        final double W = 2.0;
 
-        // V/H
-        double ratio = 3.0;
+        // Let V be the vertical height between two rows in a table on screen, and H be the horizontal distance
+        // between two characters. V/H is about 3 on my screen. My OS, dot program, etc would be no good if
+        // this ration is radically different on someone else's screen.
+        final double vOverH = 3.0;
 
-        // max # characters in columns
-        int maxLength = unqualifiedExports.stream().map(String::length).max(Integer::compareTo).orElse(0);
-        if (maxLength <= 0) {
+        // Let columnLength be the number of characters in the String that fills the width of the columns.
+        // As a simplification, we'll estimate it from the longest String in 'exports'.
+        final int columnLength = exports.stream().map(String::length).max(Integer::compareTo).orElse(0);
+        if (columnLength <= 0) {
             throw new IllegalArgumentException("Only empty package names");
         }
 
-        int columns = (int) Math.floor(Math.sqrt(unqualifiedExports.size() * ratio / maxLength));
-        if (columns <= 0) {
-            columns = 1;
-        }
+        // We now got the following equation for W
+        //
+        //       H * columns * lengthPerColumn
+        //   W = -----------------------------
+        //       V * rows
+        //
+        // On the other hand,
+        //
+        //   rows * columns = exports.size()
+        //
+        // Therefore
+        //
+        //               W * V/H * exports.size()
+        //   columns^2 = ------------------------
+        //                   lengthPerColumn
+        //
+        int columns = (int) Math.round(Math.sqrt(W * exports.size() * vOverH / columnLength));
+        columns = Math.max(1, Math.min(columns, exports.size()));
 
-        append("<i><table border=\"0\">");
+        // Ensure the table is large enough, i.e. rows * columns >= exports.size().
+        // Note: rows is guaranteed to be >= 1 (ignoring overflows).
+        int rows = (exports.size() + columns - 1) / columns;
 
-        for (int row = 0; ; ++row) {
-            int offset = columns * row;
-            if (offset >= unqualifiedExports.size()) {
-                break;
+        append("<font color=\"" + PACKAGES_COLOR + "\"><table border=\"1\" color=\"" + PACKAGES_BORDER_COLOR + "\"><tr>");
+
+        for (int column = 0; column < columns; ++column) {
+            int offset = rows * column;
+
+            append("<td balign=\"left\" valign=\"top\" border=\"0\"><i>");
+
+            for (int row = 0; row < rows; ++row) {
+                int index = offset + row;
+                if (index >= exports.size()) {
+                    break;
+                }
+
+                appendHtmlEscaped(exports.get(index)).append("<br/>");
             }
 
-            append("<tr");
-
-            for (int column = 0; column < columns; ++column) {
-                int index = offset + column;
-                String content = index < unqualifiedExports.size() ? unqualifiedExports.get(index) : "";
-                append("<td>").appendHtmlEscaped(content).append("</td>");
-            }
-
-            append("</tr>");
+            append("</i></td>");
         }
 
-        append("</table></i>");
+        append("</tr></table></font>");
 
         return this;
     }

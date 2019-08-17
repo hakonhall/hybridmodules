@@ -36,6 +36,19 @@ public class HybridModuleContainer implements AutoCloseable {
     public void discoverHybridModules(Path... paths) { discoverHybridModules(Arrays.asList(paths)); }
     public void discoverHybridModules(List<Path> paths) { observableHybridModules.discoverHybridModules(paths); }
 
+    public boolean isObservable(String id) {
+        try {
+            HybridModuleId hybridModuleId = HybridModuleId.fromId(id);
+            if (observableHybridModules.has(hybridModuleId)) {
+                return true;
+            }
+        } catch (IllegalArgumentException e) {
+            // ignore
+        }
+
+        return platformModuleContainer.get(id).isPresent();
+    }
+
     public static class ResolveParams {
         final String moduleName;
 
@@ -65,40 +78,21 @@ public class HybridModuleContainer implements AutoCloseable {
     }
 
     public ModuleGraph getModuleGraph(ModuleGraph.Params params) {
-        HashSet<HybridModule> hybridRoots = new HashSet<>();
-        HashSet<PlatformModule> platformRoots = new HashSet<>();
 
-        for (var rootId : params.getRoots()) {
-            if (rootId.indexOf('@') == -1) {
-                PlatformModule platformModule = platformModuleContainer.get(rootId)
-                        .orElseThrow(() -> new IllegalArgumentException("There is no module " + rootId));
-                platformRoots.add(platformModule);
-            } else {
-                HybridModuleId id = HybridModuleId.fromId(rootId);
-                HybridModule hybridModule = hybridModules.get(id);
-                if (hybridModule == null) {
-                    throw new IllegalArgumentException("There is no module " + rootId);
-                }
-                hybridRoots.add(hybridModule);
+        Set<HybridModule> roots = this.roots.stream().map(id -> {
+            var hybridModule = hybridModules.get(id);
+            if (hybridModule == null) {
+                throw new IllegalStateException("Root has not been resolved: " + hybridModule);
             }
-        }
-
-        if (hybridRoots.isEmpty() && platformRoots.isEmpty()) {
-            hybridRoots.addAll(roots.stream().map(id -> {
-                var hybridModule = hybridModules.get(id);
-                if (hybridModule == null) {
-                    throw new IllegalStateException("Root has not been resolved: " + hybridModule);
-                }
-                return hybridModule;
-            }).collect(Collectors.toSet()));
-        }
+            return hybridModule;
+        }).collect(Collectors.toCollection(HashSet::new));
 
         ModuleGraph graph = new ModuleGraph(params);
 
-        if (params.excludeUnreadableByRoots()) {
+        if (params.excludeUnreadable()) {
             HashSet<HybridModuleId> hybridModuleUniverse = new HashSet<>();
             HashSet<String> platformModuleUniverse = new HashSet<>();
-            hybridRoots.forEach(hybridModule -> {
+            roots.forEach(hybridModule -> {
                 hybridModule.hybridReads().stream().map(HybridModule::id).forEach(hybridModuleUniverse::add);
                 hybridModule.platformReads().stream().map(PlatformModule::name).forEach(platformModuleUniverse::add);
             });
@@ -106,8 +100,7 @@ public class HybridModuleContainer implements AutoCloseable {
             graph.setPlatformModuleUniverse(platformModuleUniverse);
         }
 
-        hybridRoots.forEach(hybridModule -> hybridModule.fillModuleGraph(graph));
-        platformRoots.forEach(platformModule -> platformModule.fillModuleGraph(graph));
+        roots.forEach(hybridModule -> hybridModule.fillModuleGraph(graph));
 
         return graph;
     }
