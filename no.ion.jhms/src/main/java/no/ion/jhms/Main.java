@@ -1,40 +1,62 @@
 package no.ion.jhms;
 
 import java.lang.module.FindException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class Main {
-    public static void main(String... args) {
-        String modulePath = null;
-        String hybridModuleName = null;
-        String mainClass = null;
+    private String modulePath = null;
+    private String hybridModuleName = null;
+    private String mainClass = null;
+    private ModuleGraph.Params moduleGraphParams = null;
 
+    public static void main(String... args) {
+        new Main().run(args);
+    }
+
+    private void run(String... args) {
         int index = 0;
         for (; index < args.length; ++index) {
-            String arg = args[index];
+            final String arg = args[index];
             switch (arg) {
+                case "--module-graph":
+                case "-g":
+                    failIf(index + 1 >= args.length, () -> "Missing argument to " + arg);
+                    ++index;
+                    moduleGraphParams = parseModuleGraphOptionValue(args[index]);
+                    continue;
                 case "--module-path":
                 case "-p":
+                    failIf(index + 1 >= args.length, () -> "Missing argument to " + arg);
                     ++index;
                     modulePath = args[index];
                     continue;
                 case "--module":
                 case "-m":
+                    failIf(index + 1 >= args.length, () -> "Missing argument to " + arg);
                     ++index;
-                    arg = args[index];
-                    int slashIndex = arg.indexOf('/');
+                    String value = args[index];
+                    int slashIndex = value.indexOf('/');
                     if (slashIndex == -1) {
-                        hybridModuleName = arg;
+                        hybridModuleName = value;
                         mainClass = null;
                     } else {
-                        hybridModuleName = arg.substring(0, slashIndex);
-                        mainClass = arg.substring(slashIndex + 1);
+                        hybridModuleName = value.substring(0, slashIndex);
+                        mainClass = value.substring(slashIndex + 1);
                     }
-                    continue;
+                    ++index;
+                    break;
                 case "--":
                     ++index;
                     break;
+                default:
+                    if (arg.startsWith("-")) {
+                        userError("Unknown option: " + arg);
+                    } else {
+                        userError("Missing --module");
+                    }
             }
 
             // Use 'continue' to loop around.
@@ -58,15 +80,68 @@ public class Main {
             container.discoverHybridModulesFromModulePath(modulePath);
             var params = new HybridModuleContainer.ResolveParams(hybridModuleName);
             RootHybridModule rootModule = container.resolve(params);
-            rootModule.main(mainClass, mainArgs);
+
+            if (moduleGraphParams == null) {
+                rootModule.main(mainClass, mainArgs);
+            } else {
+                for (String id : moduleGraphParams.modulesExcluded()) {
+                    if (!container.isObservable(id)) {
+                        userError("The module " + id + " is not observable");
+                    }
+                }
+
+
+                ModuleGraph moduleGraph = container.getModuleGraph(moduleGraphParams);
+                GraphvizDigraph graph = GraphvizDigraph.fromModuleGraph(moduleGraph);
+                System.out.println(graph.toDot());
+            }
         } catch (IllegalArgumentException | FindException | InvalidHybridModuleException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
     }
 
+    private static ModuleGraph.Params parseModuleGraphOptionValue(String optionValue) {
+        var params = new ModuleGraph.Params();
+
+        Stream.of(optionValue.split(",", -1))
+                .map(String::strip)
+                .filter(Predicate.not(String::isEmpty))
+                .forEach(graphOption -> {
+                    switch (graphOption) {
+                        case "exports":
+                            params.includeExports(true);
+                            break;
+                        case "noplatform":
+                            params.excludePlatformModules(true);
+                            break;
+                        case "self":
+                            params.includeSelf(true);
+                            break;
+                        case "visible":
+                            params.excludeUnreadable(true);
+                            break;
+                        default:
+                            if (graphOption.startsWith("-")) {
+                                String module = graphOption.substring(1);
+                                params.excludeModule(module);
+                            } else {
+                                userError("Unknown --graph-module option: '" + graphOption + "'");
+                            }
+                    }
+                });
+
+        return params;
+    }
+
     private static void userError(String message) {
-        System.out.println(message);
-        System.exit(0);
+        System.err.println(message);
+        System.exit(1);
+    }
+
+    private static void failIf(boolean fail, Supplier<String> message) {
+        if (fail) {
+            userError(message.get());
+        }
     }
 }

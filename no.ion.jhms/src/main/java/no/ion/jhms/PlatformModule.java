@@ -1,8 +1,11 @@
 package no.ion.jhms;
 
 import java.lang.module.ResolutionException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 class PlatformModule extends BaseModule {
     private final String name;
@@ -44,6 +47,38 @@ class PlatformModule extends BaseModule {
         return packages;
     }
 
+    void fillModuleGraph(ModuleGraph graph) {
+        if (graph.containsPlatformModule(name) || graph.params().excludePlatformModules() || graph.params().moduleExcluded(name)) {
+            return;
+        }
+
+        if (graph.params().includeExports()) {
+            graph.addPlatformModule(name, unqualifiedExports());
+        } else {
+            graph.addPlatformModule(name);
+        }
+
+        reads.forEach(readPlatformModule -> {
+            if (graph.platformModuleInUniverse(readPlatformModule.name)) {
+                readPlatformModule.fillModuleGraph(graph);
+
+                if (graph.params().includeSelf() || !name.equals(readPlatformModule.name)) {
+                    List<String> readEdgePackages;
+                    if (graph.params().includeExports()) {
+                        if (readPlatformModule.name.equals(name)) {
+                            readEdgePackages = unexportedPackages();
+                        } else {
+                            readEdgePackages = readPlatformModule.qualifiedExportsTo(this);
+                        }
+                    } else {
+                        readEdgePackages = List.of();
+                    }
+                    graph.addReadEdge(name, readPlatformModule.name, readEdgePackages);
+                }
+            }
+        });
+    }
+
     @Override
     public boolean equals(Object other) {
         // See HybridModule::equals
@@ -54,6 +89,7 @@ class PlatformModule extends BaseModule {
     public int hashCode() {
         return super.hashCode();
     }
+
     static class Builder {
         private final String moduleName;
         private final Set<String> packages = new HashSet<>();

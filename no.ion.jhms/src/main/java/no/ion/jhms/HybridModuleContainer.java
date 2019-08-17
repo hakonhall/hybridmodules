@@ -36,6 +36,19 @@ public class HybridModuleContainer implements AutoCloseable {
     public void discoverHybridModules(Path... paths) { discoverHybridModules(Arrays.asList(paths)); }
     public void discoverHybridModules(List<Path> paths) { observableHybridModules.discoverHybridModules(paths); }
 
+    public boolean isObservable(String id) {
+        try {
+            HybridModuleId hybridModuleId = HybridModuleId.fromId(id);
+            if (observableHybridModules.has(hybridModuleId)) {
+                return true;
+            }
+        } catch (IllegalArgumentException e) {
+            // ignore
+        }
+
+        return platformModuleContainer.get(id).isPresent();
+    }
+
     public static class ResolveParams {
         final String moduleName;
 
@@ -64,6 +77,34 @@ public class HybridModuleContainer implements AutoCloseable {
         return new RootHybridModule(root);
     }
 
+    public ModuleGraph getModuleGraph(ModuleGraph.Params params) {
+
+        Set<HybridModule> roots = this.roots.stream().map(id -> {
+            var hybridModule = hybridModules.get(id);
+            if (hybridModule == null) {
+                throw new IllegalStateException("Root has not been resolved: " + hybridModule);
+            }
+            return hybridModule;
+        }).collect(Collectors.toCollection(HashSet::new));
+
+        ModuleGraph graph = new ModuleGraph(params);
+
+        if (params.excludeUnreadable()) {
+            HashSet<HybridModuleId> hybridModuleUniverse = new HashSet<>();
+            HashSet<String> platformModuleUniverse = new HashSet<>();
+            roots.forEach(hybridModule -> {
+                hybridModule.hybridReads().stream().map(HybridModule::id).forEach(hybridModuleUniverse::add);
+                hybridModule.platformReads().stream().map(PlatformModule::name).forEach(platformModuleUniverse::add);
+            });
+            graph.setHybridModuleUniverse(hybridModuleUniverse);
+            graph.setPlatformModuleUniverse(platformModuleUniverse);
+        }
+
+        roots.forEach(hybridModule -> hybridModule.fillModuleGraph(graph));
+
+        return graph;
+    }
+
     public static class GraphParams {
         private boolean includeReads = true;
         private boolean includeSelfReadEdge = false;
@@ -76,7 +117,7 @@ public class HybridModuleContainer implements AutoCloseable {
         }
     }
 
-    public String moduleGraph(GraphParams params) {
+    public String moduleGraph2(GraphParams params) {
         StringBuilder builder = new StringBuilder(1024);
 
         if (params.includeReads) {

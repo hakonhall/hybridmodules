@@ -24,6 +24,9 @@ Options:
       Specifies the main module and class used to launch the application. CLASS
       defaults to the main class of MODULE. This option is required and is the
       last option. The next argument (if any) is the first ARG.
+  --module-graph,-g GRAPH_OPTIONS
+      Probe the module graph instead of running the main method. See MODULE
+      GRAPH below for more details.
   --module-path,-p PATH
       A : separated list of paths, each path is a path to a hybrid modular JAR
       file or a directory containing such files.
@@ -35,6 +38,25 @@ distinct from all command-line arguments (JAVA_OPTIONS), and then use the
 
 Example: To pass '-Xms1G' and '-Xmx2G' to java, do something like:
   javahms -j { -Xms1G -Xmx2G } -p mods -m super.module arg1 arg2
+
+MODULE GRAPH
+
+The --module-graph takes one argument, GRAPH_OPTIONS, which is a
+comma-separated list of:
+  exports        Include packages that are 1. exported unqualified on each
+                 module, 2. qualified exported on read edges, and 3. (with
+                 'self'), implicit qualified exported to itself, i.e. all those
+                 packages that have not been exported.
+  noplatform     Do not include platform modules.
+  self           Also include the read edges from each module to themselves.
+  visible        Only include modules readable by the root modules.
+  -MODULE        Exclude MODULE from the graph (either NAME@VERSION for hybrid
+                 modules or NAME for platform modules).
+
+The module graph is printed to stdout. Pipe this to a file (foo.dot). The .dot
+file can be viewed by e.g. invoking
+  dot -Tsvg foo.dot > foo.html
+and viewing the HTML file in a browser.
 EOF
 
     exit 0
@@ -50,6 +72,7 @@ function Main {
     (( $# > 0 )) || Fail "Missing '--module', try --help/-h?"
 
     local -a java_options=()
+    local -a module_graph=()
     local -a module_path=()
     local -a module=()
 
@@ -85,6 +108,10 @@ function Main {
                     fi
                 done
                 ;;
+            --module-graph|-g)
+                module_graph=("$1" "$2")
+                shift 2 || true
+                ;;
             --module-path|-p)
                 module_path=("$1" "$2")
                 shift 2 || true
@@ -113,7 +140,8 @@ function Main {
 	Fail "There is no no.ion.jhms JAR file: '$jar_path'"
     fi
 
-    exec java "${java_options[@]}" -jar "$jar_path" "${module_path[@]}" "${module[@]}" "$@"
+    exec java "${java_options[@]}" -jar "$jar_path" \
+         "${module_path[@]}" "${module_graph[@]}"  "${module[@]}" "$@"
 }
 
 Main "$@"

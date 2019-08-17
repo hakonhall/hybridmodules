@@ -9,6 +9,8 @@ all:
 	# This uses diffcmd to verify the second diffcmd fails
 	# correctly!
 	cd cleanfails && ../../diffcmd bash -c 'cd baddir; ../../../diffcmd --clean'
+	cd normalizer && ../../diffcmd -n ./normalizer.sh echo
+	cd normalizer-fails && ../../diffcmd ../../diffcmd -n ./normalizer.sh echo
 
 clean:
 	cd basic && ../../diffcmd --clean

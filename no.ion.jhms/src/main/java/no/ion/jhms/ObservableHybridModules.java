@@ -31,6 +31,8 @@ class ObservableHybridModules implements AutoCloseable {
 
     void discoverHybridModules(Path path) { discoverHybridModules(path, false); }
 
+    boolean has(HybridModuleId id) { return Optional.ofNullable(jars.get(id.name())).map(m -> m.get(id.version())).isPresent(); }
+
     List<HybridModuleId> getHybridModuleIds() {
         return jars.entrySet().stream()
                 .flatMap(entry -> entry.getValue().keySet().stream().map(version -> new HybridModuleId(entry.getKey(), version)))
