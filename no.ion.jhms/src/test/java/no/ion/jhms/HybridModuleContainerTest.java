@@ -416,6 +416,41 @@ public class HybridModuleContainerTest {
         }
     }
 
+    @Test
+    public void test() {
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules(Paths.get("src/test/resources"));
+
+            var resolveParams = new HybridModuleContainer.ResolveParams("find.hybrid.module.two");
+            RootHybridModule root = container.resolve(resolveParams);
+
+            var graphParams = new ModuleGraph.Params();
+            graphParams.excludeUnreadableByRoots(true);
+            ModuleGraph moduleGraph = container.getModuleGraph(graphParams);
+
+            assertEquals(Set.of("find.hybrid.module.two@1.2.3"), moduleGraph.rootHybridModules());
+
+            List<ModuleGraph.HybridModuleNode> hybridModuleNodes = moduleGraph.hybridModules();
+            assertEquals(List.of("find.hybrid.module.one@1.2.3", "find.hybrid.module.two@1.2.3"),
+                    hybridModuleNodes.stream().map(ModuleGraph.HybridModuleNode::id).collect(Collectors.toList()));
+
+            List<ModuleGraph.PlatformModuleNode> platformModuleNodes = moduleGraph.platformModules();
+            assertEquals(List.of("java.base"),
+                    platformModuleNodes.stream().map(ModuleGraph.PlatformModuleNode::name).collect(Collectors.toList()));
+
+            TreeMap<String, List<ModuleGraph.ReadEdge>> readEdges = moduleGraph.readEdges();
+            assertEquals(Set.of("find.hybrid.module.one@1.2.3", "find.hybrid.module.two@1.2.3"), readEdges.keySet());
+
+            assertEquals(List.of(
+                    "find.hybrid.module.one@1.2.3 -> java.base: []"),
+                    serializeEdgeList(readEdges.get("find.hybrid.module.one@1.2.3")));
+
+            assertEquals(List.of(
+                    "find.hybrid.module.two@1.2.3 -> find.hybrid.module.one@1.2.3: []",
+                    "find.hybrid.module.two@1.2.3 -> java.base: []"),
+                    serializeEdgeList(readEdges.get("find.hybrid.module.two@1.2.3")));
+        }
+    }
 
     private List<String> serializeEdgeList(List<ModuleGraph.ReadEdge> edges) {
         return edges.stream().map(edge -> edge.fromModule() + " -> " + edge.toModule() + ": " + edge.exports()).collect(Collectors.toList());

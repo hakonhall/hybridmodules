@@ -21,16 +21,15 @@ public class GraphvizDigraphTest {
         var javaLoggingName = "java.logging";
         var javaBaseName = "java.base";
         List<String> intermediateUnqualifiedExports =
-                params.includeExports() ?
+                includeExports() ?
                 List.of("no.ion.jhms.intermediate.a", "no.ion.jhms.intermediate.b") :
                 List.of();
-        List<String> javaBaseUnqualifiedExports = params.includeExports() ?
+        List<String> javaBaseUnqualifiedExports = includeExports() ?
                 List.of("java.lang.util", "java.lang.module") :
                 List.of();
-        List<String> packagesExportedFromDep1ToMain =
-                params.includeExports() ?
-                        List.of("no.ion.jhms.intermediate.d", "no.ion.jhms.intermediate.e", "no.ion.jhms.intermediate.f") :
-                        List.of();
+        List<String> packagesExportedFromDep1ToMain = includeExports() ?
+                List.of("no.ion.jhms.intermediate.d", "no.ion.jhms.intermediate.e", "no.ion.jhms.intermediate.f") :
+                List.of();
 
         ModuleGraph graph = new ModuleGraph();
         graph.markAsRootHybridModule(mainId);
@@ -76,7 +75,7 @@ public class GraphvizDigraphTest {
 
     private boolean includeUnreadableByRoots() { return !params.excludeUnreadableByRoots(); }
     private boolean includeSelf() { return params.includeSelf(); }
-    private boolean includeJavaBase() { return !params.excludeJavaBase() && !params.excludePlatformModules(); }
+    private boolean includeJavaBase() { return params.platformModuleIncluded("java.base"); }
     private boolean includePlatformModule() { return !params.excludePlatformModules(); }
     private boolean includeExports() { return params.includeExports(); }
 

@@ -16,7 +16,6 @@ public class ModuleGraph {
 
     private Set<HybridModuleId> hybridModuleUniverse = null;
     private Set<String> platformModuleUniverse = null;
-    private Set<String> platformModuleBlacklist = new HashSet<>();
 
     /**
      * Parameters affecting the content of the module graph, however more info may be set than guaranteed.
@@ -27,10 +26,11 @@ public class ModuleGraph {
     public static class Params {
         private final Set<String> roots = new HashSet<>();
         private boolean includeSelf = false;
-        private boolean excludeJavaBase = false;
-        private boolean excludePlatformModules = false;
         private boolean includeExports = false;
         private boolean excludeUnreadableByRoots = false;
+
+        /** WARNING: null if all platform modules are blacklisted. */
+        private Set<String> platformModuleBlacklist = new HashSet<>();
 
         /**
          * All modules 1. reads themselves, and 2. (effectively) export all of its own packages to itself.
@@ -42,10 +42,14 @@ public class ModuleGraph {
          * All modules implicitly requires the java.base module. This method can be used to exclude the
          * java.base module from the graph and all edges to/from it.
          */
-        public void excludeJavaBase(boolean excludeJavaBase) { this.excludeJavaBase = excludeJavaBase; }
+        public void excludeJavaBase(boolean excludeJavaBase) {
+            if (platformModuleBlacklist != null) {
+                platformModuleBlacklist.add("java.base");
+            }
+        }
 
         /** Whether to exclude all platform modules from the graph, and all edges to/from these. */
-        public void excludePlatformModules(boolean excludePlatformModules) { this.excludePlatformModules = excludePlatformModules; }
+        public void excludePlatformModules(boolean excludePlatformModules) { platformModuleBlacklist = null; }
 
         /**
          * Whether to include information on exported packages (= package visibility).
@@ -59,7 +63,7 @@ public class ModuleGraph {
         public void includeExports(boolean includeExports) { this.includeExports = includeExports; }
 
         /** Whether to exclude those modules from the graph that are not readable by the roots. */
-        public void excludeUnreadableByRoots(boolean onlyModulesReadableByRoots) { this.excludeUnreadableByRoots = onlyModulesReadableByRoots; }
+        public void excludeUnreadableByRoots(boolean excludeUnreadableByRoots) { this.excludeUnreadableByRoots = excludeUnreadableByRoots; }
 
         /** Limit the module graph to those reachable through these hybrid modules, instead of the current roots. */
         public void setRoots(Set<String> modules) {
@@ -67,12 +71,16 @@ public class ModuleGraph {
             this.roots.addAll(modules);
         }
 
-        public void setRoot(String module) { setRoots(Set.of(module)); }
+        public void setRoots(String... moduleNames) { setRoots(Set.of(moduleNames)); }
 
         Set<String> getRoots() { return roots; }
         boolean includeSelf() { return includeSelf; }
-        boolean excludeJavaBase() { return excludeJavaBase; }
-        boolean excludePlatformModules() { return excludePlatformModules; }
+
+        boolean platformModuleIncluded(String name) {
+            return platformModuleBlacklist != null && !platformModuleBlacklist.contains(name);
+        }
+
+        boolean excludePlatformModules() { return platformModuleBlacklist == null; }
         boolean includeExports() { return includeExports; }
         boolean excludeUnreadableByRoots() { return excludeUnreadableByRoots; }
     }
@@ -141,12 +149,13 @@ public class ModuleGraph {
     boolean containsHybridModule(HybridModuleId id) { return hybridModules.containsKey(id2String(id)); }
     boolean containsPlatformModule(String name) { return platformModules.containsKey(name); }
 
-    boolean inUniverse(HybridModuleId id) {
+    boolean hybridModuleInUniverse(HybridModuleId id) {
         return hybridModuleUniverse == null || hybridModuleUniverse.contains(id);
     }
 
-    boolean inUniverse(String platformName) {
-        return platformModuleUniverse == null || platformModuleUniverse.contains(platformName);
+    boolean platformModuleInUniverse(String name) {
+        return (platformModuleUniverse == null || platformModuleUniverse.contains(name)) &&
+                params.platformModuleIncluded(name);
     }
 
     void setHybridModuleUniverse(Set<HybridModuleId> hybridModuleUniverse) { this.hybridModuleUniverse = hybridModuleUniverse; }

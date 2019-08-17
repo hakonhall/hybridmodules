@@ -175,7 +175,7 @@ class HybridModule extends BaseModule {
     private void setHybridModuleClassLoader(HybridModuleClassLoader classLoader) { this.classLoader = classLoader; }
 
     private void fillModuleGraph2(ModuleGraph graph) {
-        if (graph.containsHybridModule(id)) {
+        if (graph.containsHybridModule(id) || !graph.hybridModuleInUniverse(id)) {
             return;
         }
 
@@ -186,39 +186,39 @@ class HybridModule extends BaseModule {
         }
 
         hybridReads.forEach(readHybridModule -> {
-            readHybridModule.fillModuleGraph2(graph);
+            if (graph.hybridModuleInUniverse(readHybridModule.id)) {
+                readHybridModule.fillModuleGraph2(graph);
 
-            if (graph.params().includeSelf() || !id.equals(readHybridModule.id)) {
-                List<String> readEdgePackages;
-                if (graph.params().includeExports()) {
-                    if (id.equals(readHybridModule.id)) {
-                        // Add all unexported packages as implicit qualified exports on the read edge.
-                        readEdgePackages = unexportedPackages();
+                if (graph.params().includeSelf() || !id.equals(readHybridModule.id)) {
+                    List<String> readEdgePackages;
+                    if (graph.params().includeExports()) {
+                        if (id.equals(readHybridModule.id)) {
+                            // Add all unexported packages as implicit qualified exports on the read edge.
+                            readEdgePackages = unexportedPackages();
+                        } else {
+                            // The read edge only contains those packages that readHybridModule exports qualified to this module.
+                            readEdgePackages = readHybridModule.qualifiedExportsTo(this);
+                        }
                     } else {
-                        // The read edge only contains those packages that readHybridModule exports qualified to this module.
-                        readEdgePackages = readHybridModule.qualifiedExportsTo(this);
+                        readEdgePackages = List.of();
                     }
-                } else {
-                    readEdgePackages = List.of();
+                    graph.addReadEdge(id, readHybridModule.id, readEdgePackages);
                 }
-                graph.addReadEdge(id, readHybridModule.id, readEdgePackages);
             }
         });
 
-        if (!graph.params().excludePlatformModules()) {
-            platformReads.forEach(readPlatformModule -> {
-                if (!graph.params().excludeJavaBase() || !readPlatformModule.name().equals("java.base")) {
-                    readPlatformModule.fillModuleGraph(graph);
+        platformReads.forEach(readPlatformModule -> {
+            if (graph.platformModuleInUniverse(readPlatformModule.name())) {
+                readPlatformModule.fillModuleGraph(graph);
 
-                    if (graph.params().includeExports()) {
-                        List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
-                        graph.addReadEdge(id, readPlatformModule.name(), qualifiedExports);
-                    } else {
-                        graph.addReadEdge(id, readPlatformModule.name());
-                    }
+                if (graph.params().includeExports()) {
+                    List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
+                    graph.addReadEdge(id, readPlatformModule.name(), qualifiedExports);
+                } else {
+                    graph.addReadEdge(id, readPlatformModule.name());
                 }
-            });
-        }
+            }
+        });
     }
 
 }
