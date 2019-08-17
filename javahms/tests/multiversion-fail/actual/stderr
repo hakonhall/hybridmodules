@@ -1,1 +1,0 @@
-Package m visible to hybrid module main@ is exported from two different readable modules (m@1 and m@2)

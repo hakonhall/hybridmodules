@@ -43,43 +43,9 @@ class HybridModule extends BaseModule {
     HybridModuleClassLoader getClassLoader() { return classLoader; }
 
     void fillModuleGraph(ModuleGraph graph) {
-        if (graph.containsHybridModule(id)) {
-            return;
-        }
-
-        if (graph.params().includeExports()) {
-            graph.addHybridModule(id, unqualifiedExports());
-        } else {
-            graph.addHybridModule(id);
-        }
-
-        hybridReads.forEach(readHybridModule -> {
-            readHybridModule.fillModuleGraph(graph);
-
-            if (graph.params().includeSelf() || !id.equals(readHybridModule.id)) {
-                if (graph.params().includeExports()) {
-                    List<String> qualifiedExports = readHybridModule.qualifiedExportsTo(readHybridModule);
-                    graph.addReadEdge(id, readHybridModule.id, qualifiedExports);
-                } else {
-                    graph.addReadEdge(id, readHybridModule.id);
-                }
-            }
-        });
-
-        platformReads.forEach(readPlatformModule -> {
-            if (!graph.params().excludeJavaBase() || !readPlatformModule.name().equals("java.base")) {
-                readPlatformModule.fillModuleGraph(graph);
-
-                if (graph.params().includeExports()) {
-                    List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
-                    graph.addReadEdge(id, readPlatformModule.name(), qualifiedExports);
-                } else {
-                    graph.addReadEdge(id, readPlatformModule.name());
-                }
-            }
-        });
+        graph.markAsRootHybridModule(id);
+        fillModuleGraph2(graph);
     }
-
     @Override
     public boolean equals(Object other) {
         // Normally, equality would be determined by this.id. However if we ever support instantiating more
@@ -93,8 +59,6 @@ class HybridModule extends BaseModule {
         // See equals()
         return super.hashCode();
     }
-
-    private void setHybridModuleClassLoader(HybridModuleClassLoader classLoader) { this.classLoader = classLoader; }
 
     static class Builder {
         private final HybridModuleJar jar;
@@ -207,4 +171,54 @@ class HybridModule extends BaseModule {
             return module;
         }
     }
+
+    private void setHybridModuleClassLoader(HybridModuleClassLoader classLoader) { this.classLoader = classLoader; }
+
+    private void fillModuleGraph2(ModuleGraph graph) {
+        if (graph.containsHybridModule(id)) {
+            return;
+        }
+
+        if (graph.params().includeExports()) {
+            graph.addHybridModule(id, unqualifiedExports());
+        } else {
+            graph.addHybridModule(id);
+        }
+
+        hybridReads.forEach(readHybridModule -> {
+            readHybridModule.fillModuleGraph2(graph);
+
+            if (graph.params().includeSelf() || !id.equals(readHybridModule.id)) {
+                List<String> readEdgePackages;
+                if (graph.params().includeExports()) {
+                    if (id.equals(readHybridModule.id)) {
+                        // Add all unexported packages as implicit qualified exports on the read edge.
+                        readEdgePackages = unexportedPackages();
+                    } else {
+                        // The read edge only contains those packages that readHybridModule exports qualified to this module.
+                        readEdgePackages = readHybridModule.qualifiedExportsTo(this);
+                    }
+                } else {
+                    readEdgePackages = List.of();
+                }
+                graph.addReadEdge(id, readHybridModule.id, readEdgePackages);
+            }
+        });
+
+        if (!graph.params().excludePlatformModules()) {
+            platformReads.forEach(readPlatformModule -> {
+                if (!graph.params().excludeJavaBase() || !readPlatformModule.name().equals("java.base")) {
+                    readPlatformModule.fillModuleGraph(graph);
+
+                    if (graph.params().includeExports()) {
+                        List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
+                        graph.addReadEdge(id, readPlatformModule.name(), qualifiedExports);
+                    } else {
+                        graph.addReadEdge(id, readPlatformModule.name());
+                    }
+                }
+            });
+        }
+    }
+
 }

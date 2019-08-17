@@ -1,6 +1,11 @@
 package no.ion.jhms;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class ModuleGraph {
     private final Params params;
@@ -8,6 +13,10 @@ public class ModuleGraph {
     private final TreeMap<String, HybridModuleNode> hybridModules = new TreeMap<>();
     private final TreeMap<String, PlatformModuleNode> platformModules = new TreeMap<>();
     private final TreeMap<String, List<ReadEdge>> readEdges = new TreeMap<>();
+
+    private Set<HybridModuleId> hybridModuleUniverse = null;
+    private Set<String> platformModuleUniverse = null;
+    private Set<String> platformModuleBlacklist = new HashSet<>();
 
     /**
      * Parameters affecting the content of the module graph, however more info may be set than guaranteed.
@@ -41,10 +50,11 @@ public class ModuleGraph {
         /**
          * Whether to include information on exported packages (= package visibility).
          *
-         * <p>For a reads-edge graph, the unqualified exports from a module is shown on the node, while qualified exports are shows on the read edge.
+         * <p>The unqualified exports from a module is shown on the node. Qualified exports shows on the read edge.
+         * All unexported packages are shown on the read edge to self (with {@link #includeSelf(boolean) includeSelf(true)}).
          *
-         * <p>For a requires-edge graph, the unqualified exports of the read closure of a module is shown on the node, while the qualified
-         * exports from the read closure is shown on the required edge.
+         * <p>For a requires-edge graph, the unqualified exports of the read closure of a module is shown on the node,
+         * while the qualified exports from the read closure is shown on the required edge.
          */
         public void includeExports(boolean includeExports) { this.includeExports = includeExports; }
 
@@ -68,16 +78,16 @@ public class ModuleGraph {
     }
 
     public static class HybridModuleNode implements Comparable<HybridModuleNode> {
-        private final String id;
+        private final HybridModuleId id;
         private final List<String> unqualifiedExports;
 
         private HybridModuleNode(HybridModuleId id, List<String> unqualifiedExports) {
-            this.id = id2String(id);
+            this.id = id;
             this.unqualifiedExports = new ArrayList<>(unqualifiedExports);
             this.unqualifiedExports.sort(Comparator.naturalOrder());
         }
 
-        public String id() { return id; }
+        public String id() { return id2String(id); }
         public List<String> unqualifiedExports() { return unqualifiedExports; }
 
         @Override
@@ -130,6 +140,17 @@ public class ModuleGraph {
 
     boolean containsHybridModule(HybridModuleId id) { return hybridModules.containsKey(id2String(id)); }
     boolean containsPlatformModule(String name) { return platformModules.containsKey(name); }
+
+    boolean inUniverse(HybridModuleId id) {
+        return hybridModuleUniverse == null || hybridModuleUniverse.contains(id);
+    }
+
+    boolean inUniverse(String platformName) {
+        return platformModuleUniverse == null || platformModuleUniverse.contains(platformName);
+    }
+
+    void setHybridModuleUniverse(Set<HybridModuleId> hybridModuleUniverse) { this.hybridModuleUniverse = hybridModuleUniverse; }
+    void setPlatformModuleUniverse(Set<String> platformModuleUniverse) { this.platformModuleUniverse = platformModuleUniverse; }
 
     void markAsRootHybridModule(HybridModuleId module) { rootHybridModules.add(id2String(module)); }
     void addHybridModule(HybridModuleId module, List<String> unqualifiedExports) { hybridModules.put(id2String(module), new HybridModuleNode(module, unqualifiedExports)); }

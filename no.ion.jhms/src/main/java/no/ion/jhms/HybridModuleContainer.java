@@ -94,10 +94,19 @@ public class HybridModuleContainer implements AutoCloseable {
         }
 
         ModuleGraph graph = new ModuleGraph(params);
-        hybridRoots.forEach(hybridModule -> {
-            graph.markAsRootHybridModule(hybridModule.id());
-            hybridModule.fillModuleGraph(graph);
-        });
+
+        if (params.excludeUnreadableByRoots()) {
+            HashSet<HybridModuleId> hybridModuleUniverse = new HashSet<>();
+            HashSet<String> platformModuleUniverse = new HashSet<>();
+            hybridRoots.forEach(hybridModule -> {
+                hybridModule.hybridReads().stream().map(HybridModule::id).forEach(hybridModuleUniverse::add);
+                hybridModule.platformReads().stream().map(PlatformModule::name).forEach(platformModuleUniverse::add);
+            });
+            graph.setHybridModuleUniverse(hybridModuleUniverse);
+            graph.setPlatformModuleUniverse(platformModuleUniverse);
+        }
+
+        hybridRoots.forEach(hybridModule -> hybridModule.fillModuleGraph(graph));
         platformRoots.forEach(platformModule -> platformModule.fillModuleGraph(graph));
 
         return graph;

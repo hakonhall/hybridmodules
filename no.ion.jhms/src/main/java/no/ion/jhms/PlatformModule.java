@@ -45,7 +45,7 @@ class PlatformModule extends BaseModule {
     }
 
     void fillModuleGraph(ModuleGraph graph) {
-        if (graph.containsPlatformModule(name)) {
+        if (graph.containsPlatformModule(name) || graph.params().excludePlatformModules()) {
             return;
         }
 
@@ -62,12 +62,17 @@ class PlatformModule extends BaseModule {
 
             if ((graph.params().includeSelf() || !name.equals(readPlatformModule.name)) &&
                     (!graph.params().excludeJavaBase() || !readPlatformModule.name.equals("java.base"))) {
+                List<String> readEdgePackages;
                 if (graph.params().includeExports()) {
-                    List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
-                    graph.addReadEdge(name, readPlatformModule.name, qualifiedExports);
+                    if (readPlatformModule.name.equals(name)) {
+                        readEdgePackages = unexportedPackages();
+                    } else {
+                        readEdgePackages = readPlatformModule.qualifiedExportsTo(this);
+                    }
                 } else {
-                    graph.addReadEdge(name, readPlatformModule.name);
+                    readEdgePackages = List.of();
                 }
+                graph.addReadEdge(name, readPlatformModule.name, readEdgePackages);
             }
         });
     }
