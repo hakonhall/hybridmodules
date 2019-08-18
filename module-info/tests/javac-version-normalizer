@@ -1,0 +1,16 @@
+#!/bin/bash
+
+actual_dir="$1"
+
+# This assumes the javac version used to compile the module-info.javas is the
+# same as javac on PATH!
+version=$(javac --version | grep -Eo '[0-9.]+')
+
+file="$actual_dir"/stdout
+if test -r "$file"
+then
+    sed -i "s/$version/JAVAC_VERSION/" "$file"
+else
+    echo "Failed to find '$file', aborting..."
+    exit 1
+fi

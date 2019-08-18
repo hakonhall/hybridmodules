@@ -120,25 +120,25 @@ function Main {
         fi
         set -e
 
+        if test "$normalizer" != ""
+        then
+            if ! "$normalizer" "$outdir"
+            then
+                local command_line=
+                printf -v command_line "%q %q" "$normalizer" "$dir"/actual
+                Fail "Normalizer command failed, aborting: $command_line"
+            fi
+        fi
+
+        # Make default expectancies for convenience
+        test -d "$dir"/expected || mkdir "$dir"/expected
+        test -e "$dir"/expected/stdout || touch "$dir"/expected/stdout
+        test -e "$dir"/expected/stderr || touch "$dir"/expected/stderr
+        test -e "$dir"/expected/exit_status || \
+            echo 0 > "$dir"/expected/exit_status
+
         if ! $update
         then
-            if test "$normalizer" != ""
-            then
-                if ! "$normalizer" "$dir"/actual
-                then
-                    local command_line=
-                    printf -v command_line "%q %q" "$normalizer" "$dir"/actual
-                    Fail "Normalizer command failed, aborting: $command_line"
-                fi
-            fi
-
-            # Make default expectancies for convenience
-            test -d "$dir"/expected || mkdir "$dir"/expected
-            test -e "$dir"/expected/stdout || touch "$dir"/expected/stdout
-            test -e "$dir"/expected/stderr || touch "$dir"/expected/stderr
-            test -e "$dir"/expected/exit_status || \
-                echo 0 > "$dir"/expected/exit_status
-
             # If there is no diff, this returns 0 and this script returns
             # 0. Otherwise, diff returns !=0, which by 'set -e' means the
             # script exits with != 0.

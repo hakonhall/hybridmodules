@@ -1,12 +1,19 @@
 package no.ion.jhms;
 
 import java.lang.module.FindException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static no.ion.jhms.ExceptionUtil.uncheck;
+
 public class Main {
+    public static final String MODULE_GRAPH_FILE_PREFIX = "file:";
+    private Path graphModuleOutputPath = null;
     private String modulePath = null;
     private String hybridModuleName = null;
     private String mainClass = null;
@@ -93,7 +100,13 @@ public class Main {
 
                 ModuleGraph moduleGraph = container.getModuleGraph(moduleGraphParams);
                 GraphvizDigraph graph = GraphvizDigraph.fromModuleGraph(moduleGraph);
-                System.out.println(graph.toDot());
+                String dot = graph.toDot();
+
+                if (graphModuleOutputPath == null) {
+                    System.out.println(dot);
+                } else {
+                    uncheck(() -> Files.writeString(graphModuleOutputPath, dot, StandardCharsets.UTF_8));
+                }
             }
         } catch (IllegalArgumentException | FindException | InvalidHybridModuleException e) {
             System.err.println(e.getMessage());
@@ -101,7 +114,7 @@ public class Main {
         }
     }
 
-    private static ModuleGraph.Params parseModuleGraphOptionValue(String optionValue) {
+    private ModuleGraph.Params parseModuleGraphOptionValue(String optionValue) {
         var params = new ModuleGraph.Params();
 
         Stream.of(optionValue.split(",", -1))
@@ -125,6 +138,8 @@ public class Main {
                             if (graphOption.startsWith("-")) {
                                 String module = graphOption.substring(1);
                                 params.excludeModule(module);
+                            } else if (graphOption.startsWith(MODULE_GRAPH_FILE_PREFIX)) {
+                                graphModuleOutputPath = Path.of(graphOption.substring(MODULE_GRAPH_FILE_PREFIX.length()));
                             } else {
                                 userError("Unknown --graph-module option: '" + graphOption + "'");
                             }
