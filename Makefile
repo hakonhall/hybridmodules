@@ -1,14 +1,16 @@
-dirs = bundle diffcmd experiments jar javahms modulec no.ion.jhms \
+dirs = bundle diffcmd experiments jar javahms modulec module-info no.ion.jhms \
  no.ion.jhms.bundle
 
-.PHONY: $(dirs)
+.PHONY: all clean doit $(dirs)
 
-target =
-all: $(dirs)
-	@echo Success
+all: target =
+all: doit
 
 clean: target = clean
-clean: all
+clean: doit
+
+doit: $(dirs)
+	@echo Success
 
 bundle: no.ion.jhms.bundle modulec
 diffcmd:
@@ -16,6 +18,7 @@ experiments: modulec
 jar:
 javahms: no.ion.jhms diffcmd modulec
 modulec: diffcmd
+module-info: modulec diffcmd
 no.ion.jhms:
 no.ion.jhms.bundle:
 
