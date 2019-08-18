@@ -13,3 +13,4 @@ $(subdirs):
 
 clean: target = clean
 clean:  $(subdirs)
+	../../../diffcmd/diffcmd --clean
