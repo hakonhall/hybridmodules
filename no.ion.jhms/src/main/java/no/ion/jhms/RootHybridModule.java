@@ -40,10 +40,11 @@ public class RootHybridModule {
 
         Class<?> mainClass;
         try {
-            mainClass = loadClass(mainClassName);
+            // ClassLoader.loadClass() is used instead of loadExportedClass() because the main method IS allowed to
+            // be defined in an internal class, for compatibility with JPMS modular JARs.
+            mainClass = root.getClassLoader().loadClass(mainClassName);
         } catch (ClassNotFoundException e) {
-            NoClassDefFoundError error = new NoClassDefFoundError(mainClassName +
-                    " not found in an exported package of hybrid module " + root.id());
+            NoClassDefFoundError error = new NoClassDefFoundError(mainClassName + " not found in hybrid module " + root.id());
             error.initCause(e);
             throw error;
         }

@@ -97,7 +97,6 @@ public class Main {
                     }
                 }
 
-
                 ModuleGraph moduleGraph = container.getModuleGraph(moduleGraphParams);
                 GraphvizDigraph graph = GraphvizDigraph.fromModuleGraph(moduleGraph);
                 String dot = graph.toDot();
