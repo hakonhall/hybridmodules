@@ -16,3 +16,5 @@ clean:
 	cd basic && ../../diffcmd --clean
 	cd cleanfails && ../../diffcmd --clean
 	../diffcmd --clean
+	../diffcmd --clean -d normalizer
+	../diffcmd --clean -d normalizer-fails

@@ -12,7 +12,7 @@ Execute command and diff stdout, stderr, and exit status against expectancy.
 
 First the command is executed as follows:
   CMD [ARG...] < DIR/stdin > DIR/actual/stdout 2> DIR/actual/stderr
-  echo $? > DIR/actual/exit_status
+  echo $? > DIR/actual/exit
 
 then the 'DIR/actual' directory tree is diffed against the 'DIR/expected'
 directory tree. without differences, 0 is returned.
@@ -92,7 +92,7 @@ function Main {
             case "$file" in
                 */stdout) : ;;
                 */stderr) : ;;
-                */exit_status) : ;;
+                */exit) : ;;
                 *) Fail "Unknown file found - refuse to clear actual: $file" ;;
             esac
         done
@@ -113,10 +113,10 @@ function Main {
         if test -r stdin
         then
             "$@" < "$dir"/stdin > "$outdir"/stdout 2> "$outdir"/stderr
-            echo $? > "$outdir"/exit_status
+            echo $? > "$outdir"/exit
         else
             "$@" <<< "" > "$outdir"/stdout 2> "$outdir"/stderr
-            echo $? > "$outdir"/exit_status
+            echo $? > "$outdir"/exit
         fi
         set -e
 
@@ -134,8 +134,7 @@ function Main {
         test -d "$dir"/expected || mkdir "$dir"/expected
         test -e "$dir"/expected/stdout || touch "$dir"/expected/stdout
         test -e "$dir"/expected/stderr || touch "$dir"/expected/stderr
-        test -e "$dir"/expected/exit_status || \
-            echo 0 > "$dir"/expected/exit_status
+        test -e "$dir"/expected/exit || echo 0 > "$dir"/expected/exit
 
         if ! $update
         then
