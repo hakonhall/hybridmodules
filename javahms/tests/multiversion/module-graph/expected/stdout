@@ -12,12 +12,12 @@ digraph "module graph" {
     node [ color=red; ]
     "java.base"
   }
-  "intermediate@" -> "m@2"
   "intermediate@" -> "java.base"
+  "intermediate@" -> "m@2"
   "m@1" -> "java.base"
   "m@2" -> "java.base"
-  "main@" -> "m@1"
   "main@" -> "intermediate@"
   "main@" -> "java.base"
+  "main@" -> "m@1"
 }
 

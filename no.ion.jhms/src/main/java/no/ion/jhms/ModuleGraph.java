@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class ModuleGraph {
     private final Params params;
@@ -121,7 +122,14 @@ public class ModuleGraph {
     public Set<String> rootHybridModules() { return rootHybridModules; }
     public List<HybridModuleNode> hybridModules() { return new ArrayList<>(hybridModules.values()); }
     public List<PlatformModuleNode> platformModules() { return new ArrayList<>(platformModules.values()); }
-    public TreeMap<String, List<ReadEdge>> readEdges() { return readEdges; }
+    public TreeMap<String, List<ReadEdge>> readEdges() {
+        return new TreeMap<>(readEdges.entrySet().stream().collect(Collectors.toMap(
+                entry -> entry.getKey(),
+                entry -> entry.getValue().stream()
+                        .sorted(Comparator.comparing(ReadEdge::fromModule).thenComparing(ReadEdge::toModule))
+                        .collect(Collectors.toList())
+        )));
+    }
 
     Params params() { return params; }
 

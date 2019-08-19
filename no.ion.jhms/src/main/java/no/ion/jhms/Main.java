@@ -1,6 +1,7 @@
 package no.ion.jhms;
 
 import java.lang.module.FindException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -78,6 +79,21 @@ public class Main {
 
         if (hybridModuleName == null) {
             userError("Missing --module");
+        } else {
+            int atIndex = hybridModuleName.indexOf('@');
+            if (atIndex == -1) {
+                try {
+                    BaseModule.validateModuleName(hybridModuleName);
+                } catch (IllegalArgumentException e) {
+                    userError(e.getMessage());
+                }
+            } else {
+                try {
+                    HybridModuleId.validateHybridModuleId(hybridModuleName);
+                } catch (IllegalArgumentException e) {
+                    userError(e.getMessage());
+                }
+            }
         }
 
         // Avoid closing container when returning from main(), since daemon threads may have been spawned.
@@ -85,31 +101,49 @@ public class Main {
 
         try {
             container.discoverHybridModulesFromModulePath(modulePath);
-            var params = new HybridModuleContainer.ResolveParams(hybridModuleName);
-            RootHybridModule rootModule = container.resolve(params);
+        } catch (FindException | InvalidHybridModuleException e) {
+            userError(e.getMessage());
+        }
 
-            if (moduleGraphParams == null) {
+        var params = new HybridModuleContainer.ResolveParams(hybridModuleName);
+        RootHybridModule rootModule;
+        try {
+            rootModule = container.resolve(params);
+        } catch (RuntimeException e) {
+            userError(e.getMessage());
+            return; // for compiler
+        }
+
+        if (moduleGraphParams == null) {
+            try {
                 rootModule.main(mainClass, mainArgs);
-            } else {
-                for (String id : moduleGraphParams.modulesExcluded()) {
-                    if (!container.isObservable(id)) {
-                        userError("The module " + id + " is not observable");
-                    }
+            } catch (IllegalAccessError | IllegalArgumentException | NoClassDefFoundError e) {
+                userError(e.getMessage());
+            } // pass through UndeclaredThrowableException...
+        } else {
+            for (String module : moduleGraphParams.modulesExcluded()) {
+                boolean observable;
+                try {
+                    observable = container.isObservable(module);
+                } catch (IllegalArgumentException e) {
+                    userError(e.getMessage());
+                    return; // for compiler
                 }
 
-                ModuleGraph moduleGraph = container.getModuleGraph(moduleGraphParams);
-                GraphvizDigraph graph = GraphvizDigraph.fromModuleGraph(moduleGraph);
-                String dot = graph.toDot();
-
-                if (graphModuleOutputPath == null) {
-                    System.out.println(dot);
-                } else {
-                    uncheck(() -> Files.writeString(graphModuleOutputPath, dot, StandardCharsets.UTF_8));
+                if (!observable) {
+                    userError("The module " + module + " is not observable");
                 }
             }
-        } catch (IllegalArgumentException | FindException | InvalidHybridModuleException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+
+            ModuleGraph moduleGraph = container.getModuleGraph(moduleGraphParams);
+            GraphvizDigraph graph = GraphvizDigraph.fromModuleGraph(moduleGraph);
+            String dot = graph.toDot();
+
+            if (graphModuleOutputPath == null) {
+                System.out.println(dot);
+            } else {
+                uncheck(() -> Files.writeString(graphModuleOutputPath, dot, StandardCharsets.UTF_8));
+            }
         }
     }
 

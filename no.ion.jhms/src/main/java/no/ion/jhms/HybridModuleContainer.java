@@ -30,23 +30,34 @@ public class HybridModuleContainer implements AutoCloseable {
      * <p>A path either refers to a regular file, which must be a modular JAR, or a directory in case
      * all *.jar files must be modular JARs. Either way, these are then made observable and ready
      * to be resolved if necessary during resolution {@link #resolve(ResolveParams) resolve()}.
+     *
+     * @throws FindException if e.g. two hybrid modular JAR are found with for the same hybrid module name and version.
+     * @throws java.io.UncheckedIOException
+     * @throws InvalidHybridModuleException
      */
     public void discoverHybridModulesFromModulePath(String modulePath) { observableHybridModules.discoverHybridModulesFromModulePath(modulePath); }
     public void discoverHybridModules(String... paths) { discoverHybridModules(Stream.of(paths).map(Paths::get).collect(Collectors.toList()));}
     public void discoverHybridModules(Path... paths) { discoverHybridModules(Arrays.asList(paths)); }
     public void discoverHybridModules(List<Path> paths) { observableHybridModules.discoverHybridModules(paths); }
 
-    public boolean isObservable(String id) {
-        try {
-            HybridModuleId hybridModuleId = HybridModuleId.fromId(id);
-            if (observableHybridModules.has(hybridModuleId)) {
-                return true;
-            }
-        } catch (IllegalArgumentException e) {
-            // ignore
+    /**
+     * Returns true if {@code module} is the ID of an observable hybrid module, or the name of an
+     * (observable) platform module.
+     *
+     * @throws IllegalArgumentException if {@code module} is ill-formed
+     */
+    public boolean isObservable(String module) {
+        int atIndex = module.indexOf('@');
+        if (atIndex == -1) {
+            // Is presumably a platform module
+            BaseModule.validateModuleName(module);
+            return platformModuleContainer.get(module).isPresent();
+        } else {
+            // Is presumably a hybrid module
+            HybridModuleId.validateHybridModuleId(module);
+            HybridModuleId id = HybridModuleId.fromId(module);
+            return observableHybridModules.has(id);
         }
-
-        return platformModuleContainer.get(id).isPresent();
     }
 
     public static class ResolveParams {

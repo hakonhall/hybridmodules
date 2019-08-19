@@ -30,7 +30,17 @@ public class RootHybridModule {
     /** Get the main class of the root hybrid module. */
     public Optional<String> mainClass() { return root.getMainClass(); }
 
-    /** Invoke a main method in the root hybrid module. */
+    /**
+     * Invoke a main method in the root hybrid module.
+     *
+     * @throws IllegalArgumentException if mainClassName is null and the root hybrid module does not
+     *                                  have a main class, or if there is no 'public static void main(String...)'
+     *                                  in the main class.
+     * @throws NoClassDefFoundError if the main class is not visible in the hybrid module.
+     * @throws IllegalAccessError if the main class is not public.
+     * @throws UndeclaredThrowableException if the main method threw an exception (use
+     *                                      {@link UndeclaredThrowableException#getCause() getCause()}).
+     */
     public void main(String mainClassName, String... args) {
         if (mainClassName == null) {
             mainClassName = mainClass()

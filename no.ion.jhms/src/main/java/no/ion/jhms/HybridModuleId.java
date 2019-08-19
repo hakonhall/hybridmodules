@@ -10,7 +10,25 @@ class HybridModuleId implements Comparable<HybridModuleId> {
     private final String name;
     private final HybridModuleVersion version;
 
-    public static HybridModuleId fromId(String id) {
+    /** Verify id is a valid hybrid module ID, or otherwise throw an IllegalArgument exception. */
+    static void validateHybridModuleId(String id) {
+        int atIndex = id.indexOf('@');
+        if (atIndex == -1) {
+            throw new IllegalArgumentException(id + ": Invalid hybrid module identifier: Missing version");
+        }
+
+        // The version string,
+        //   String version = id.substring(atIndex + 1);
+        // is guaranteed to be valid because
+        //  1. either it is empty, which indicates the null (absent) version, or
+        //  2. it is non-empty, in case it is a raw version string, if it is not a valid ModuleDescriptor.Version
+
+        String name = id.substring(0, atIndex);
+        BaseModule.validateModuleName(name);
+    }
+
+    /** The id must be valid (see {@link #validateHybridModuleId(String)}). */
+    static HybridModuleId fromId(String id) {
         int atIndex = id.indexOf('@');
         if (atIndex == -1) {
             throw new IllegalArgumentException("Bad hybrid module ID: " + id);
