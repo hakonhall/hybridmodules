@@ -1,5 +1,6 @@
 package no.ion.jhms;
 
+import java.lang.module.ModuleDescriptor;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,19 @@ abstract class BaseModule {
     private final Map<String, Set<String>> exports;
 
     private volatile List<String> unexportedPackages = null;
+
+    /** Verify 'name' is a valid JPMS module name, or otherwise throw an {@link IllegalArgumentException}. */
+    static void validateModuleName(String name) {
+        // It would be preferable to call jdk.internal.module.Checks.requireModuleName(), but that's not exported.
+        // return Checks.requireModuleName(name);
+
+        // Instead, ModuleDescriptor.newModule(String) invokes it, and does very little else.
+        // requireModuleName() throws an "NAME: Invalid module name: 'ID' is not a Java identifier"
+        // IllegalArgumentException, which suits us well. ID is the dot-separated component which is
+        // invalid. E.g. "byte.foo" would throw an exception because ID = "byte" is not a valid
+        // identifier.
+        ModuleDescriptor.newModule(name);
+    }
 
     BaseModule(String name, Set<String> packages, Map<String, Set<String>> exports) {
         this.name = name;

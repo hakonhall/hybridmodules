@@ -107,17 +107,17 @@ public class GraphvizDigraphTest {
                 "  \"dep@1\" -> \"java.base\"\n" +
                 "  \"dep@2\" -> \"java.base\"\n" +
                 "  \"intermediate@\" -> \"dep@2\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
-                "  \"intermediate@\" -> \"java.logging\"\n" +
                 "  \"intermediate@\" -> \"java.base\"\n" +
+                "  \"intermediate@\" -> \"java.logging\"\n" +
+                "  \"intermediate@\" -> \"transient@3\"\n" +
                 "  \"java.logging\" -> \"java.base\"\n" +
                 "  \"main@\" -> \"dep@1\"\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
-                "  \"main@\" -> \"java.logging\"\n" +
                 "  \"main@\" -> \"java.base\"\n" +
-                "  \"transient@3\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"transient@3\"\n" +
                 "  \"transient@3\" -> \"java.base\"\n" +
+                "  \"transient@3\" -> \"java.logging\"\n" +
                 "}\n");
     }
 
@@ -140,12 +140,12 @@ public class GraphvizDigraphTest {
                 "    \"java.logging\"\n" +
                 "  }\n" +
                 "  \"intermediate@\" -> \"dep@2\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
                 "  \"intermediate@\" -> \"java.logging\"\n" +
+                "  \"intermediate@\" -> \"transient@3\"\n" +
                 "  \"main@\" -> \"dep@1\"\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
                 "  \"main@\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"transient@3\"\n" +
                 "  \"transient@3\" -> \"java.logging\"\n" +
                 "}\n");
     }
@@ -173,23 +173,23 @@ public class GraphvizDigraphTest {
                 "  \"dep@1\" -> \"java.base\"\n" +
                 "  \"dep@2\" -> \"dep@2\"\n" +
                 "  \"dep@2\" -> \"java.base\"\n" +
-                "  \"intermediate@\" -> \"intermediate@\"\n" +
                 "  \"intermediate@\" -> \"dep@2\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
-                "  \"intermediate@\" -> \"java.logging\"\n" +
+                "  \"intermediate@\" -> \"intermediate@\"\n" +
                 "  \"intermediate@\" -> \"java.base\"\n" +
+                "  \"intermediate@\" -> \"java.logging\"\n" +
+                "  \"intermediate@\" -> \"transient@3\"\n" +
                 "  \"java.base\" -> \"java.base\"\n" +
-                "  \"java.logging\" -> \"java.logging\"\n" +
                 "  \"java.logging\" -> \"java.base\"\n" +
-                "  \"main@\" -> \"main@\"\n" +
+                "  \"java.logging\" -> \"java.logging\"\n" +
                 "  \"main@\" -> \"dep@1\"\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
-                "  \"main@\" -> \"java.logging\"\n" +
                 "  \"main@\" -> \"java.base\"\n" +
-                "  \"transient@3\" -> \"transient@3\"\n" +
-                "  \"transient@3\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"main@\"\n" +
+                "  \"main@\" -> \"transient@3\"\n" +
                 "  \"transient@3\" -> \"java.base\"\n" +
+                "  \"transient@3\" -> \"java.logging\"\n" +
+                "  \"transient@3\" -> \"transient@3\"\n" +
                 "}\n");
     }
 
@@ -230,17 +230,17 @@ public class GraphvizDigraphTest {
                 "    \"java.logging\"\n" +
                 "  }\n" +
                 "  \"dep@1\" -> \"java.base\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
-                "  \"intermediate@\" -> \"java.logging\"\n" +
                 "  \"intermediate@\" -> \"java.base\"\n" +
+                "  \"intermediate@\" -> \"java.logging\"\n" +
+                "  \"intermediate@\" -> \"transient@3\"\n" +
                 "  \"java.logging\" -> \"java.base\"\n" +
                 "  \"main@\" -> \"dep@1\"\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
-                "  \"main@\" -> \"java.logging\"\n" +
                 "  \"main@\" -> \"java.base\"\n" +
-                "  \"transient@3\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"transient@3\"\n" +
                 "  \"transient@3\" -> \"java.base\"\n" +
+                "  \"transient@3\" -> \"java.logging\"\n" +
                 "}\n");
     }
 
@@ -266,17 +266,17 @@ public class GraphvizDigraphTest {
                 "  \"dep@1\" -> \"java.base\"\n" +
                 "  \"dep@2\" -> \"java.base\"\n" +
                 "  \"intermediate@\" -> \"dep@2\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
-                "  \"intermediate@\" -> \"java.logging\"\n" +
                 "  \"intermediate@\" -> \"java.base\"\n" +
+                "  \"intermediate@\" -> \"java.logging\"\n" +
+                "  \"intermediate@\" -> \"transient@3\"\n" +
                 "  \"java.logging\" -> \"java.base\"\n" +
                 "  \"main@\" -> \"dep@1\" [ label=<<font color=\"dimgray\"><table border=\"1\" color=\"yellowgreen\"><tr><td balign=\"left\" valign=\"top\" border=\"0\"><i>no.ion.jhms.intermediate.d<br/>no.ion.jhms.intermediate.e<br/>no.ion.jhms.intermediate.f<br/></i></td></tr></table></font>>; ]\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
-                "  \"main@\" -> \"java.logging\"\n" +
                 "  \"main@\" -> \"java.base\"\n" +
-                "  \"transient@3\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"transient@3\"\n" +
                 "  \"transient@3\" -> \"java.base\"\n" +
+                "  \"transient@3\" -> \"java.logging\"\n" +
                 "}\n");
     }
 }
