@@ -252,6 +252,11 @@ public class HybridModuleContainer implements AutoCloseable {
         builder.setPackages(descriptor.packages());
 
         for (var requires : descriptor.requires()) {
+            if (requires.modifiers().contains(ModuleDescriptor.Requires.Modifier.STATIC)) {
+                // JHMS §2.2: static requires are ignored at run time.
+                continue;
+            }
+
             boolean transitive = requires.modifiers().contains(ModuleDescriptor.Requires.Modifier.TRANSITIVE);
             Optional<PlatformModule> requiredPlatformModule = platformModuleContainer.resolve(requires.name());
             if (requiredPlatformModule.isPresent()) {

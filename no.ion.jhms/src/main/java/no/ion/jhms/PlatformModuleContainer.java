@@ -58,13 +58,22 @@ public class PlatformModuleContainer {
         builder.setPackages(descriptor.packages());
 
         for (var requires : descriptor.requires()) {
+            if (requires.modifiers().contains(ModuleDescriptor.Requires.Modifier.STATIC)) {
+                // The behavior is mandated by java.lang.module package documentation, and is difficult to
+                // get exactly right. From a scan of OpenJDK 12, no platform modules use the static modifier,
+                // except the jdk.scripting.nashorn.shell module which is deprecated since 11.
+                //
+                // We therefore take some freedom in handling 'static' as we wish - and choose to ignore it.
+                continue;
+            }
+
             String requiresName = requires.name();
             Optional<PlatformModule> requiresModule = resolve(requiresName);
             if (requiresModule.isPresent()) {
                 builder.addRequires(
                         requiresModule.get(),
                         requires.modifiers().contains(ModuleDescriptor.Requires.Modifier.TRANSITIVE));
-            } else if (!requires.modifiers().contains(ModuleDescriptor.Requires.Modifier.STATIC)) {
+            } else {
                 throw new FindException("Platform module " + descriptor.name() + " requires " + requiresName +
                         ", but it was not found with ModuleFinder.ofSystem()");
             }

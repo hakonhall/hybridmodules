@@ -76,3 +76,30 @@ What are the ModuleDescriptor.packages()?
 
 Answer: All packages with at least one source file, whether opened, exported,
 or not. It's a compile error to open or export a package without a source file.
+
+Case VII:
+
+'transitive static' may appear together.
+
+Case VII':
+
+If A 'requires transitive static' B, and B 'requires transitive' C, and 0
+'requires' A, then if A is present at run time, does C has to be present also?
+
+Answer: No. This seems like a bug since it violates B requires C!?
+
+Case VIII:
+
+If 0 'requires static' A, then whether A is on the module path at run time or
+not, any references 0 had to A will result in a NoClassDefFoundError. 'java
+--limit-modules root --list-modules -p 0:A -m root' confirms module 'a' is not
+in the module graph.
+
+However, if A is required through other means, e.g. 0 requires B requires A,
+then 0's references to A WILL resolve at run time.
+
+So, at run time, if a module M is only depended on through 'requires static',
+it will not be included in the graph. Otherwise, it will be included and all
+'requires static' will resolve too. This is consistent with "'requires'
+directives with 'static' modifier" section of the java.lang.module package
+documentation.
