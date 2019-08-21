@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static no.ion.jhms.ModuleGraph.ReadEdge.Type.IMPLICIT;
+import static no.ion.jhms.ModuleGraph.ReadEdge.Type.REQUIRES;
+import static no.ion.jhms.ModuleGraph.ReadEdge.Type.REQUIRES_TRANSITIVE;
 import static org.junit.Assert.assertEquals;
 
 public class GraphvizDigraphTest {
@@ -42,33 +45,33 @@ public class GraphvizDigraphTest {
         if (includePlatformModule()) graph.addPlatformModule(javaLoggingName);
         if (includeJavaBase()) graph.addPlatformModule(javaBaseName, javaBaseUnqualifiedExports);
 
-        if (includeSelf()) graph.addReadEdge(mainId, mainId);
-        graph.addReadEdge(mainId, dep1Id, packagesExportedFromDep1ToMain);
-        graph.addReadEdge(mainId, intermediateId);
-        graph.addReadEdge(mainId, transientId);
-        if (includePlatformModule()) graph.addReadEdge(mainId, javaLoggingName);
-        if (includeJavaBase()) graph.addReadEdge(mainId, javaBaseName);
+        if (includeSelf()) graph.addReadEdge(mainId, mainId, List.of(), IMPLICIT);
+        graph.addReadEdge(mainId, dep1Id, packagesExportedFromDep1ToMain, REQUIRES);
+        graph.addReadEdge(mainId, intermediateId, List.of(), REQUIRES);
+        graph.addReadEdge(mainId, transientId, List.of(), IMPLICIT);
+        if (includePlatformModule()) graph.addReadEdge(mainId, javaLoggingName, List.of(), IMPLICIT);
+        if (includeJavaBase()) graph.addReadEdge(mainId, javaBaseName, List.of(), IMPLICIT);
 
-        if (includeSelf()) graph.addReadEdge(dep1Id, dep1Id);
-        if (includeJavaBase()) graph.addReadEdge(dep1Id, javaBaseName);
+        if (includeSelf()) graph.addReadEdge(dep1Id, dep1Id, List.of(), IMPLICIT);
+        if (includeJavaBase()) graph.addReadEdge(dep1Id, javaBaseName, List.of(), IMPLICIT);
 
-        if (includeUnreadableByRoots() && includeSelf()) graph.addReadEdge(dep2Id, dep2Id);
-        if (includeUnreadableByRoots() && includeJavaBase())  graph.addReadEdge(dep2Id, javaBaseName);
+        if (includeUnreadableByRoots() && includeSelf()) graph.addReadEdge(dep2Id, dep2Id, List.of(), IMPLICIT);
+        if (includeUnreadableByRoots() && includeJavaBase())  graph.addReadEdge(dep2Id, javaBaseName, List.of(), IMPLICIT);
 
-        if (includeSelf()) graph.addReadEdge(intermediateId, intermediateId);
-        if (includeUnreadableByRoots()) graph.addReadEdge(intermediateId, dep2Id);
-        graph.addReadEdge(intermediateId, transientId);
-        if (includePlatformModule()) graph.addReadEdge(intermediateId, javaLoggingName);
-        if (includeJavaBase()) graph.addReadEdge(intermediateId, javaBaseName);
+        if (includeSelf()) graph.addReadEdge(intermediateId, intermediateId, List.of(), IMPLICIT);
+        if (includeUnreadableByRoots()) graph.addReadEdge(intermediateId, dep2Id, List.of(), REQUIRES);
+        graph.addReadEdge(intermediateId, transientId, List.of(), REQUIRES_TRANSITIVE);
+        if (includePlatformModule()) graph.addReadEdge(intermediateId, javaLoggingName, List.of(), IMPLICIT);
+        if (includeJavaBase()) graph.addReadEdge(intermediateId, javaBaseName, List.of(), IMPLICIT);
 
-        if (includeSelf()) graph.addReadEdge(transientId, transientId);
-        if (includePlatformModule()) graph.addReadEdge(transientId, javaLoggingName);
-        if (includeJavaBase()) graph.addReadEdge(transientId, javaBaseName);
+        if (includeSelf()) graph.addReadEdge(transientId, transientId, List.of(), IMPLICIT);
+        if (includePlatformModule()) graph.addReadEdge(transientId, javaLoggingName, List.of(), REQUIRES_TRANSITIVE);
+        if (includeJavaBase()) graph.addReadEdge(transientId, javaBaseName, List.of(), IMPLICIT);
 
-        if (includeSelf() && includePlatformModule()) graph.addReadEdge(javaLoggingName, javaLoggingName);
-        if (includeJavaBase()) graph.addReadEdge(javaLoggingName, javaBaseName);
+        if (includeSelf() && includePlatformModule()) graph.addReadEdge(javaLoggingName, javaLoggingName, List.of(), IMPLICIT);
+        if (includeJavaBase()) graph.addReadEdge(javaLoggingName, javaBaseName, List.of(), IMPLICIT);
 
-        if (includeSelf() && includeJavaBase()) graph.addReadEdge(javaBaseName, javaBaseName);
+        if (includeSelf() && includeJavaBase()) graph.addReadEdge(javaBaseName, javaBaseName, List.of(), IMPLICIT);
 
         return graph;
     }
@@ -90,7 +93,7 @@ public class GraphvizDigraphTest {
     public void testDefaultParams() {
         assertDot("digraph \"module graph\" {\n" +
                 "  subgraph cluster_hybrid {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
                 "    node [ color=blue; ]\n" +
                 "    \"dep@1\"\n" +
                 "    \"dep@2\"\n" +
@@ -99,25 +102,25 @@ public class GraphvizDigraphTest {
                 "    \"transient@3\"\n" +
                 "  }\n" +
                 "  subgraph cluster_platform {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
                 "    node [ color=red; ]\n" +
                 "    \"java.base\"\n" +
                 "    \"java.logging\"\n" +
                 "  }\n" +
-                "  \"dep@1\" -> \"java.base\"\n" +
-                "  \"dep@2\" -> \"java.base\"\n" +
+                "  \"dep@1\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"dep@2\" -> \"java.base\" [ style=dashed; ]\n" +
                 "  \"intermediate@\" -> \"dep@2\"\n" +
-                "  \"intermediate@\" -> \"java.base\"\n" +
-                "  \"intermediate@\" -> \"java.logging\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
-                "  \"java.logging\" -> \"java.base\"\n" +
+                "  \"intermediate@\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"transient@3\" [ arrowhead=normaloinv; ]\n" +
+                "  \"java.logging\" -> \"java.base\" [ style=dashed; ]\n" +
                 "  \"main@\" -> \"dep@1\"\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"java.base\"\n" +
-                "  \"main@\" -> \"java.logging\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
-                "  \"transient@3\" -> \"java.base\"\n" +
-                "  \"transient@3\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"transient@3\" [ style=dashed; ]\n" +
+                "  \"transient@3\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"transient@3\" -> \"java.logging\" [ arrowhead=normaloinv; ]\n" +
                 "}\n");
     }
 
@@ -126,7 +129,7 @@ public class GraphvizDigraphTest {
         params.excludeModule("java.base");
         assertDot("digraph \"module graph\" {\n" +
                 "  subgraph cluster_hybrid {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
                 "    node [ color=blue; ]\n" +
                 "    \"dep@1\"\n" +
                 "    \"dep@2\"\n" +
@@ -135,18 +138,18 @@ public class GraphvizDigraphTest {
                 "    \"transient@3\"\n" +
                 "  }\n" +
                 "  subgraph cluster_platform {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
                 "    node [ color=red; ]\n" +
                 "    \"java.logging\"\n" +
                 "  }\n" +
                 "  \"intermediate@\" -> \"dep@2\"\n" +
-                "  \"intermediate@\" -> \"java.logging\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
+                "  \"intermediate@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"transient@3\" [ arrowhead=normaloinv; ]\n" +
                 "  \"main@\" -> \"dep@1\"\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"java.logging\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
-                "  \"transient@3\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"transient@3\" [ style=dashed; ]\n" +
+                "  \"transient@3\" -> \"java.logging\" [ arrowhead=normaloinv; ]\n" +
                 "}\n");
     }
 
@@ -155,7 +158,7 @@ public class GraphvizDigraphTest {
         params.includeSelf(true);
         assertDot("digraph \"module graph\" {\n" +
                 "  subgraph cluster_hybrid {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
                 "    node [ color=blue; ]\n" +
                 "    \"dep@1\"\n" +
                 "    \"dep@2\"\n" +
@@ -164,32 +167,32 @@ public class GraphvizDigraphTest {
                 "    \"transient@3\"\n" +
                 "  }\n" +
                 "  subgraph cluster_platform {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
                 "    node [ color=red; ]\n" +
                 "    \"java.base\"\n" +
                 "    \"java.logging\"\n" +
                 "  }\n" +
-                "  \"dep@1\" -> \"dep@1\"\n" +
-                "  \"dep@1\" -> \"java.base\"\n" +
-                "  \"dep@2\" -> \"dep@2\"\n" +
-                "  \"dep@2\" -> \"java.base\"\n" +
+                "  \"dep@1\" -> \"dep@1\" [ style=dashed; ]\n" +
+                "  \"dep@1\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"dep@2\" -> \"dep@2\" [ style=dashed; ]\n" +
+                "  \"dep@2\" -> \"java.base\" [ style=dashed; ]\n" +
                 "  \"intermediate@\" -> \"dep@2\"\n" +
-                "  \"intermediate@\" -> \"intermediate@\"\n" +
-                "  \"intermediate@\" -> \"java.base\"\n" +
-                "  \"intermediate@\" -> \"java.logging\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
-                "  \"java.base\" -> \"java.base\"\n" +
-                "  \"java.logging\" -> \"java.base\"\n" +
-                "  \"java.logging\" -> \"java.logging\"\n" +
+                "  \"intermediate@\" -> \"intermediate@\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"transient@3\" [ arrowhead=normaloinv; ]\n" +
+                "  \"java.base\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"java.logging\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"java.logging\" -> \"java.logging\" [ style=dashed; ]\n" +
                 "  \"main@\" -> \"dep@1\"\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"java.base\"\n" +
-                "  \"main@\" -> \"java.logging\"\n" +
-                "  \"main@\" -> \"main@\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
-                "  \"transient@3\" -> \"java.base\"\n" +
-                "  \"transient@3\" -> \"java.logging\"\n" +
-                "  \"transient@3\" -> \"transient@3\"\n" +
+                "  \"main@\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"main@\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"transient@3\" [ style=dashed; ]\n" +
+                "  \"transient@3\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"transient@3\" -> \"java.logging\" [ arrowhead=normaloinv; ]\n" +
+                "  \"transient@3\" -> \"transient@3\" [ style=dashed; ]\n" +
                 "}\n");
     }
 
@@ -204,10 +207,10 @@ public class GraphvizDigraphTest {
                 "    \"main@\" [ style=bold; label=<<b><u>main@</u></b>>; ]\n" +
                 "    \"transient@3\"\n" +
                 "  \"intermediate@\" -> \"dep@2\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
+                "  \"intermediate@\" -> \"transient@3\" [ arrowhead=normaloinv; ]\n" +
                 "  \"main@\" -> \"dep@1\"\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
+                "  \"main@\" -> \"transient@3\" [ style=dashed; ]\n" +
                 "}\n");
     }
 
@@ -216,7 +219,7 @@ public class GraphvizDigraphTest {
         params.excludeUnreadable(true);
         assertDot("digraph \"module graph\" {\n" +
                 "  subgraph cluster_hybrid {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
                 "    node [ color=blue; ]\n" +
                 "    \"dep@1\"\n" +
                 "    \"intermediate@\"\n" +
@@ -224,23 +227,23 @@ public class GraphvizDigraphTest {
                 "    \"transient@3\"\n" +
                 "  }\n" +
                 "  subgraph cluster_platform {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
                 "    node [ color=red; ]\n" +
                 "    \"java.base\"\n" +
                 "    \"java.logging\"\n" +
                 "  }\n" +
-                "  \"dep@1\" -> \"java.base\"\n" +
-                "  \"intermediate@\" -> \"java.base\"\n" +
-                "  \"intermediate@\" -> \"java.logging\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
-                "  \"java.logging\" -> \"java.base\"\n" +
+                "  \"dep@1\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"transient@3\" [ arrowhead=normaloinv; ]\n" +
+                "  \"java.logging\" -> \"java.base\" [ style=dashed; ]\n" +
                 "  \"main@\" -> \"dep@1\"\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"java.base\"\n" +
-                "  \"main@\" -> \"java.logging\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
-                "  \"transient@3\" -> \"java.base\"\n" +
-                "  \"transient@3\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"transient@3\" [ style=dashed; ]\n" +
+                "  \"transient@3\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"transient@3\" -> \"java.logging\" [ arrowhead=normaloinv; ]\n" +
                 "}\n");
     }
 
@@ -249,7 +252,7 @@ public class GraphvizDigraphTest {
         params.includeExports(true);
         assertDot("digraph \"module graph\" {\n" +
                 "  subgraph cluster_hybrid {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">HYBRID MODULES</font>>; ]\n" +
                 "    node [ color=blue; ]\n" +
                 "    \"dep@1\"\n" +
                 "    \"dep@2\"\n" +
@@ -258,25 +261,25 @@ public class GraphvizDigraphTest {
                 "    \"transient@3\"\n" +
                 "  }\n" +
                 "  subgraph cluster_platform {\n" +
-                "    graph [ style=dotted; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
+                "    graph [ color=khaki; label=<<font face=\"Helvetica\">PLATFORM MODULES</font>>; ]\n" +
                 "    node [ color=red; ]\n" +
                 "    \"java.base\" [ label=<<table border=\"0\"><tr><td>java.base</td></tr><tr><td><font color=\"dimgray\"><table border=\"1\" color=\"yellowgreen\"><tr><td balign=\"left\" valign=\"top\" border=\"0\"><i>java.lang.module<br/>java.lang.util<br/></i></td></tr></table></font></td></tr></table>>; ]\n" +
                 "    \"java.logging\"\n" +
                 "  }\n" +
-                "  \"dep@1\" -> \"java.base\"\n" +
-                "  \"dep@2\" -> \"java.base\"\n" +
+                "  \"dep@1\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"dep@2\" -> \"java.base\" [ style=dashed; ]\n" +
                 "  \"intermediate@\" -> \"dep@2\"\n" +
-                "  \"intermediate@\" -> \"java.base\"\n" +
-                "  \"intermediate@\" -> \"java.logging\"\n" +
-                "  \"intermediate@\" -> \"transient@3\"\n" +
-                "  \"java.logging\" -> \"java.base\"\n" +
+                "  \"intermediate@\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"intermediate@\" -> \"transient@3\" [ arrowhead=normaloinv; ]\n" +
+                "  \"java.logging\" -> \"java.base\" [ style=dashed; ]\n" +
                 "  \"main@\" -> \"dep@1\" [ label=<<font color=\"dimgray\"><table border=\"1\" color=\"yellowgreen\"><tr><td balign=\"left\" valign=\"top\" border=\"0\"><i>no.ion.jhms.intermediate.d<br/>no.ion.jhms.intermediate.e<br/>no.ion.jhms.intermediate.f<br/></i></td></tr></table></font>>; ]\n" +
                 "  \"main@\" -> \"intermediate@\"\n" +
-                "  \"main@\" -> \"java.base\"\n" +
-                "  \"main@\" -> \"java.logging\"\n" +
-                "  \"main@\" -> \"transient@3\"\n" +
-                "  \"transient@3\" -> \"java.base\"\n" +
-                "  \"transient@3\" -> \"java.logging\"\n" +
+                "  \"main@\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"java.logging\" [ style=dashed; ]\n" +
+                "  \"main@\" -> \"transient@3\" [ style=dashed; ]\n" +
+                "  \"transient@3\" -> \"java.base\" [ style=dashed; ]\n" +
+                "  \"transient@3\" -> \"java.logging\" [ arrowhead=normaloinv; ]\n" +
                 "}\n");
     }
 }

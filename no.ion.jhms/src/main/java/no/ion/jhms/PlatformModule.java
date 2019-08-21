@@ -1,6 +1,7 @@
 package no.ion.jhms;
 
 import java.lang.module.ResolutionException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ class PlatformModule extends BaseModule {
     private final String name;
     private final Set<PlatformModule> reads;
     private final Set<PlatformModule> readClosure;
+    private final HashMap<String, Boolean> transitiveByRequires;
 
     private volatile Set<String> packagesVisibleToHybridModules = null;
 
@@ -18,11 +20,13 @@ class PlatformModule extends BaseModule {
                            Set<String> packages,
                            HashSet<PlatformModule> reads,
                            HashSet<PlatformModule> readClosure,
-                           Map<String, Set<String>> exports) {
+                           Map<String, Set<String>> exports,
+                           HashMap<String, Boolean> transitiveByRequires) {
         super(moduleName, packages, exports);
         this.name = moduleName;
         this.reads = reads;
         this.readClosure = readClosure;
+        this.transitiveByRequires = transitiveByRequires;
 
         reads.add(this);
         readClosure.add(this);
@@ -73,7 +77,16 @@ class PlatformModule extends BaseModule {
                     } else {
                         readEdgePackages = List.of();
                     }
-                    graph.addReadEdge(name, readPlatformModule.name, readEdgePackages);
+
+                    Boolean transitive = transitiveByRequires.get(readPlatformModule.name());
+                    ModuleGraph.ReadEdge.Type type =
+                            transitive == null ?
+                                    ModuleGraph.ReadEdge.Type.IMPLICIT :
+                                    transitive ?
+                                            ModuleGraph.ReadEdge.Type.REQUIRES_TRANSITIVE :
+                                            ModuleGraph.ReadEdge.Type.REQUIRES;
+
+                    graph.addReadEdge(name, readPlatformModule.name, readEdgePackages, type);
                 }
             }
         });
@@ -97,6 +110,7 @@ class PlatformModule extends BaseModule {
         private final HashSet<PlatformModule> reads = new HashSet<>();
         private final HashSet<PlatformModule> readClosure = new HashSet<>();
         private final TreeMap<String, Set<String>> exports = new TreeMap<>();
+        private final HashMap<String, Boolean> transitiveByRequires = new HashMap<>();
 
         Builder(String moduleName) {
             this.moduleName = moduleName;
@@ -111,6 +125,7 @@ class PlatformModule extends BaseModule {
             }
 
             reads.addAll(platformModule.readClosure());
+            transitiveByRequires.put(platformModule.name(), transitive);
 
             if (transitive) {
                 readClosure.addAll(platformModule.readClosure());
@@ -124,7 +139,7 @@ class PlatformModule extends BaseModule {
         }
 
         PlatformModule build() {
-            return new PlatformModule(moduleName, packages, reads, readClosure, exports);
+            return new PlatformModule(moduleName, packages, reads, readClosure, exports, transitiveByRequires);
         }
     }
 }
