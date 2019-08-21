@@ -3,19 +3,21 @@ package no.ion.jhms;
 import java.util.List;
 
 class GraphvizDigraph {
-    private static String MODULE_CLUSTER_FONT_FACE = "Helvetica";
-    private static String MODULE_CLUSTER_STYLE = "dotted";
-    private static String HYBRID_MODULE_BORDER_COLOR = "blue";
-    // private static String HYBRID_MODULE_NAME_COLOR = "black";
-    private static String PLATFORM_MODULE_BORDER_COLOR = "red";
-    private static String PACKAGES_COLOR = "dimgray";
-    private static String PACKAGES_BORDER_COLOR = "yellowgreen";
+    private static final String REQUIRES_TRANSITIVE_ARROWHEAD = "normaloinv";
+    private static final String IMPLICIT_READ_EDGE_STYLE = "dashed";
+    private static final String MODULE_CLUSTER_FONT_FACE = "Helvetica";
+    private static final String MODULE_CLUSTER_COLOR = "khaki";
+    private static final String HYBRID_MODULE_BORDER_COLOR = "blue";
+    private static final String PLATFORM_MODULE_BORDER_COLOR = "red";
+    private static final String PACKAGES_COLOR = "dimgray";
+    private static final String PACKAGES_BORDER_COLOR = "yellowgreen";
 
 
     private final String name;
     private final ModuleGraph graph;
-
     private final StringBuilder dot = new StringBuilder();
+
+    private boolean attributeListOpened = false;
 
     static GraphvizDigraph fromModuleGraph(ModuleGraph graph) {
         return new GraphvizDigraph(graph);
@@ -33,7 +35,7 @@ class GraphvizDigraph {
 
         if (graph.platformModules().size() > 0) {
             appendLine("  subgraph cluster_hybrid {");
-            appendLine("    graph [ style=" + MODULE_CLUSTER_STYLE + "; label=<<font face=\"" + MODULE_CLUSTER_FONT_FACE +
+            appendLine("    graph [ color=" + MODULE_CLUSTER_COLOR + "; label=<<font face=\"" + MODULE_CLUSTER_FONT_FACE +
                     "\">HYBRID MODULES</font>>; ]");
         }
 
@@ -61,7 +63,7 @@ class GraphvizDigraph {
             appendLine("  }");
 
             appendLine("  subgraph cluster_platform {");
-            appendLine("    graph [ style=" + MODULE_CLUSTER_STYLE + "; label=<<font face=\"" +
+            appendLine("    graph [ color=" + MODULE_CLUSTER_COLOR + "; label=<<font face=\"" +
                     MODULE_CLUSTER_FONT_FACE + "\">PLATFORM MODULES</font>>; ]");
             appendLine("    node [ color=" + PLATFORM_MODULE_BORDER_COLOR + "; ]");
             graph.platformModules().forEach(module -> {
@@ -82,16 +84,45 @@ class GraphvizDigraph {
                         .forEach(toEdge -> {
                             append("  ").appendId(from).append(" -> ").appendId(toEdge.toModule());
 
+                            switch (toEdge.type()) {
+                                case REQUIRES:
+                                    break;
+                                case REQUIRES_TRANSITIVE:
+                                    openAttributeList().append(" arrowhead=" + REQUIRES_TRANSITIVE_ARROWHEAD + ";");
+                                    break;
+                                case IMPLICIT:
+                                    openAttributeList().append(" style=" + IMPLICIT_READ_EDGE_STYLE + ";");
+                                    break;
+                                default:
+                                    throw new IllegalArgumentException("Unknown type " + toEdge.type());
+                            }
+
                             List<String> exports = toEdge.exports();
                             if (exports.size() > 0) {
-                                append(" [ label=<").appendExportsTable(exports).appendLine(">; ]");
-                            } else {
-                                appendLine();
+                                openAttributeList().append(" label=<").appendExportsTable(exports).append(">;");
                             }
+
+                            closeAttributeList().appendLine();
                         }));
         appendLine("}");
 
         return dot.toString();
+    }
+
+    private GraphvizDigraph openAttributeList() {
+        if (!attributeListOpened) {
+            append(" [");
+            attributeListOpened = true;
+        }
+        return this;
+    }
+
+    private GraphvizDigraph closeAttributeList() {
+        if (attributeListOpened) {
+            append(" ]");
+            attributeListOpened = false;
+        }
+        return this;
     }
 
     private static String htmlEscape(String text) { return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"); }

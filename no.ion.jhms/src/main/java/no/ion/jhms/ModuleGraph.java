@@ -1,5 +1,6 @@
 package no.ion.jhms;
 
+import java.lang.module.ModuleDescriptor;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -103,17 +104,46 @@ public class ModuleGraph {
         private final String fromModule;
         private final String toModule;
         private final List<String> exports;
+        private final Type type;
 
-        public ReadEdge(String fromModule, String toModule, List<String> exports) {
+        public enum Type {
+            /** A bare 'requires'. */
+            REQUIRES,
+
+            /** A 'requires transitive'. */
+            REQUIRES_TRANSITIVE,
+
+            /**
+             * A read not backed by an explicit 'requires' in the module declaration/descriptor.
+             *
+             * Either an indirect transitive dependency, or the mandated dependency java.base, or from
+             * the module reading itself.
+             */
+            IMPLICIT;
+
+            public static Type from(Set<ModuleDescriptor.Requires.Modifier> modifiers) {
+                if (modifiers == null || modifiers.contains(ModuleDescriptor.Requires.Modifier.MANDATED)) {
+                    return ModuleGraph.ReadEdge.Type.IMPLICIT;
+                } else if (modifiers.contains(ModuleDescriptor.Requires.Modifier.TRANSITIVE)) {
+                    return ModuleGraph.ReadEdge.Type.REQUIRES_TRANSITIVE;
+                } else {
+                    return ModuleGraph.ReadEdge.Type.REQUIRES;
+                }
+            }
+        }
+
+        public ReadEdge(String fromModule, String toModule, List<String> exports, Type type) {
             this.fromModule = fromModule;
             this.toModule = toModule;
             this.exports = new ArrayList<>(exports);
             this.exports.sort(Comparator.naturalOrder());
+            this.type = type;
         }
 
         public String fromModule() { return fromModule; }
         public String toModule() { return toModule; }
         public List<String> exports() { return exports; }
+        public Type type() { return type; }
     }
 
     ModuleGraph() { this(new Params()); }
@@ -153,16 +183,21 @@ public class ModuleGraph {
     void markAsRootHybridModule(HybridModuleId module) { rootHybridModules.add(id2String(module)); }
     void addHybridModule(HybridModuleId module, List<String> unqualifiedExports) { hybridModules.put(id2String(module), new HybridModuleNode(module, unqualifiedExports)); }
     void addHybridModule(HybridModuleId module) { addHybridModule(module, List.of()); }
-    void addPlatformModule(String module, List<String> unqualifiedExports) { platformModules.put(module, new PlatformModuleNode(module, unqualifiedExports)); }
+    void addPlatformModule(String module, List<String> unqualifiedExports) {
+        platformModules.put(module, new PlatformModuleNode(module, unqualifiedExports));
+    }
     void addPlatformModule(String module) { addPlatformModule(module, List.of()); }
 
-    void addReadEdge(HybridModuleId fromModule, HybridModuleId toModule, List<String> exported) { addReadEdge(id2String(fromModule), id2String(toModule), exported); }
-    void addReadEdge(HybridModuleId fromModule, String toModule, List<String> exported) { addReadEdge(id2String(fromModule), toModule, exported); }
-    void addReadEdge(String fromModule, String toModule, List<String> exported) { readEdges.computeIfAbsent(fromModule, __ -> new ArrayList<>()).add(new ReadEdge(fromModule, toModule, exported)); }
-
-    void addReadEdge(HybridModuleId fromModule, HybridModuleId toModule) { addReadEdge(id2String(fromModule), id2String(toModule)); }
-    void addReadEdge(HybridModuleId fromModule, String toModule) { addReadEdge(id2String(fromModule), toModule); }
-    void addReadEdge(String fromModule, String toModule) { addReadEdge(fromModule, toModule, List.of()); }
+    void addReadEdge(HybridModuleId fromModule, HybridModuleId toModule, List<String> exported, ReadEdge.Type type) {
+        addReadEdge(id2String(fromModule), id2String(toModule), exported, type);
+    }
+    void addReadEdge(HybridModuleId fromModule, String toModule, List<String> exported, ReadEdge.Type type) {
+        addReadEdge(id2String(fromModule), toModule, exported, type);
+    }
+    void addReadEdge(String fromModule, String toModule, List<String> exported, ReadEdge.Type type) {
+        readEdges.computeIfAbsent(fromModule, __ -> new ArrayList<>()).add(
+                new ReadEdge(fromModule, toModule, exported, type));
+    }
 
     private static String id2String(HybridModuleId id) { return id.toString(); }
 }

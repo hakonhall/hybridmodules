@@ -1,6 +1,6 @@
 digraph "module graph" {
   subgraph cluster_hybrid {
-    graph [ style=dotted; label=<<font face="Helvetica">HYBRID MODULES</font>>; ]
+    graph [ color=khaki; label=<<font face="Helvetica">HYBRID MODULES</font>>; ]
     node [ color=blue; ]
     "intermediate@"
     "m@1"
@@ -8,7 +8,7 @@ digraph "module graph" {
     "main@" [ style=bold; label=<<b><u>main@</u></b>>; ]
   }
   subgraph cluster_platform {
-    graph [ style=dotted; label=<<font face="Helvetica">PLATFORM MODULES</font>>; ]
+    graph [ color=khaki; label=<<font face="Helvetica">PLATFORM MODULES</font>>; ]
     node [ color=red; ]
     "java.base"
   }

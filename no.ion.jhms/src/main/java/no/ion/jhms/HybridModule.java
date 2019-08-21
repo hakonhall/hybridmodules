@@ -10,6 +10,7 @@ class HybridModule extends BaseModule {
     private final List<PlatformModule> platformReadClosure;
     private final List<HybridModule> hybridReads;
     private final List<HybridModule> hybridReadClosure;
+    private final HashMap<String, Boolean> transitiveByRequires;
 
     private HybridModuleClassLoader classLoader;
 
@@ -19,7 +20,8 @@ class HybridModule extends BaseModule {
                          List<PlatformModule> platformReadClosure,
                          List<HybridModule> hybridReads,
                          List<HybridModule> hybridReadClosure,
-                         Map<String, Set<String>> exports) {
+                         Map<String, Set<String>> exports,
+                         HashMap<String, Boolean> transitiveByRequires) {
         super(jar.hybridModuleId().name(), packages, exports);
         this.id = jar.hybridModuleId();
         this.jar = jar;
@@ -27,6 +29,7 @@ class HybridModule extends BaseModule {
         this.platformReadClosure = platformReadClosure;
         this.hybridReads = hybridReads;
         this.hybridReadClosure = hybridReadClosure;
+        this.transitiveByRequires = transitiveByRequires;
 
         hybridReads.add(this);
         hybridReadClosure.add(this);
@@ -62,18 +65,14 @@ class HybridModule extends BaseModule {
 
     static class Builder {
         private final HybridModuleJar jar;
-
-        private Set<String> packages = new HashSet<>();
-
+        private final Set<String> packages = new HashSet<>();
         private final Set<String> requiresNames = new HashSet<>();
-
         private final List<PlatformModule> platformReads = new ArrayList<>();
         private final List<PlatformModule> platformReadClosure = new ArrayList<>();
-
         private final List<HybridModule> hybridReads = new ArrayList<>();
         private final List<HybridModule> hybridReadClosure = new ArrayList<>();
-
         private final Map<String, Set<String>> exports = new HashMap<>();
+        private final HashMap<String, Boolean> transitiveByRequires = new HashMap<>();
 
         Builder(HybridModuleJar jar) {
             this.jar = jar;
@@ -91,6 +90,7 @@ class HybridModule extends BaseModule {
 
             hybridReads.addAll(hybridModule.hybridReadClosure());
             platformReads.addAll(hybridModule.platformReadClosure());
+            transitiveByRequires.put(hybridModule.id().name(), transitive);
 
             if (transitive) {
                 hybridReadClosure.addAll(hybridModule.hybridReadClosure());
@@ -105,6 +105,8 @@ class HybridModule extends BaseModule {
             }
 
             platformReads.add(platformModule);
+            transitiveByRequires.put(platformModule.name(), transitive);
+
             if (transitive) {
                 platformReadClosure.add(platformModule);
             }
@@ -122,7 +124,8 @@ class HybridModule extends BaseModule {
                     platformReadClosure,
                     hybridReads,
                     hybridReadClosure,
-                    exports);
+                    exports,
+                    transitiveByRequires);
 
             // The hybrid module has a reference to the class loader, and vice versa, which complicates construction.
 
@@ -202,7 +205,16 @@ class HybridModule extends BaseModule {
                     } else {
                         readEdgePackages = List.of();
                     }
-                    graph.addReadEdge(id, readHybridModule.id, readEdgePackages);
+
+                    Boolean transitive = transitiveByRequires.get(readHybridModule.id().name());
+                    ModuleGraph.ReadEdge.Type type =
+                            transitive == null ?
+                                    ModuleGraph.ReadEdge.Type.IMPLICIT :
+                                    transitive ?
+                                            ModuleGraph.ReadEdge.Type.REQUIRES_TRANSITIVE :
+                                            ModuleGraph.ReadEdge.Type.REQUIRES;
+
+                    graph.addReadEdge(id, readHybridModule.id, readEdgePackages, type);
                 }
             }
         });
@@ -211,14 +223,20 @@ class HybridModule extends BaseModule {
             if (graph.platformModuleInUniverse(readPlatformModule.name())) {
                 readPlatformModule.fillModuleGraph(graph);
 
-                if (graph.params().includeExports()) {
-                    List<String> qualifiedExports = readPlatformModule.qualifiedExportsTo(this);
-                    graph.addReadEdge(id, readPlatformModule.name(), qualifiedExports);
-                } else {
-                    graph.addReadEdge(id, readPlatformModule.name());
-                }
+                List<String> qualifiedExports = graph.params().includeExports() ?
+                        readPlatformModule.qualifiedExportsTo(this) :
+                        List.of();
+
+                Boolean transitive = transitiveByRequires.get(readPlatformModule.name());
+                ModuleGraph.ReadEdge.Type type =
+                        transitive == null ?
+                                ModuleGraph.ReadEdge.Type.IMPLICIT :
+                                transitive ?
+                                        ModuleGraph.ReadEdge.Type.REQUIRES_TRANSITIVE :
+                                        ModuleGraph.ReadEdge.Type.REQUIRES;
+
+                graph.addReadEdge(id, readPlatformModule.name(), qualifiedExports, type);
             }
         });
     }
-
 }
