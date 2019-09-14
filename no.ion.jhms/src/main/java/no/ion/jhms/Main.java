@@ -2,6 +2,7 @@ package no.ion.jhms;
 
 import java.lang.module.FindException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;

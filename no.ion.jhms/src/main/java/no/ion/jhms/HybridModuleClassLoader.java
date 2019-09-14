@@ -1,11 +1,26 @@
 package no.ion.jhms;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.*;
 
 import static no.ion.jhms.PackageUtil.getPackageName;
+import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
 
 /** Class loader responsible for loading classes from a modular JAR. */
 public class HybridModuleClassLoader extends ClassLoader {
+    private static final StackWalker stackWalker = StackWalker.getInstance(RETAIN_CLASS_REFERENCE);
+
+    static {
+        if (!ClassLoader.registerAsParallelCapable())
+            throw new InternalError();
+    }
+
     private final HybridModuleJar jar;
     private final HybridModule hybridModule;
 
@@ -88,6 +103,50 @@ public class HybridModuleClassLoader extends ClassLoader {
             }
 
             return c;
+        }
+    }
+
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+        return super.getResources(name);
+    }
+
+    @Override
+    public InputStream getResourceAsStream(String absoluteName) {
+        Optional<String> packageName = PackageUtil.getPackageNameFromAbsoluteNameOfResource(absoluteName);
+
+        if (packageName.isPresent()) {
+            PlatformModule platformModule = platformModulesByPackage.get(packageName.get());
+            if (platformModule != null) {
+                return platformModule.getResourceAsStream(absoluteName);
+            }
+        }
+
+        return packageName
+                .map(name -> hybridModulesByPackage.getOrDefault(name, hybridModule))
+                .orElse(hybridModule)
+                // This works as intended even if 'getClassLoader() == this'.
+                .getClassLoader()
+                .jar
+                .getResourceAsStream(absoluteName)
+                .orElse(null);
+    }
+
+    @Override
+    public URL getResource(String name) {
+        try {
+            return new URL("jhms", null, 0, "/" + hybridModule.id().toString() + "/" + name, new URLStreamHandler() {
+                @Override
+                protected URLConnection openConnection(URL url) {
+                    return new URLConnection(url) {
+                        @Override public InputStream getInputStream() { return getResourceAsStream(name); }
+                        @Override public void connect() {}
+
+                    };
+                }
+            });
+        } catch (MalformedURLException e) {
+            throw new UncheckedIOException(e);
         }
     }
 

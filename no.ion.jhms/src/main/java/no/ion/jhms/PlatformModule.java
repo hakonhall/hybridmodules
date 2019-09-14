@@ -1,6 +1,9 @@
 package no.ion.jhms;
 
+import java.io.InputStream;
+import java.lang.module.FindException;
 import java.lang.module.ResolutionException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,11 +11,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import static no.ion.jhms.ExceptionUtil.uncheck;
+
 class PlatformModule extends BaseModule {
     private final String name;
     private final Set<PlatformModule> reads;
     private final Set<PlatformModule> readClosure;
     private final HashMap<String, Boolean> transitiveByRequires;
+    private final Module nativeModule;
 
     private volatile Set<String> packagesVisibleToHybridModules = null;
 
@@ -27,6 +33,10 @@ class PlatformModule extends BaseModule {
         this.reads = reads;
         this.readClosure = readClosure;
         this.transitiveByRequires = transitiveByRequires;
+        this.nativeModule = ModuleLayer.boot().findModule(name)
+                .orElseThrow(() -> new FindException("Failed to find platform module " + name +
+                        " in the boot module layer"));
+
 
         reads.add(this);
         readClosure.add(this);
@@ -101,6 +111,10 @@ class PlatformModule extends BaseModule {
     @Override
     public int hashCode() {
         return super.hashCode();
+    }
+
+    public InputStream getResourceAsStream(String name) {
+        return uncheck(() -> nativeModule.getResourceAsStream(name));
     }
 
     static class Builder {

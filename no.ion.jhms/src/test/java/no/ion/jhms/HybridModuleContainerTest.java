@@ -2,15 +2,24 @@ package no.ion.jhms;
 
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -64,6 +73,95 @@ public class HybridModuleContainerTest {
                             e.getMessage());
                 }
             }
+        }
+    }
+
+    @Test
+    public void getResourceAsStreamFromHybridModule() throws ClassNotFoundException, IOException {
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules(Paths.get("src/test/resources"));
+            HybridModuleContainer.ResolveParams params = new HybridModuleContainer.ResolveParams("rich.descriptor");
+            RootHybridModule root = container.resolve(params);
+            assertEquals("rich.descriptor@1.3.4", root.toString());
+            Class<?> aClass = root.loadClass("rich.descriptor.exported.E");
+            assertNotNull(aClass);
+
+            assertResource("This file is exported.\n", aClass.getResourceAsStream("exported.txt"));
+            assertResource("This file is exported.\n", aClass.getResourceAsStream("/rich/descriptor/exported/exported.txt"));
+
+            // A class in hybrid module rich.descriptor is able to access an exported resource in
+            // a required hybrid module 'required'.
+            assertResource("Exported file.\n", aClass.getResourceAsStream("/required/exported/exported.txt"));
+
+            // A class in hybrid module rich.descriptor is unable to access an unexported resource in
+            // a required hybrid module 'required'.
+            String unexportedResource = "/required/unexported.txt";
+            assertResource(null, aClass.getResourceAsStream(unexportedResource));
+
+            // aClass is a class in rich.descriptor. It is able to load a class RequiredExported since
+            // rich.descriptor requires the "required" hybrid module.
+            Class<?> requiredClass = aClass.getClassLoader().loadClass("required.exported.RequiredExported");
+            assertNotNull(requiredClass);
+
+            // An instance of RequiredClass will be able to load internal resources even if the package is not exported.
+            assertResource("Unexported resource file.\n", requiredClass.getResourceAsStream(unexportedResource));
+        }
+    }
+
+    @Test
+    public void getResourceAsStreamFromPlatformModule() throws ClassNotFoundException, IOException {
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules(Paths.get("src/test/resources"));
+            HybridModuleContainer.ResolveParams params = new HybridModuleContainer.ResolveParams("rich.descriptor");
+            RootHybridModule root = container.resolve(params);
+            assertEquals("rich.descriptor@1.3.4", root.toString());
+            Class<?> aClass = root.loadClass("rich.descriptor.exported.E");
+            assertNotNull(aClass);
+
+            assertResourceContains("iso-start", aClass.getResourceAsStream('/' + PlatformModuleTest.JAVA_TIME_CHRONO_RESOURCE));
+            assertResourceContains(null, aClass.getResourceAsStream('/' + PlatformModuleTest.SUN_NET_WWW_RESOURCE));
+        }
+    }
+
+    @Test
+    public void getResource() throws ClassNotFoundException, IOException {
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules(Paths.get("src/test/resources"));
+            HybridModuleContainer.ResolveParams params = new HybridModuleContainer.ResolveParams("rich.descriptor");
+            RootHybridModule root = container.resolve(params);
+            assertEquals("rich.descriptor@1.3.4", root.toString());
+            Class<?> aClass = root.loadClass("rich.descriptor.exported.E");
+            assertNotNull(aClass);
+
+            // Verify Class.getResource(String) works in the trivial case of getInputStream().
+            URL resourceUrl = aClass.getResource("exported.txt");
+            assertEquals("jhms:/rich.descriptor@1.3.4/rich/descriptor/exported/exported.txt", resourceUrl.toString());
+            assertEquals("/rich.descriptor@1.3.4/rich/descriptor/exported/exported.txt", resourceUrl.getPath());
+            URLConnection urlConnection = resourceUrl.openConnection();
+            urlConnection.connect();
+            assertNull(urlConnection.getContentType());
+            assertResource("This file is exported.\n", urlConnection.getInputStream());
+        }
+    }
+
+    private static void assertResourceContains(String expectedUtf8ContentSubstring, InputStream actualInputStream)
+            throws IOException {
+        if (expectedUtf8ContentSubstring == null) {
+            assertNull(actualInputStream);
+        } else {
+            assertNotNull(actualInputStream);
+            String actualUtf8Content = new String(actualInputStream.readAllBytes(), StandardCharsets.UTF_8);
+            assertThat(actualUtf8Content, containsString(expectedUtf8ContentSubstring));
+        }
+    }
+
+    private static void assertResource(String expectedUtf8Content, InputStream actualInputStream) throws IOException {
+        if (expectedUtf8Content == null) {
+            assertNull(actualInputStream);
+        } else {
+            assertNotNull(actualInputStream);
+            String actualUtf8Content = new String(actualInputStream.readAllBytes(), StandardCharsets.UTF_8);
+            assertEquals(expectedUtf8Content, actualUtf8Content);
         }
     }
 
