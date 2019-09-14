@@ -3,4 +3,4 @@ module rich.descriptor {
     requires transitive required;
     exports rich.descriptor.exported;
     exports rich.descriptor.qualified to friend;
-}        
+}

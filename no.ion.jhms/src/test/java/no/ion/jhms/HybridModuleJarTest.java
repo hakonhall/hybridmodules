@@ -47,7 +47,7 @@ public class HybridModuleJarTest {
             assertEquals(Set.of("friend"), exports.get("rich.descriptor.qualified"));
 
             // Gotten from sha256sum(1). Recreating the JAR file will change the checksum.
-            assertEquals("1E01DCC93916A380327C2D952A7BD76A615E254254ABB1E073E969C7008E461A", jar.sha256String());
+            assertEquals("ec7dcd6565a85b2d5e826ed5a4643191559dd3fbeeb51b0cfdd15712d69ea790", jar.sha256String().toLowerCase());
 
             String uri = jar.uri().toString();
             assertTrue(uri.endsWith("src/test/resources/rich.descriptor-1.3.4.jar"));

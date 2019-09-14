@@ -22,7 +22,7 @@ public class ObservableHybridModulesTest {
             loader.discoverHybridModulesFromModulePath("src/test/resources");
             List<String> hybridModuleIds = loader.getHybridModuleIds().stream().map(Object::toString).collect(Collectors.toList());
             assertThat(hybridModuleIds, equalTo(List.of(
-                    "find.hybrid.module.one@1.2.3", "find.hybrid.module.two@1.2.3", "rich.descriptor@1.3.4")));
+                    "find.hybrid.module.one@1.2.3", "find.hybrid.module.two@1.2.3", "required@3.1", "rich.descriptor@1.3.4")));
             HybridModuleJar oneJar = loader.getJar(oneId);
             assertEquals(oneId, oneJar.hybridModuleId());
         }

@@ -63,20 +63,24 @@ class HybridModuleJar implements AutoCloseable {
     /** Get the class bytes given class name, or null if not found. */
     byte[] getClassBytes(String binaryName) {
         String resourceName = resourceNameFromBinaryClassName(binaryName);
-        Optional<InputStream> inputStream = uncheck(() -> reader.open(resourceName));
-        if (inputStream.isPresent()) {
-            try {
-                return uncheck(() -> inputStream.get().readAllBytes());
-            } finally {
-                try {
-                    inputStream.get().close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
-        } else {
-            return null;
-        }
+        return getResourceAsStream(resourceName)
+                .map(inputStream -> {
+                    try {
+                        return uncheck(inputStream::readAllBytes);
+                    } finally {
+                        try {
+                            inputStream.close();
+                        } catch (IOException e) {
+                            // ignore
+                        }
+                    }
+                })
+                .orElse(null);
+    }
+
+    /** The caller must ensure to close the returned {@link InputStream} unless null. */
+    Optional<InputStream> getResourceAsStream(String absoluteName) {
+        return uncheck(() -> reader.open(absoluteName));
     }
 
     /** Two JARs are {@code probablyEqual} if they are the same file (device ID and i-node), or if they have the same SHA-256 checksum. */
