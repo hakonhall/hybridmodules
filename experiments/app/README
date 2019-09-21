@@ -103,3 +103,11 @@ it will not be included in the graph. Otherwise, it will be included and all
 'requires static' will resolve too. This is consistent with "'requires'
 directives with 'static' modifier" section of the java.lang.module package
 documentation.
+
+Case IX:
+
+If 0 refers to A, but 0 does not require A, but A is on the module path, will
+there be an error and what does it say?
+
+Answer: compilation fails with "package A is not visible" and "package A is
+declared in module A, but module 0 does not read it".
