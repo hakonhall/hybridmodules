@@ -89,6 +89,10 @@ public class RootHybridModule {
             error.initCause(e);
             throw error;
         } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+
             throw new UndeclaredThrowableException(e.getCause());
         }
     }
