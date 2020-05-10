@@ -125,16 +125,20 @@ function Main {
         esac
     done
 
-    local javahms_dir=$(dirname "$0")
-    local jar_dir="$javahms_dir"/../no.ion.jhms/target
+    local jhms_home=$(readlink -m "$0"/../../no.ion.jhms)
+    if ! test -d "$jhms_home"
+    then
+        Fail "Failed to find no.ion.jhms directory: $jhms_home does not exist"
+    fi
 
+    local jar_dir="$jhms_home"/target
     if ! test -d "$jar_dir"
     then
-	Fail "Failed to find jar directory for no.ion.jhms from '$0'"
+	Fail "no.ion.jhms has not been built: $jar_dir does not exist"
     fi
 
     local version=3.0.0
-    local jar_path="$jar_dir"/no.ion.jhms-$version.jar
+    local jar_path="$jar_dir"/no.ion.jhms-"$version".jar
     if ! test -f "$jar_path"
     then
 	Fail "There is no no.ion.jhms JAR file: '$jar_path'"

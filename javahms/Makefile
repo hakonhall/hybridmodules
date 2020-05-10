@@ -1,9 +1,15 @@
 
 subdirs = tests
-.PHONY: $(subdirs)
+.PHONY: all install clean $(subdirs)
 
 target =
 all: $(subdirs)
+
+install: ~/bin/javahms
+
+~/bin/javahms: javahms
+	rm -f $@
+	ln -s $$PWD/$< $@
 
 $(subdirs):
 	$(MAKE) -C $@ $(target)
