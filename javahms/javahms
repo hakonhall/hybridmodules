@@ -2,13 +2,13 @@
 
 function Usage {
     cat <<EOF
-Usage: javahms [OPTION...] --module MODULE[/CLASS] [ARG...]
+Usage: javahms [OPTION...] --module MODULE[/[/]CLASS] [ARG...]
 Launch hybrid module MODULE, passing ARG... to the main method of CLASS.
 
 Launch Java Hybrid Module System (JHMS) application.
 
-CLASS must be an exported class of MODULE. ARG... are passed to the main method
-of CLASS.
+CLASS must be an exported class of MODULE.  ARG... are passed to the main
+method of CLASS.
 
 ARG... are passed to the main method of CLASS of module MODULE. CLASS must be
 an exported unqualified from MODULE.
@@ -20,9 +20,10 @@ Options:
       invocation. JAVA_OPTIONS... must not specify the class path. As a special
       case: if the first TOK is one of (, {, or [, the end token must be ), },
       or ], respectively. See below for more.
-  --module,-m MODULE[/CLASS]
-      Specifies the main module and class used to launch the application. CLASS
-      defaults to the main class of MODULE. This option is required and is the
+  --module,-m MODULE[/[/]CLASS]
+      Specifies the main module and class used to launch the application.
+      CLASS defaults to the main class of MODULE.  MODULE//CLASS means the
+      qualified main class is MODULE.CLASS.  This option is required and is the
       last option. The next argument (if any) is the first ARG.
   --module-graph,-g GRAPH_OPTIONS
       Probe the module graph instead of running the main method. See MODULE
@@ -117,7 +118,12 @@ function Main {
                 shift 2 || true
                 ;;
             --module|-m)
-                module=("$1" "$2")
+                if [[ "$2" =~ ^([^/]*)//(.*)$ ]]
+                then
+                    module=("$1" "${BASH_REMATCH[1]}"/"${BASH_REMATCH[1]}.${BASH_REMATCH[2]}")
+                else
+                    module=("$1" "$2")
+                fi
                 shift 2 || true
                 break
                 ;;
