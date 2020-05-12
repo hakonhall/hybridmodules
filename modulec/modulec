@@ -37,7 +37,8 @@ Make a modular JAR from the Java module source in SRC.
 Options:
   -d CLASSDIR             The directory to write the compiled class files to.
                           By default, a temporary directory will be used.
-  -e,--main-class CLASS   Specify the main class of the module.
+  -e,--main-class CLASS   Specify the main class of the module. If CLASS starts
+                          with a dot (.), the main class is prefixed with NAME.
   -f,--file JARPATH       The path to the modular JAR file. If JARPATH is a
                           directory, the modular JAR will be written to that
                           directory with a filename NAME[-VERSION].jar. If
@@ -236,6 +237,12 @@ function Main {
         fi
 
         jarpath+=/"$name$version_suffix".jar
+    fi
+
+    # Resolve relative main class
+    if (( ${#main_class[@]} > 0 )) && test "${main_class[1]:0:1}" == .
+    then
+        main_class[1]="$name${main_class[1]}"
     fi
 
     if Run jar -c -f "$jarpath" "${main_class[@]}" -C "$classdir" .
