@@ -37,36 +37,35 @@ Make a modular JAR from the Java module source in SRC.
 Options:
   -d CLASSDIR             The directory to write the compiled class files to.
                           By default, a temporary directory will be used.
+  -D BUILDDIR             Same as '-d BUILDDIR/classes -f BUILDDIR/'.
   -e,--main-class CLASS   Specify the main class of the module. If CLASS starts
                           with a dot (.), the main class is prefixed with NAME.
-  -f,--file JARPATH       The path to the modular JAR file. If JARPATH is a
-                          directory, the modular JAR will be written to that
-                          directory with a filename NAME[-VERSION].jar. If
-                          NAME has not been set with --name, it is extracted
-                          from module-info.class with javap after compilation.
-                          By default JARPATH is the current directory.
-  -m,--manifest MANIFEST  Include the manifest info from MANIFEST
-  -n,--name NAME          Sets the name of the module AND trigger compilation
-                          optimization (see below).
+  -f,--file JARPATH       The path to the modular JAR file. If JARPATH ends with
+                          /, it is created as a directory if it does not exists.
+                          If JARPATH is a directory, the modular JAR will be
+                          written to that directory with a filename
+                          NAME[-VERSION].jar.  By default JARPATH is the
+                          current directory.
+  -m,--manifest MANIFEST  Include the manifest information from MANIFEST file.
+  -n,--name NAME          Provides the module name when it cannot be figured out
+                          from module-info.java trivially.
   -p,--module-path MPATH  Set the module path for compilation, empty by default.
                           This option is folded into JAVAC_ARG.
   -v,--version VERSION    Set the module version.
 
-modulec first compiles the *.java files under SRC (JAVA_FILE...), with
-    javac -d CLASSDIR [--module-version VERSION] [JAVAC_ARG...] JAVA_FILE...
+modulec first compiles the module NAME with source files in SRC using
+--module-source-path and --module NAME, to class files below CLASSDIR:
 
-However if --name has been specified, the source is instead compiled using
---module-source-path and --module, which should be faster (with -d).
+    javac --module-source-path TMPSRC --module NAME -d CLASSDIR \\
+          [--module-version VERSION] [JAVAC_ARG...]
 
-Then the modular JAR is made with
+TMPSRC is a temporary directory containing a symlink NAME that points to SRC.
+These temporaries can be avoided from Java 12 using --module-source-path
+NAME=SRC syntax.
+
+Next, the modular JAR is made with:
+
     jar -c -f JARPATH [--main-class CLASS] -C CLASSDIR .
-
-Example: Say the 'src' directory contains module-info.java, defining module
-'mod', and foo/Bar.java. Then
-    modulec src
-will make a 'mod.jar' modular JAR. But it is recommended to use -d and -n:
-    modulec -d classes -n mod src
-which may be considerable faster on subsequent compilations.
 EOF
 
     exit 1
@@ -90,6 +89,11 @@ function Main {
             -d)
                 classdir="$2"
                 shift 2
+                ;;
+            -D)
+                local builddir="$2"
+                shift 2
+                set -- -d "$builddir"/classes -f "$builddir"/ "$@"
                 ;;
             -e|--main-class)
                 main_class=("$1" "$2")
@@ -143,6 +147,22 @@ function Main {
     test -r "$src"/module-info.java || \
         Fail "'$src' does not contain a module-info.java file!"
 
+    local newline=$'\n'
+    if test "$name" == ""
+    then
+        # Heuristic getting the module name.
+        [[ $(< "$src"/module-info.java) =~ (^|$newline)module' '+([a-zA-Z0-9._]+) ]] || \
+            Fail "Failed to read module name from $src/module-info.java, " \
+                 "please provide it with --name"
+        name="${BASH_REMATCH[2]}"
+    fi
+
+    # Resolve relative main class name
+    if (( ${#main_class[@]} > 0 )) && test "${main_class[1]:0:1}" == .
+    then
+        main_class[1]="$name${main_class[1]}"
+    fi
+
     if (( $# > 0 ))
     then
         test "$1" == -- || Fail "Expected '--' but found '$1'"
@@ -163,79 +183,44 @@ function Main {
     type javac &> /dev/null || Fail "'javac' is not installed"
     type jar &> /dev/null || Fail "'jar' is not installed"
 
-    if test "$name" != ""
+    # This strategy removes need to find all *.java files. Also, it checks
+    # timestamps to figure out which *.java file to compile. Thus --name
+    # does not make much sense without -d.
+    #
+    # Future improvement with Java 12, it is possible to specify
+    # '--module-source-path NAME=SRC', where NAME is the module name, and
+    # SRC is the path to the root of the module source tree. Unfortunately,
+    # the output is still put under outputdir/NAME.
+
+    local tmpdir=
+    tmpdir=$(mktemp -d)
+    mkdir -p "$tmpdir"/classes "$tmpdir"/src
+    local absolute_src=$(realpath "$src")
+    mkdir -p "$classdir"
+    local absolute_classdir=$(realpath "$classdir")
+
+    ln -s "$absolute_src" "$tmpdir"/src/"$name"
+    ln -s "$absolute_classdir" "$tmpdir"/classes/"$name"
+
+    if Run javac -d "$tmpdir"/classes "${module_version[@]}" \
+           --module-source-path "$tmpdir"/src --module "$name" \
+           "${module_path[@]}" "${javac_args[@]}"
     then
-        # This strategy removes need to find all *.java files. Also, it checks
-        # timestamps to figure out which *.java file to compile. Thus --name
-        # does not make much sense without -d.
-        #
-        # Future improvement with Java 12, it is possible to specify
-        # '--module-source-path NAME=SRC', where NAME is the module name, and
-        # SRC is the path to the root of the module source tree. Unfortunately,
-        # the output is still put under outputdir/NAME.
-
-        local tmpdir=
-        tmpdir=$(mktemp -d)
-        mkdir -p "$tmpdir"/classes "$tmpdir"/src
-        local absolute_src=$(realpath "$src")
-        mkdir -p "$classdir"
-        local absolute_classdir=$(realpath "$classdir")
-
-        ln -s "$absolute_src" "$tmpdir"/src/"$name"
-        ln -s "$absolute_classdir" "$tmpdir"/classes/"$name"
-
-        if Run javac -d "$tmpdir"/classes "${module_version[@]}" \
-               --module-source-path "$tmpdir"/src --module "$name" \
-               "${module_path[@]}" "${javac_args[@]}"
-        then
-            rm -r "$tmpdir"
-        else
-            local exit_code=$?
-            rm -r "$tmpdir"
-            exit $exit_code
-        fi
+        rm -r "$tmpdir"
     else
-        if Run javac -d "$classdir" "${module_version[@]}" \
-               "${module_path[@]}" "${javac_args[@]}" \
-               $(find "$src" -name '*.java')
-        then
-            :
-        else
-            exit $?
-        fi
+        local exit_code=$?
+        rm -r "$tmpdir"
+        exit $exit_code
     fi
 
-    if ! test -d "$jarpath" && [[ "$jarpath" =~ ^(.*[^/])/+$ ]]
+    if [[ "$jarpath" =~ /$ ]]
     then
-        mkdir -p "$jarpath"
-        jarpath="${BASH_REMATCH[1]}"
+        jarpath="${jarpath%/}"
+        test -d "$jarpath" || mkdir -p "$jarpath"
     fi
 
     if test -d "$jarpath"
     then
-        if test "$name" == ""
-        then
-            type javap &> /dev/null || Fail "'javap' is not installed"
-
-            local output=
-            output=$(javap "$classdir"/module-info.class)
-
-            while read -r
-            do
-                if [[ "$REPLY" =~ ^'module '([^@\ ]+) ]]
-                then
-                    name="${BASH_REMATCH[1]}"
-                    break
-                fi
-            done <<< "$output"
-
-            if test "$name" == ""
-            then
-                ! $classdir_is_tmp || rm -r "$classdir"
-                Fail "Failed to find module name from module descriptor"
-            fi
-        fi
-
         jarpath+=/"$name$version_suffix".jar
     fi
 
