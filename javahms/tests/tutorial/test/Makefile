@@ -3,7 +3,7 @@
 all: test.jar
 
 test.jar:
-	../../../../modulec/modulec -p ../helloworld classes
+	modulec -f $@ -p ../helloworld classes
 
 clean:
 	rm -f test.jar

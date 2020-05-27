@@ -1,7 +1,9 @@
 all: b.jar
 
 b.jar:
-	../../../../modulec/modulec -p ../A java
+	modulec -f $@ -p ../A java
 
 clean:
 	rm -f b.jar
+	rm -rf target
+

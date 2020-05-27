@@ -1,5 +1,5 @@
 helloworld.jar:
-	../../../../modulec/modulec classes
+	modulec -f helloworld.jar classes
 
 clean:
 	rm -f helloworld.jar

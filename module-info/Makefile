@@ -3,7 +3,7 @@
 all: build-jar tests
 
 build-jar:
-	../modulec/modulec -e no.ion.Main java
+	modulec -f no.ion.moduleinfo.jar -e no.ion.Main java
 
 tests:
 	$(MAKE) -C $@
