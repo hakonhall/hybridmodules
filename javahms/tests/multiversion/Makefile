@@ -6,10 +6,10 @@ target =
 # make clean all doesn't work...
 
 all: $(subdirs)
-	../../../diffcmd/diffcmd ../../javahms -p m-1:m-2:intermediate:main \
-		-m main
+	../../../diffcmd/diffcmd ../../javahms -p \
+                m-1:m-2:intermediate/target:main/target -m main
 	../../../diffcmd/diffcmd -d module-graph ../../javahms -p \
-		m-1:m-2:intermediate:main -g '' -m main
+		m-1:m-2:intermediate/target:main/target -g '' -m main
 
 m-1:
 m-2:

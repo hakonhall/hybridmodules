@@ -1,7 +1,7 @@
 all: compile test
 
 compile:
-	../../modulec/modulec src
+	modulec -f a.jar src
 
 test:
 	@ # Verify that without --add-opens we get a warning for reflective
@@ -17,3 +17,4 @@ test:
 
 clean:
 	rm -f out a.jar
+	rm -rf target

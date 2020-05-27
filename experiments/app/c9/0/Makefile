@@ -1,7 +1,6 @@
-MODULEC := ../../../../modulec/modulec
-
 all:
-	$(MODULEC) -p ../A -e root.Main java
+	modulec -p ../A -e root.Main java
 
 clean:
 	rm -f *.jar
+	rm -rf target
