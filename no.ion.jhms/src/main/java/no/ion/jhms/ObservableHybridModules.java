@@ -18,7 +18,7 @@ import static no.ion.jhms.ExceptionUtil.uncheck;
 
 class ObservableHybridModules implements AutoCloseable {
     /** Hybrid module JAR by name and version. */
-    private TreeMap<String, TreeMap<HybridModuleVersion, HybridModuleJar>> jars = new TreeMap<>();
+    private final TreeMap<String, TreeMap<HybridModuleVersion, HybridModuleJar>> jars = new TreeMap<>();
 
     void discoverHybridModulesFromModulePath(String modulePath) {
         for (String element : modulePath.split(":")) {
@@ -51,14 +51,6 @@ class ObservableHybridModules implements AutoCloseable {
     List<HybridModuleJar> getJarsWithName(String name) {
         Map<HybridModuleVersion, HybridModuleJar> jarsByVersion = jars.get(name);
         return jarsByVersion == null ? List.of() : new ArrayList<>(jarsByVersion.values());
-    }
-
-    String getEffectiveModulePath() {
-        return jars.values().stream()
-                .flatMap(x -> x.values().stream())
-                .map(HybridModuleJar::path)
-                .map(Path::toString)
-                .collect(Collectors.joining(":"));
     }
 
     @Override
