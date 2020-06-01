@@ -21,9 +21,8 @@ doit: $(dirs)
 bundle: no.ion.jhms.bundle modulec
 diffcmd:
 experiments: modulec
-jar:
+jar: diffcmd modulec module-info
 javahms: no.ion.jhms diffcmd modulec
-modulec: diffcmd
 module-info: modulec diffcmd
 no.ion.jhms:
 no.ion.jhms.bundle:
