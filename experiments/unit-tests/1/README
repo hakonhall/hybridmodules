@@ -1,0 +1,24 @@
+This project runs JUnit 5 using the console launcher
+
+https://junit.org/junit5/docs/current/user-guide/#running-tests-console-launcher
+
+The console launcher is a JAR junit-platform-console-standalone-1.6.2.jar that
+has its broken module-info.class removed, and the JAR renamed to
+org.junit.platform.console.standalone-1.6.2.jar to better match the main class
+org.junit.platform.console.ConsoleLauncher.
+
+Java is launched in module mode, with "one" as a module (with --add-modules
+ALL-MODULE-PATH) and org.junit.platform.console.standalone as the root and
+automatic module.  An automatic module reads all other modules, but to allow
+run-time access to e.g. package-private tests (common in JUnit 5) one has to
+open the test module.
+
+target-test/one.jar is a modular JAR compiled with:
+ a. The compiled class files of the module, excluding module-info.class.
+ b. A module-info.java (module-info-test.java) that contains the union of the
+    requirements of the module (none) and the unit tests (JUnit 5 types, which
+    happens to be in the same module org.junit.platform.console.standalone).
+ c. The *.java unit test files.
+
+As alluded to in (a), target/one.jar was compiled with the *.java module
+source, including its module-info.java (module-info-src.java).
