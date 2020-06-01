@@ -52,8 +52,10 @@ public class Main {
             break; // this is how a switch-case can break out of the for-loop
         }
 
-        if (index != args.length - 1) {
+        if (index < args.length - 1) {
             userError("Too many arguments");
+        } else if (index > args.length - 1) {
+            userError("Too few arguments");
         }
 
         Path path = Path.of(args[index]);

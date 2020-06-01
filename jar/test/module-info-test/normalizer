@@ -1,0 +1,13 @@
+#!/bin/bash
+
+stdout=$(< "$1"/stdout)
+
+printf "%s\n" "$stdout" | while read -r
+do
+    if [[ "$REPLY" =~ ^'    requires java.base@' ]]
+    then
+        printf "    requires java.base@;\n"
+    else
+        printf "%s\n" "$REPLY"
+    fi
+done > "$1"/stdout

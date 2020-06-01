@@ -2,9 +2,9 @@
 
 set -e
 
-declare VERBOSE=true
+declare VERBOSE=false
 
-declare TEMPORARY_DIRECTORY=""
+declare TMP_DIRECTORY=""
 
 function PrintArguments {
     if (( $# > 0 ))
@@ -22,17 +22,22 @@ function Usage {
     PrintArguments "$@"
     cat <<EOF
 Usage: ${0##*/} [OPTION...]
-Update an existing jar to become a modular jar
+Update an existing jar to a modular jar.
 
 Options:
-  -f, --file FILE            The archive file name [required]
-      --main-class CLASSNAME The application entry point for stand-alone
-                             applications bundled into a modular or executable
-                             jar
-      --module-version VERSION    The module version
-      --module-info FILE     The module-info.java file or its parent directory,
-                             defaulting to current directory (.).
-  -u, --update               Update an existing jar archive [required]
+  -f, --file FILE               The archive file name [required]
+      --main-class CLASSNAME    The application entry point for stand-alone
+                                applications bundled into a modular or
+                                executable jar.
+  -I, --module-info FILE        The module-info.java file [required]
+  -p, --module-path MPATH       The module path when compiling module-info.java.
+  -V, --module-version VERSION  The module version
+  -u, --update                  Update an existing jar archive [required]
+
+Example:
+  ${0##*/} -u -f foo.jar -I module-info.java -p modsdir1:modsdir2
+
+Prerequisites: realpath
 EOF
 
     # Verify & do: Add --module-path to get compiled versions correct?
@@ -65,104 +70,89 @@ function Run {
 }
 
 function RemoveTemporaryDirectory {
-    rm -rf "$TEMPORARY_DIRECTORY"
+    rm -rf "$TMP_DIRECTORY"
 }
 
 function Main {
-    local action=""
+    type realpath &> /dev/null || Fail "This program requires 'realpath'"
+
+    local is_update=false
     local jarfile=""
-    local module_info="."
-    local -a extra_jar_arguments=()
+    local module_info=""
+    local -a javac_xopts=()
+    local -a jar_xopts=()
 
     while (( $# > 0 ))
     do
         case "$1" in
             -u|--update)
-                action=update
-                extra_jar_arguments+=("$1")
+                is_update=true
                 shift
                 ;;
             -f|--file)
-                if ! test -r "$2"
-                then
-                    Usage "jar archive '$2' not found"
-                fi
-                jarfile=$(realpath "$2")
-                if ! test -r "$jarfile"
-                then
-                    Usage "jar archive '$2' not found"
-                fi
-                extra_jar_arguments+=("$1" "$jarfile")
+                test -r "$2" || Fail "No such file: $2"
+                jarfile=$(realpath -m "$2")
+                test -r "$jarfile" || Fail "Failed to resolve $1"
                 shift 2
                 ;;
             -h|--help)
                 Usage
                 ;;
             --main-class)
-                extra_jar_arguments+=(--main-class "$2")
+                jar_xopts+=(--main-class "$2")
                 shift 2
                 ;;
-            --module-info)
+            -I|--module-info)
+                test -r "$2" || Fail "No such file: $2"
                 module_info="$2"
+                module_info=$(realpath -m "$module_info")
+                test -r "$module_info" || Fail "Failed to resolve $1"
                 shift 2
                 ;;
-            --module-version)
-                extra_jar_arguments+=(--module-version "$2")
+            -p|--module-path)
+                javac_xopts+=("$1" "$2")
+                shift 2
+                ;;
+            -V|--module-version)
+                javac_xopts+=(--module-version "$2")
                 shift 2
                 ;;
             --verbose|-v)
                 VERBOSE=true
                 shift
                 ;;
+            -*) Fail "Unknown option: $1" ;;
             *)
                 break
                 ;;
         esac
     done
 
-    if (( $# != 0 ))
-    then
-        Usage "Extraneous arguments found: $*"
-    elif test -z "$action"
-    then
-        Usage "No action specified"
-    elif test -z "$jarfile"
-    then
-        Usage "No jar archive specified"
-    fi
+    (( $# == 0 )) || Fail "Too many arguments: $*"
+    $is_update || Fail "--update is required, see --help"
+    test -n "$jarfile" || Fail "--file is required, see --help"
+    test -n "$module_info" || Fail "--module-info is required, see --help"
 
-    # module-info
-    if test -d "$module_info"
-    then
-        module_info+=/module-info.java
-    fi
-    if ! test -r "$module_info"
-    then
-        Usage "Module info file '$module_info' not found"
-    fi
-    module_info=$(realpath "$module_info")
-    if ! test -r "$module_info"
-    then
-        Usage "Module info file '$module_info' not found"
-    fi
-
-    if ! TEMPORARY_DIRECTORY=$(mktemp -d)
+    if ! TMP_DIRECTORY=$(mktemp -d)
     then
         Fail "Failed to create temporary directory with 'mktemp -d'"
     fi
-
     trap RemoveTemporaryDirectory EXIT
 
-    cd "$TEMPORARY_DIRECTORY"
+    local pwd="$PWD"
+    cd "$TMP_DIRECTORY"
+    ln -s "$module_info" module-info.java
+    mkdir exploded
+    cd exploded
     jar -x -f "$jarfile"
+    # A timestamp on an existing module-info.class may fool javac.
+    rm -f module-info.class
 
-    # This allows --module-info to refer to a file not named module-info.java,
-    # which can be useful if a directory contains a bunch of JAR files, and one
-    # needs one module-info.java for each.
-    cp "$module_info" module-info.java
-
-    javac -d . module-info.java
-    jar "${extra_jar_arguments[@]}" module-info.class
+    cd "$pwd"
+    Run javac "${javac_xopts[@]}" -d "$TMP_DIRECTORY"/exploded \
+          "$TMP_DIRECTORY"/module-info.java
+    Run jar -u -f "$jarfile" "${jar_xopts[@]}" -C "$TMP_DIRECTORY"/exploded \
+        module-info.class
 }
 
 Main "$@"

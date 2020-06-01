@@ -1,0 +1,5 @@
+module a.foo@1.2.3 {
+    requires a.dep@1.0.3;
+    requires java.base@;
+    exports a.foo;
+}
