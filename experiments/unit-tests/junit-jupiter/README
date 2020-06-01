@@ -1,0 +1,8 @@
+The junit-platform-console-standalone-1.6.2.jar JAR file can be used to run the
+JUnit 5 console launcher: To run JUnit 5 tests from the command line.
+
+The JAR file has a bogus module-info.class file, so Makefile creates 2 variants
+in target:
+
+ - target/junit-platform-console-standalone-1.6.2.jar contains a modular JAR.
+ - target/org.junit.platform.console.standalone-1.6.2.jar w/o module-info.class.
