@@ -157,12 +157,40 @@ public class HybridModuleClassLoader extends ClassLoader {
             return c;
         }
 
+        // While testing with the JUnit 5 console launcher it was found that
+        // java.lang.reflect.AnnotatedElement.isAnnotationPresent() requires jdk.internal.reflect.ConstructorAccessorImpl
+        // in java.base to be loaded by the invoking class loader.  But its package is not exported.
+        //
+        // In JPMS all (types in) packages of all modules are visible, and all types can be loaded successfully.
+        // It is only if such types are accessed, e.g. a constructor being invoked, that JPMS enforces its accessibility
+        // restrictions.
+        //
+        // In JHMS a non-exported package is not even visible, which would cause a ClassNotFoundException to be thrown.
+        //
+        // OSGi also noted irregularities w.r.t. class loading of system classes.  From its Core 7 specification:
+        // "Certain Java virtual machines, also Oracle's VMs, appear to make the erroneous assumption that the
+        // delegation to the parent class loader always occurs."  OSGi specifies a org.osgi.framework.bootdelegation
+        // system property to force delegation to the "system class loader" (AFAIK the parent class loader of the
+        // OSGi framework).  OSGi always delegates for java.* packages.
+        //
+        // Note: The canonical way to use reflection on a class C in a hybrid module M is to use M's class loader.
+        //
+        // In JHMS delegation is always to parent first (system class loader, not application class loader that
+        // includes the class path).  An alternative is to have a system property of packages to delegate for,
+        // like org.osgi.framework.bootdelegation.
+
+        try {
+            return getParent().loadClass(name);
+        } catch (ClassNotFoundException e) {
+            // nothing
+        }
+
         // If the class is in a readable platform module package
         String packageName = getPackageName(name);
-        PlatformModule platformModule = platformModulesByPackage.get(packageName);
+        /*PlatformModule platformModule = platformModulesByPackage.get(packageName);
         if (platformModule != null) {
             return getParent().loadClass(name);
-        }
+        }*/
 
         // If the class is in a readable hybrid module package
         HybridModule hybridModule = hybridModulesByPackage.get(packageName);
