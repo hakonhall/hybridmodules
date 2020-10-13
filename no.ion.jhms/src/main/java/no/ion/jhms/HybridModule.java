@@ -67,10 +67,10 @@ class HybridModule extends BaseModule {
         private final HybridModuleJar jar;
         private final Set<String> packages = new HashSet<>();
         private final Set<String> requiresNames = new HashSet<>();
-        private final List<PlatformModule> platformReads = new ArrayList<>();
-        private final List<PlatformModule> platformReadClosure = new ArrayList<>();
-        private final List<HybridModule> hybridReads = new ArrayList<>();
-        private final List<HybridModule> hybridReadClosure = new ArrayList<>();
+        private final Map<String, PlatformModule> platformReads = new HashMap<>();
+        private final Map<String, PlatformModule> platformReadClosure = new HashMap<>();
+        private final Map<String, HybridModule> hybridReads = new HashMap<>();
+        private final Map<String, HybridModule> hybridReadClosure = new HashMap<>();
         private final Map<String, Set<String>> exports = new HashMap<>();
         private final HashMap<String, Boolean> transitiveByRequires = new HashMap<>();
 
@@ -88,13 +88,30 @@ class HybridModule extends BaseModule {
                 throw new ResolutionException("Hybrid module " + jar.hybridModuleId() + " requires " + hybridModule.id().name() + " twice");
             }
 
-            hybridReads.addAll(hybridModule.hybridReadClosure());
-            platformReads.addAll(hybridModule.platformReadClosure());
+            hybridModule.hybridReadClosure.forEach(hm -> {
+                HybridModule previousHybridModule = hybridReads.put(hm.id.name(), hm);
+
+                if (previousHybridModule != null && !previousHybridModule.id.version().equals(hm.id.version())) {
+                    throw new ResolutionException(jar.hybridModuleId() + " requires hybrid module " + hm.id.name() +
+                            " at two different versions: " + previousHybridModule.id.version() + " and " + hm.id.version());
+                }
+            });
+
+            hybridModule.platformReadClosure.forEach(pm -> platformReads.put(pm.name(), pm));
             transitiveByRequires.put(hybridModule.id().name(), transitive);
 
             if (transitive) {
-                hybridReadClosure.addAll(hybridModule.hybridReadClosure());
-                platformReadClosure.addAll(hybridModule.platformReadClosure());
+                hybridModule.hybridReadClosure().forEach(hm -> {
+                    HybridModule previousHybridModule = hybridReadClosure.put(hm.id.name(), hm);
+
+                    if (previousHybridModule != null && !previousHybridModule.id.equals(hm.id)) {
+                        throw new ResolutionException(jar.hybridModuleId() + " requires hybrid module " + hm.id.name() +
+                                " (transitively) at two different versions: " + previousHybridModule.id.version() +
+                                " and " + hm.id.version());
+                    }
+                });
+
+                hybridModule.platformReadClosure().forEach(pm -> platformReadClosure.put(pm.name(), pm));
             }
         }
 
@@ -104,11 +121,11 @@ class HybridModule extends BaseModule {
                 throw new ResolutionException("Hybrid module " + jar.hybridModuleId() + " requires " + platformModule.name() + " twice");
             }
 
-            platformReads.add(platformModule);
+            platformReads.put(platformModule.name(), platformModule);
             transitiveByRequires.put(platformModule.name(), transitive);
 
             if (transitive) {
-                platformReadClosure.add(platformModule);
+                platformReadClosure.put(platformModule.name(), platformModule);
             }
         }
 
@@ -117,24 +134,27 @@ class HybridModule extends BaseModule {
         }
 
         HybridModule build() {
+            // 'module' adds 'this' to hybridRead (and hybridReadClosure), and we need to loop over hybridRead below
+            ArrayList<HybridModule> hybridReads = new ArrayList<>(this.hybridReads.values());
+
             HybridModule module = new HybridModule(
                     jar,
                     packages,
-                    platformReads,
-                    platformReadClosure,
+                    new ArrayList<>(platformReads.values()),
+                    new ArrayList<>(platformReadClosure.values()),
                     hybridReads,
-                    hybridReadClosure,
+                    new ArrayList<>(hybridReadClosure.values()),
                     exports,
                     transitiveByRequires);
 
             // The hybrid module has a reference to the class loader, and vice versa, which complicates construction.
 
             TreeMap<String, PlatformModule> platformModuleByPackage = new TreeMap<>();
-            for (var platformModule : platformReads) {
+            for (var platformModule : platformReads.values()) {
                 for (var packageName : platformModule.packagesVisibleTo(module)) {
                     PlatformModule previousOwner = platformModuleByPackage.put(packageName, platformModule);
 
-                    if (previousOwner != null) {
+                    if (previousOwner != null && !previousOwner.name().equals(platformModule.name())) {
                         throw new InvalidHybridModuleException("Package " + packageName + " visible to hybrid module " +
                                 module.id() + " is exported from two different readable modules (" +
                                 previousOwner.name() + " and " + platformModule.name() + ")");
@@ -153,7 +173,7 @@ class HybridModule extends BaseModule {
                     }
 
                     HybridModule previousOwner = hybridModuleByPackage.put(packageName, hybridModule);
-                    if (previousOwner != null) {
+                    if (previousOwner != null && !previousOwner.id().equals(hybridModule.id())) {
                         throw new InvalidHybridModuleException("Package " + packageName + " visible to hybrid module " +
                                 module.id() + " is exported from two different readable modules (" +
                                 previousOwner.id() + " and " + hybridModule.id() + ")");

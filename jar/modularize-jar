@@ -30,7 +30,8 @@ Options:
                                 applications bundled into a modular or
                                 executable jar.
   -I, --module-info FILE        The module-info.java file [required]
-  -p, --module-path MPATH       The module path when compiling module-info.java.
+  -p, --module-path MPATH       Add to module path when compiling
+                                module-info.java.
   -V, --module-version VERSION  The module version
   -u, --update                  Update an existing jar archive [required]
 
@@ -81,6 +82,7 @@ function Main {
     local module_info=""
     local -a javac_xopts=()
     local -a jar_xopts=()
+    local module_path=""
 
     while (( $# > 0 ))
     do
@@ -110,7 +112,12 @@ function Main {
                 shift 2
                 ;;
             -p|--module-path)
-                javac_xopts+=("$1" "$2")
+                if (( ${#module_path} == 0 ))
+                then
+                    module_path="$2"
+                else
+                    module_path+=:"$2"
+                fi
                 shift 2
                 ;;
             -V|--module-version)
@@ -132,6 +139,8 @@ function Main {
     $is_update || Fail "--update is required, see --help"
     test -n "$jarfile" || Fail "--file is required, see --help"
     test -n "$module_info" || Fail "--module-info is required, see --help"
+
+    (( ${#module_path} == 0 )) || javac_xopts+=(--module-path "$module_path")
 
     if ! TMP_DIRECTORY=$(mktemp -d)
     then

@@ -1,0 +1,9 @@
+This experiment tries to run unit test with JUnit 5 using the "standard" or
+"naive" approach to whitebox unit testing with hybrid modules:
+
+  1. The modular JAR contains both the module and the unit tests, with a
+     module-info.class containing the union (module-info-test.java).
+
+  2. The console launcher non-modular JAR has been changed into a modular JAR.
+
+  3. (2) must require (1) in order to observe that module.

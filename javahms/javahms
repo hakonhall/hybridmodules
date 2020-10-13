@@ -30,7 +30,7 @@ Options:
       GRAPH below for more details.
   --module-path,-p PATH
       A : separated list of paths, each path is a path to a hybrid modular JAR
-      file or a directory containing such files.
+      file, or a directory containing such files. May be repeated.
 
 To pass java command-line arguments (JAVA_OPTIONS...) to the java invocation
 when launching a JHMS application, the administrator would pick a token (TOK)
@@ -76,10 +76,15 @@ function Main {
     local -a module_graph=()
     local -a module_path=()
     local -a module=()
+    local dry_run=false
 
     while (( $# > 0 ))
     do
         case "$1" in
+            --dry-run|-n)
+                dry_run=true
+                shift
+                ;;
             --help|-h) Usage ;;
             --java-options|-J)
                 shift
@@ -114,7 +119,12 @@ function Main {
                 shift 2 || true
                 ;;
             --module-path|-p)
-                module_path=("$1" "$2")
+                if (( ${#module_path[@]} == 0 ))
+                then
+                    module_path=("$1" "$2")
+                else
+                    module_path=("$1" "${module_path[1]}:$2")
+                fi
                 shift 2 || true
                 ;;
             --module|-m)
@@ -150,8 +160,14 @@ function Main {
 	Fail "There is no no.ion.jhms JAR file: '$jar_path'"
     fi
 
-    exec java "${java_options[@]}" -jar "$jar_path" \
-         "${module_path[@]}" "${module_graph[@]}"  "${module[@]}" "$@"
+    if $dry_run
+    then
+        echo java "${java_options[@]}" -jar "$jar_path" \
+             "${module_path[@]}" "${module_graph[@]}"  "${module[@]}" "$@"
+    else
+        exec java "${java_options[@]}" -jar "$jar_path" \
+             "${module_path[@]}" "${module_graph[@]}"  "${module[@]}" "$@"
+    fi
 }
 
 Main "$@"
