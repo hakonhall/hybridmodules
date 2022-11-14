@@ -11,7 +11,7 @@ CLASS must be an exported class of MODULE.  ARG... are passed to the main
 method of CLASS.
 
 ARG... are passed to the main method of CLASS of module MODULE. CLASS must be
-an exported unqualified from MODULE.
+exported by MODULE.
 
 Options:
   --java-options,-j TOK JAVA_OPTION... TOK
@@ -35,10 +35,11 @@ Options:
 To pass java command-line arguments (JAVA_OPTIONS...) to the java invocation
 when launching a JHMS application, the administrator would pick a token (TOK)
 distinct from all command-line arguments (JAVA_OPTIONS), and then use the
---java-options option.
+--java-options option.  As special cases, "{" is ended by "}", and similarly
+for parentheses and brackets. Examples passing '-Xms1G' and '-Xmx2G' to java:
 
-Example: To pass '-Xms1G' and '-Xmx2G' to java, do something like:
   javahms -j { -Xms1G -Xmx2G } -p mods -m super.module arg1 arg2
+  javahms -j JVMLIST -Xms1G -Xmx2G JVMLIST -p mods -m super.module arg1 arg2
 
 MODULE GRAPH
 

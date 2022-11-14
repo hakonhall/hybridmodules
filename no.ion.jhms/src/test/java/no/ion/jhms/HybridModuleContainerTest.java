@@ -15,15 +15,69 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class HybridModuleContainerTest {
+
+    public static final List<String> JAVA_BASE_EXPORTS = List.of(
+            "java.io",
+            "java.lang",
+            "java.lang.annotation",
+            "java.lang.constant",
+            "java.lang.invoke",
+            "java.lang.module",
+            "java.lang.ref",
+            "java.lang.reflect",
+            "java.lang.runtime",
+            "java.math",
+            "java.net",
+            "java.net.spi",
+            "java.nio",
+            "java.nio.channels",
+            "java.nio.channels.spi",
+            "java.nio.charset",
+            "java.nio.charset.spi",
+            "java.nio.file",
+            "java.nio.file.attribute",
+            "java.nio.file.spi",
+            "java.security",
+            "java.security.cert",
+            "java.security.interfaces",
+            "java.security.spec",
+            "java.text",
+            "java.text.spi",
+            "java.time",
+            "java.time.chrono",
+            "java.time.format",
+            "java.time.temporal",
+            "java.time.zone",
+            "java.util",
+            "java.util.concurrent",
+            "java.util.concurrent.atomic",
+            "java.util.concurrent.locks",
+            "java.util.function",
+            "java.util.jar",
+            "java.util.random",
+            "java.util.regex",
+            "java.util.spi",
+            "java.util.stream",
+            "java.util.zip",
+            "javax.crypto",
+            "javax.crypto.interfaces",
+            "javax.crypto.spec",
+            "javax.net",
+            "javax.net.ssl",
+            "javax.security.auth",
+            "javax.security.auth.callback",
+            "javax.security.auth.login",
+            "javax.security.auth.spi",
+            "javax.security.auth.x500",
+            "javax.security.cert");
+
     @Test
     public void testClassLoading() throws ClassNotFoundException {
         try (var container = new HybridModuleContainer()) {
@@ -118,8 +172,10 @@ public class HybridModuleContainerTest {
             Class<?> aClass = root.loadClass("rich.descriptor.exported.E");
             assertNotNull(aClass);
 
-            assertResourceContains("iso-start", aClass.getResourceAsStream('/' + PlatformModuleTest.JAVA_TIME_CHRONO_RESOURCE));
-            assertResourceContains(null, aClass.getResourceAsStream('/' + PlatformModuleTest.SUN_NET_WWW_RESOURCE));
+            assertResourceIsNull(false, aClass.getResourceAsStream('/' + PlatformModuleTest.INTEGER));
+
+            // (§2.9) says to return null for non-.class files.
+            assertResourceIsNull(true, aClass.getResourceAsStream('/' + PlatformModuleTest.SUN_NET_WWW_RESOURCE));
         }
     }
 
@@ -144,14 +200,14 @@ public class HybridModuleContainerTest {
         }
     }
 
-    private static void assertResourceContains(String expectedUtf8ContentSubstring, InputStream actualInputStream)
+    private static void assertResourceIsNull(boolean expectNull, InputStream actualInputStream)
             throws IOException {
-        if (expectedUtf8ContentSubstring == null) {
+        if (expectNull) {
             assertNull(actualInputStream);
         } else {
             assertNotNull(actualInputStream);
-            String actualUtf8Content = new String(actualInputStream.readAllBytes(), StandardCharsets.UTF_8);
-            assertThat(actualUtf8Content, containsString(expectedUtf8ContentSubstring));
+            byte[] content = actualInputStream.readAllBytes();
+            assertTrue(content.length > 10);
         }
     }
 
@@ -302,58 +358,7 @@ public class HybridModuleContainerTest {
                     platformModuleNodes.stream().map(ModuleGraph.PlatformModuleNode::name).collect(Collectors.toList()));
             // The exact list is not tested since it changes from one Java major version to the next.
             assertTrue("Unexpected list of java.base exports: " + platformModuleNodes.get(0).unqualifiedExports(),
-                    platformModuleNodes.get(0).unqualifiedExports().containsAll(List.of(
-                    "java.io",
-                    "java.lang",
-                    "java.lang.annotation",
-                    "java.lang.invoke",
-                    "java.lang.module",
-                    "java.lang.ref",
-                    "java.lang.reflect",
-                    "java.math",
-                    "java.net",
-                    "java.net.spi",
-                    "java.nio",
-                    "java.nio.channels",
-                    "java.nio.channels.spi",
-                    "java.nio.charset",
-                    "java.nio.charset.spi",
-                    "java.nio.file",
-                    "java.nio.file.attribute",
-                    "java.nio.file.spi",
-                    "java.security",
-                    "java.security.acl",
-                    "java.security.cert",
-                    "java.security.interfaces",
-                    "java.security.spec",
-                    "java.text",
-                    "java.text.spi",
-                    "java.time",
-                    "java.time.chrono",
-                    "java.time.format",
-                    "java.time.temporal",
-                    "java.time.zone",
-                    "java.util",
-                    "java.util.concurrent",
-                    "java.util.concurrent.atomic",
-                    "java.util.concurrent.locks",
-                    "java.util.function",
-                    "java.util.jar",
-                    "java.util.regex",
-                    "java.util.spi",
-                    "java.util.stream",
-                    "java.util.zip",
-                    "javax.crypto",
-                    "javax.crypto.interfaces",
-                    "javax.crypto.spec",
-                    "javax.net",
-                    "javax.net.ssl",
-                    "javax.security.auth",
-                    "javax.security.auth.callback",
-                    "javax.security.auth.login",
-                    "javax.security.auth.spi",
-                    "javax.security.auth.x500",
-                    "javax.security.cert")));
+                    platformModuleNodes.get(0).unqualifiedExports().containsAll(JAVA_BASE_EXPORTS));
 
             TreeMap<String, List<ModuleGraph.ReadEdge>> readEdges = moduleGraph.readEdges();
             assertEquals(Set.of("find.hybrid.module.one@1.2.3", "find.hybrid.module.two@1.2.3"), readEdges.keySet());
@@ -441,10 +446,12 @@ public class HybridModuleContainerTest {
                             "java.io",
                             "java.lang",
                             "java.lang.annotation",
+                            "java.lang.constant",
                             "java.lang.invoke",
                             "java.lang.module",
                             "java.lang.ref",
                             "java.lang.reflect",
+                            "java.lang.runtime",
                             "java.math",
                             "java.net",
                             "java.net.spi",
@@ -457,7 +464,6 @@ public class HybridModuleContainerTest {
                             "java.nio.file.attribute",
                             "java.nio.file.spi",
                             "java.security",
-                            "java.security.acl",
                             "java.security.cert",
                             "java.security.interfaces",
                             "java.security.spec",
@@ -474,6 +480,7 @@ public class HybridModuleContainerTest {
                             "java.util.concurrent.locks",
                             "java.util.function",
                             "java.util.jar",
+                            "java.util.random",
                             "java.util.regex",
                             "java.util.spi",
                             "java.util.stream",
@@ -510,7 +517,7 @@ public class HybridModuleContainerTest {
             assertEquals(1, javaBaseReadEdges.size());
             ModuleGraph.ReadEdge javaBaseSelfReadEdge = javaBaseReadEdges.get(0);
             assertEquals("java.base", javaBaseSelfReadEdge.toModule());
-            assertTrue(javaBaseSelfReadEdge.exports().contains("jdk.internal.util"));
+            assertTrue(javaBaseSelfReadEdge.exports().contains("jdk.internal"));
         }
     }
 
