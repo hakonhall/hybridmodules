@@ -3,7 +3,7 @@
 all: test.jar
 
 test.jar:
-	modulec -f $@ -p ../helloworld classes
+	modc -p ../helloworld -m -f $@ -s classes
 
 clean:
-	rm -f test.jar
+	rm -rf test.jar target

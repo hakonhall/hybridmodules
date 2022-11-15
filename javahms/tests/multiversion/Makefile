@@ -7,9 +7,10 @@ target =
 
 all: $(subdirs)
 	../../../diffcmd/diffcmd ../../javahms -p \
-                m-1:m-2:intermediate/target:main/target -m main
+                m-1:m-2:intermediate/target/intermediate:main/target/main -m main
 	../../../diffcmd/diffcmd -d module-graph ../../javahms -p \
-		m-1:m-2:intermediate/target:main/target -g '' -m main
+		m-1:m-2:intermediate/target/intermediate:main/target/main \
+		-g '' -m main
 
 m-1:
 m-2:

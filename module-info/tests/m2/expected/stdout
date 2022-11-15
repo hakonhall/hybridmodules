@@ -1,4 +1,4 @@
-module no.m2@0.0.2 {
+module no.mB@0.0.2 {
     requires java.base@JAVAC_VERSION;
-    requires transitive no.m1@0.0.1;
+    requires transitive no.mA@0.0.1;
 }

@@ -1,8 +1,10 @@
 all:
-	modulec -v 0.0.1 -f no.m1.jar java
+	modc -m -v 0.0.1 -f no.mA.jar -s java
 	../../../diffcmd/diffcmd -n ../javac-version-normalizer \
-		../../module-info no.m1.jar
+		../../module-info no.mA.jar
 
 clean:
 	../../../diffcmd/diffcmd --clean
-	rm -f no.m1.jar
+	rm -f no.mA.jar
+	rm -rf target
+

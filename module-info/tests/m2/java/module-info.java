@@ -1,3 +1,3 @@
-module no.m2 {
-    requires transitive no.m1;
+module no.mB {
+    requires transitive no.mA;
 }

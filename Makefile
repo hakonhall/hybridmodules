@@ -1,16 +1,16 @@
 dirs = bundle diffcmd experiments jar javahms module-info no.ion.jhms \
  no.ion.jhms.bundle
 
-.PHONY: all modulec install clean doit $(dirs)
+.PHONY: all install clean doit $(dirs)
 
 all: target =
 all: doit
 
 install: target = install
-install: modulec javahms
+install: javahms
 
-modulec:
-	type modulec &> /dev/null || { echo "modulec not in PATH, please install it from https://github.com/hakonhall/modulec"; exit 1; }
+modc:
+	type modc &> /dev/null || { echo "modc not in PATH, please install it from https://github.com/hakonhall/modulec"; exit 1; }
 
 clean: target = clean
 clean: doit
@@ -18,12 +18,12 @@ clean: doit
 doit: $(dirs)
 	@echo Success
 
-bundle: no.ion.jhms.bundle modulec
+bundle: no.ion.jhms.bundle modc
 diffcmd:
-experiments: modulec
-jar: diffcmd modulec module-info
-javahms: no.ion.jhms diffcmd modulec
-module-info: modulec diffcmd
+experiments: modc
+jar: diffcmd modc module-info
+javahms: no.ion.jhms diffcmd modc
+module-info: modc diffcmd
 no.ion.jhms:
 no.ion.jhms.bundle:
 

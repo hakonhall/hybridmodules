@@ -1,5 +1,5 @@
 all:
-	modulec -v 1.0.3 src
+	modc -m -v 1.0.3 -s src
 
 clean:
 	rm -rf target

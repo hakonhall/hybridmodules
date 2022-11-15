@@ -1,7 +1,7 @@
 all: m-2.jar
 
 m-2.jar:
-	modulec -f $@ -v 2 src
+	modc -m -f $@ -v 2 -s src
 
 clean:
-	rm -f m-2.jar
+	rm -rf m-2.jar target

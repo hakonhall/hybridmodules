@@ -1,5 +1,5 @@
 helloworld.jar:
-	modulec -f helloworld.jar classes
+	modc -m -f helloworld.jar -s classes
 
 clean:
-	rm -f helloworld.jar
+	rm -rf helloworld.jar target

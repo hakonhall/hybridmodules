@@ -1,7 +1,7 @@
 all: intermediate.jar
 
 intermediate.jar:
-	modulec -f $@ -p ../m-2 src
+	modc -p ../m-2 -m -f $@ -s src
 
 clean:
 	rm -f intermediate.jar
