@@ -4,6 +4,7 @@ import m.VersionOneClass;
 import intermediate.Intermediate;
 
 public class Main {
+    private Main() {}
     public static void main(String... args) {
         System.out.println("From module m@1: " + VersionOneClass.info());
         System.out.println("From module m@2: " + Intermediate.info() +

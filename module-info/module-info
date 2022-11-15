@@ -1,5 +1,0 @@
-#!/bin/bash
-
-program_path=$(realpath -m "$0")
-program_dir=$(dirname "$program_path")
-java -jar "$program_dir"/no.ion.moduleinfo.jar "$@"

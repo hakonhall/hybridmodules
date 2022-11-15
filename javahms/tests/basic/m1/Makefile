@@ -1,7 +1,7 @@
 all: m1.jar
 
 m1.jar:
-	modulec -f $@ -e m1.Main src
+	modc -m -f $@ -e m1.Main -s src
 
 clean:
-	rm -f m1.jar
+	rm -rf m1.jar target

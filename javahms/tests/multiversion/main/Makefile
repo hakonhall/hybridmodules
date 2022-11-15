@@ -1,7 +1,7 @@
 all: main.jar
 
 main.jar:
-	modulec -p ../m-1:../intermediate/target -e main.Main src
+	modc -p ../m-1:../intermediate/target/intermediate -m -e main.Main -s src
 
 clean:
-	rm -f main.jar
+	rm -rf main.jar target

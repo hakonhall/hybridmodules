@@ -1,9 +1,19 @@
-.PHONY: tests
+.PHONY: all build-jar clean install tests
 
-all: build-jar tests
+all: module-info tests
 
-build-jar:
-	modulec -f no.ion.moduleinfo.jar -e no.ion.Main java
+module-info: module-info.sh no.ion.moduleinfo.jar
+	cat $^ > $@
+	chmod +x $@
+
+no.ion.moduleinfo.jar:
+	modc -m -f no.ion.moduleinfo.jar -e no.ion.Main -s java
+
+install: ~/bin/module-info
+
+~/bin/module-info: module-info
+	rm -f $@
+	cp $< $@
 
 tests:
 	$(MAKE) -C $@
@@ -11,3 +21,5 @@ tests:
 clean:
 	$(MAKE) -C tests clean
 	rm -f no.ion.moduleinfo.jar
+	rm -f module-info
+	rm -rf target

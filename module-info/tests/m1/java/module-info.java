@@ -1,3 +1,3 @@
-module no.m1 {
+module no.mA {
     requires transitive java.net.http;
 }

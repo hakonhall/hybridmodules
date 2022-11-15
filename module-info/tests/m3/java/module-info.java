@@ -1,3 +1,3 @@
-module no.m3 {
-    requires no.m2;
+module no.mC {
+    requires no.mB;
 }
