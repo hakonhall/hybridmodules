@@ -22,3 +22,4 @@ $(subdirs):
 
 clean: target = clean
 clean: all
+	rm -f javahms
