@@ -2,6 +2,7 @@ package no.ion.jhms;
 
 import java.lang.module.ResolutionException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 class HybridModule extends BaseModule {
     private final HybridModuleId id;
@@ -16,23 +17,23 @@ class HybridModule extends BaseModule {
 
     private HybridModule(HybridModuleJar jar,
                          Set<String> packages,
-                         List<PlatformModule> platformReads,
-                         List<PlatformModule> platformReadClosure,
-                         List<HybridModule> hybridReads,
-                         List<HybridModule> hybridReadClosure,
+                         Map<String, PlatformModule> platformReads,
+                         Map<String, PlatformModule> platformReadClosure,
+                         Map<HybridModuleId, HybridModule> hybridReads,
+                         Map<HybridModuleId, HybridModule> hybridReadClosure,
                          Map<String, Set<String>> exports,
                          HashMap<String, Boolean> transitiveByRequires) {
         super(jar.hybridModuleId().name(), packages, exports);
         this.id = jar.hybridModuleId();
         this.jar = jar;
-        this.platformReads = platformReads;
-        this.platformReadClosure = platformReadClosure;
-        this.hybridReads = hybridReads;
-        this.hybridReadClosure = hybridReadClosure;
+        this.platformReads = platformReads.values().stream().sorted(Comparator.comparing(PlatformModule::name)).collect(Collectors.toCollection(ArrayList::new));
+        this.platformReadClosure = platformReadClosure.values().stream().sorted(Comparator.comparing(PlatformModule::name)).collect(Collectors.toCollection(ArrayList::new));
+        hybridReads.put(jar.hybridModuleId(), this);
+        hybridReadClosure.put(jar.hybridModuleId(), this);
+        this.hybridReads = hybridReads.values().stream().sorted(Comparator.comparing(HybridModule::id)).collect(Collectors.toCollection(ArrayList::new));
+        this.hybridReadClosure = hybridReadClosure.values().stream().sorted(Comparator.comparing(HybridModule::id)).collect(Collectors.toCollection(ArrayList::new));
         this.transitiveByRequires = transitiveByRequires;
 
-        hybridReads.add(this);
-        hybridReadClosure.add(this);
     }
 
     HybridModuleId id() { return id; }
@@ -67,10 +68,10 @@ class HybridModule extends BaseModule {
         private final HybridModuleJar jar;
         private final Set<String> packages = new HashSet<>();
         private final Set<String> requiresNames = new HashSet<>();
-        private final List<PlatformModule> platformReads = new ArrayList<>();
-        private final List<PlatformModule> platformReadClosure = new ArrayList<>();
-        private final List<HybridModule> hybridReads = new ArrayList<>();
-        private final List<HybridModule> hybridReadClosure = new ArrayList<>();
+        private final Map<String, PlatformModule> platformReads = new HashMap<>();
+        private final Map<String, PlatformModule> platformReadClosure = new HashMap<>();
+        private final Map<HybridModuleId, HybridModule> hybridReads = new HashMap<>();
+        private final Map<HybridModuleId, HybridModule> hybridReadClosure = new HashMap<>();
         private final Map<String, Set<String>> exports = new HashMap<>();
         private final HashMap<String, Boolean> transitiveByRequires = new HashMap<>();
 
@@ -88,13 +89,13 @@ class HybridModule extends BaseModule {
                 throw new ResolutionException("Hybrid module " + jar.hybridModuleId() + " requires " + hybridModule.id().name() + " twice");
             }
 
-            hybridReads.addAll(hybridModule.hybridReadClosure());
-            platformReads.addAll(hybridModule.platformReadClosure());
+            hybridModule.hybridReadClosure().forEach(hm -> hybridReads.putIfAbsent(hm.id, hm));
+            hybridModule.platformReadClosure().forEach(pm -> platformReads.putIfAbsent(pm.name(), pm));
             transitiveByRequires.put(hybridModule.id().name(), transitive);
 
             if (transitive) {
-                hybridReadClosure.addAll(hybridModule.hybridReadClosure());
-                platformReadClosure.addAll(hybridModule.platformReadClosure());
+                hybridModule.hybridReadClosure().forEach(hm -> hybridReadClosure.putIfAbsent(hm.id, hm));
+                hybridModule.platformReadClosure().forEach(pm -> platformReadClosure.putIfAbsent(pm.name(), pm));
             }
         }
 
@@ -104,11 +105,11 @@ class HybridModule extends BaseModule {
                 throw new ResolutionException("Hybrid module " + jar.hybridModuleId() + " requires " + platformModule.name() + " twice");
             }
 
-            platformReads.add(platformModule);
+            platformReads.putIfAbsent(platformModule.name(), platformModule);
             transitiveByRequires.put(platformModule.name(), transitive);
 
             if (transitive) {
-                platformReadClosure.add(platformModule);
+                platformReadClosure.putIfAbsent(platformModule.name(), platformModule);
             }
         }
 
@@ -130,7 +131,7 @@ class HybridModule extends BaseModule {
             // The hybrid module has a reference to the class loader, and vice versa, which complicates construction.
 
             TreeMap<String, PlatformModule> platformModuleByPackage = new TreeMap<>();
-            for (var platformModule : platformReads) {
+            for (var platformModule : platformReads.values()) {
                 for (var packageName : platformModule.packagesVisibleTo(module)) {
                     PlatformModule previousOwner = platformModuleByPackage.put(packageName, platformModule);
 
@@ -143,7 +144,7 @@ class HybridModule extends BaseModule {
             }
 
             TreeMap<String, HybridModule> hybridModuleByPackage = new TreeMap<>();
-            for (var hybridModule : hybridReads) {
+            for (var hybridModule : hybridReads.values()) {
                 for (var packageName : hybridModule.packagesVisibleTo(module)) {
                     PlatformModule previousPlatformOwner = platformModuleByPackage.get(packageName);
                     if (previousPlatformOwner != null) {
