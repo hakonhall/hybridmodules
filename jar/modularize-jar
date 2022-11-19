@@ -31,7 +31,7 @@ Options:
                                 executable jar.
   -I, --module-info FILE        The module-info.java file [required]
   -p, --module-path MPATH       The module path when compiling module-info.java.
-  -V, --module-version VERSION  The module version
+  -v, --module-version VERSION  The module version
   -u, --update                  Update an existing jar archive [required]
 
 Example:
@@ -113,11 +113,11 @@ function Main {
                 javac_xopts+=("$1" "$2")
                 shift 2
                 ;;
-            -V|--module-version)
+            -v|--module-version)
                 javac_xopts+=(--module-version "$2")
                 shift 2
                 ;;
-            --verbose|-v)
+            --verbose)
                 VERBOSE=true
                 shift
                 ;;
