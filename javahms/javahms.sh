@@ -16,10 +16,10 @@ exported by MODULE.
 Options:
   --java-options,-j TOK JAVA_OPTION... TOK
       All command-line arguments following TOK up to but not including the next
-      TOK (JAVA_OPTION...) will be passed through to the java
-      invocation. JAVA_OPTIONS... must not specify the class path. As a special
-      case: if the first TOK is one of (, {, or [, the end token must be ), },
-      or ], respectively. See below for more.
+      TOK (JAVA_OPTION...) will be passed through to the java invocation.
+      JAVA_OPTIONS... must not specify the class path. As a special case: if
+      the first TOK is one of (, {, or [, the end token must be ), }, or ],
+      respectively. See below for more.
   --module,-m MODULE[/[/]CLASS]
       Specifies the main module and class used to launch the application.
       CLASS defaults to the main class of MODULE.  MODULE//CLASS means the
@@ -132,26 +132,7 @@ function Main {
         esac
     done
 
-    local jhms_home=$(readlink -m "$0"/../../no.ion.jhms)
-    if ! test -d "$jhms_home"
-    then
-        Fail "Failed to find no.ion.jhms directory: $jhms_home does not exist"
-    fi
-
-    local jar_dir="$jhms_home"/target
-    if ! test -d "$jar_dir"
-    then
-	Fail "no.ion.jhms has not been built: $jar_dir does not exist"
-    fi
-
-    local version=3.0.0
-    local jar_path="$jar_dir"/no.ion.jhms-"$version".jar
-    if ! test -f "$jar_path"
-    then
-	Fail "There is no no.ion.jhms JAR file: '$jar_path'"
-    fi
-
-    exec java "${java_options[@]}" -jar "$jar_path" \
+    exec java "${java_options[@]}" -jar "$0" \
          "${module_path[@]}" "${module_graph[@]}"  "${module[@]}" "$@"
 }
 

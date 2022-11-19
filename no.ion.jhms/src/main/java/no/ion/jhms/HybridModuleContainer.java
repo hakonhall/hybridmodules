@@ -264,7 +264,12 @@ public class HybridModuleContainer implements AutoCloseable {
             } else {
                 HybridModuleVersion version = HybridModuleVersion.fromRaw(requires.rawCompiledVersion());
                 HybridModuleId requiredHybridModuleId = new HybridModuleId(requires.name(), version);
-                HybridModule requiredHybridModule = resolveHybridModule(requiredHybridModuleId);
+                final HybridModule requiredHybridModule;
+                try {
+                    requiredHybridModule = resolveHybridModule(requiredHybridModuleId);
+                } catch (FindException e) {
+                    throw new FindException(e.getMessage() + ": Required by " + id);
+                }
                 builder.addHybridModuleRequires(requiredHybridModule, transitive);
             }
         }
