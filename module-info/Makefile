@@ -7,7 +7,7 @@ module-info: module-info.sh no.ion.moduleinfo.jar
 	chmod +x $@
 
 no.ion.moduleinfo.jar:
-	modc -m -f no.ion.moduleinfo.jar -e no.ion.Main -s java
+	modc -m -o no.ion.moduleinfo.jar -e no.ion.Main -s java
 
 install: ~/bin/module-info
 

@@ -1,5 +1,5 @@
 all:
-	modc -m -v 0.0.1 -f no.mA.jar -s java
+	modc -m -v 0.0.1 -o no.mA.jar -s java
 	../../../diffcmd/diffcmd -n ../javac-version-normalizer \
 		../../module-info no.mA.jar
 

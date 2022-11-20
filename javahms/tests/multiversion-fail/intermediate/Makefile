@@ -1,7 +1,7 @@
 all: intermediate.jar
 
 intermediate.jar:
-	modc -p ../m-2 -m -f $@ -s src
+	modc -p ../m-2 -m -o $@ -s src
 
 clean:
 	rm -f intermediate.jar
