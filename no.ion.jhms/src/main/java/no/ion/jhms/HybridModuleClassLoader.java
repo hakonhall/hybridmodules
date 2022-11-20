@@ -1,6 +1,5 @@
 package no.ion.jhms;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
@@ -15,6 +14,16 @@ import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
 /** Class loader responsible for loading classes from a modular JAR. */
 public class HybridModuleClassLoader extends ClassLoader {
     private static final StackWalker stackWalker = StackWalker.getInstance(RETAIN_CLASS_REFERENCE);
+
+    /**
+     * The JVM apparently needed to resolve jdk.internal.reflect.SerializationConstructorAccessorImpl
+     * with a HybridModuleClassLoader.  Not entirely sure why: it was around the invocation on an interface.
+     * Likely triggered by internals of JVM.  But jdk.internal.reflect is not an (unqualified) exported package.
+     * Delegating to application class loader resolves the issue.
+     *
+     * <p>Consider always letting the parent class loader load a class before the hybrid module.</p>.
+     */
+    private static final Set<String> IMPLICITLY_EXPORTED_CLASSES = Set.of("jdk.internal.reflect.SerializationConstructorAccessorImpl");
 
     static {
         if (!ClassLoader.registerAsParallelCapable())
@@ -107,8 +116,8 @@ public class HybridModuleClassLoader extends ClassLoader {
     }
 
     @Override
-    public Enumeration<URL> getResources(String name) throws IOException {
-        return super.getResources(name);
+    public Enumeration<URL> findResources(String absoluteName) {
+        throw new UnsupportedOperationException(HybridModuleClassLoader.class.getSimpleName() + ".findResources(String)");
     }
 
     @Override
@@ -160,7 +169,7 @@ public class HybridModuleClassLoader extends ClassLoader {
         // If the class is in a readable platform module package
         String packageName = getPackageName(name);
         PlatformModule platformModule = platformModulesByPackage.get(packageName);
-        if (platformModule != null) {
+        if (platformModule != null || IMPLICITLY_EXPORTED_CLASSES.contains(name)) {
             return getParent().loadClass(name);
         }
 

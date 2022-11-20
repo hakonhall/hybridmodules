@@ -3,7 +3,7 @@
 all: test.jar
 
 test.jar:
-	modc -p ../helloworld -m -f $@ -s classes
+	modc -p ../helloworld -m -o $@ -s classes
 
 clean:
 	rm -rf test.jar target

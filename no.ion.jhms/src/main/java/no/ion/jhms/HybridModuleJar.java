@@ -2,7 +2,11 @@ package no.ion.jhms;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.module.*;
+import java.lang.module.FindException;
+import java.lang.module.ModuleDescriptor;
+import java.lang.module.ModuleFinder;
+import java.lang.module.ModuleReader;
+import java.lang.module.ModuleReference;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
