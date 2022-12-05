@@ -50,6 +50,7 @@ class HybridModule extends BaseModule {
         graph.markAsRootHybridModule(id);
         fillModuleGraph2(graph);
     }
+
     @Override
     public boolean equals(Object other) {
         // Normally, equality would be determined by this.id. However if we ever support instantiating more

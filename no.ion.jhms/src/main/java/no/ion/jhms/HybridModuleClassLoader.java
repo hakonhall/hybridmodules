@@ -6,15 +6,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static no.ion.jhms.PackageUtil.getPackageName;
-import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
 
 /** Class loader responsible for loading classes from a modular JAR. */
 public class HybridModuleClassLoader extends ClassLoader {
-    private static final StackWalker stackWalker = StackWalker.getInstance(RETAIN_CLASS_REFERENCE);
-
     /**
      * The JVM apparently needed to resolve jdk.internal.reflect.SerializationConstructorAccessorImpl
      * with a HybridModuleClassLoader.  Not entirely sure why: it was around the invocation on an interface.
@@ -22,8 +24,11 @@ public class HybridModuleClassLoader extends ClassLoader {
      * Delegating to application class loader resolves the issue.
      *
      * <p>Consider always letting the parent class loader load a class before the hybrid module.</p>.
+     *
+     * <p>This serves the same purpose as OSGi's org.osgi.framework.bootdelegation.</p>
      */
-    private static final Set<String> IMPLICITLY_EXPORTED_CLASSES = Set.of("jdk.internal.reflect.SerializationConstructorAccessorImpl");
+    private static final Set<String> IMPLICITLY_EXPORTED_CLASSES = Set.of("jdk.internal.reflect.SerializationConstructorAccessorImpl",
+                                                                          "jdk.internal.reflect.ConstructorAccessorImpl");
 
     static {
         if (!ClassLoader.registerAsParallelCapable())
@@ -117,7 +122,7 @@ public class HybridModuleClassLoader extends ClassLoader {
 
     @Override
     public Enumeration<URL> findResources(String absoluteName) {
-        throw new UnsupportedOperationException(HybridModuleClassLoader.class.getSimpleName() + ".findResources(String)");
+        throw new UnsupportedOperationException(HybridModuleClassLoader.class.getSimpleName() + ".findResources(String): " + absoluteName);
     }
 
     @Override
