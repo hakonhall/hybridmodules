@@ -1,8 +1,6 @@
 package no.ion.jhms;
 
 import java.lang.module.FindException;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +17,7 @@ public class Main {
     private String modulePath = null;
     private String hybridModuleName = null;
     private String mainClass = null;
+    private String contextId = null;
     private ModuleGraph.Params moduleGraphParams = null;
 
     public static void main(String... args) {
@@ -30,6 +29,12 @@ public class Main {
         for (; index < args.length; ++index) {
             final String arg = args[index];
             switch (arg) {
+                case "-c":
+                case "--context-class-loader":
+                    failIf(index + 1 >= args.length, () -> "Missing argument to " + arg);
+                    ++index;
+                    contextId = args[index];
+                    continue;
                 case "--module-graph":
                 case "-g":
                     failIf(index + 1 >= args.length, () -> "Missing argument to " + arg);
@@ -116,11 +121,30 @@ public class Main {
         }
 
         if (moduleGraphParams == null) {
+            ClassLoader savedClassLoader = null;
             try {
-                rootModule.main(mainClass, mainArgs);
-            } catch (IllegalAccessError | IllegalArgumentException | NoClassDefFoundError e) {
-                userError(e.getMessage());
-            } // pass through UndeclaredThrowableException...
+                // JHMS §2.8 2.b.
+                if (contextId == null) {
+                    Thread thread = Thread.currentThread();
+                    savedClassLoader = thread.getContextClassLoader();
+                    thread.setContextClassLoader(rootModule.getClassLoader());
+                } else if (!contextId.isEmpty()) {
+                    var contextParams = new HybridModuleContainer.ResolveParams(contextId);
+                    HybridModuleClassLoader classLoader = container.resolve(contextParams).getClassLoader();
+                    Thread thread = Thread.currentThread();
+                    savedClassLoader = thread.getContextClassLoader();
+                    thread.setContextClassLoader(classLoader);
+                }
+
+                try {
+                    rootModule.main(mainClass, mainArgs);
+                } catch (IllegalAccessError | IllegalArgumentException | NoClassDefFoundError e) {
+                    userError(e.getMessage());
+                } // pass through UndeclaredThrowableException...
+            } finally {
+                if (savedClassLoader != null)
+                    Thread.currentThread().setContextClassLoader(savedClassLoader);
+            }
         } else {
             for (String module : moduleGraphParams.modulesExcluded()) {
                 boolean observable;

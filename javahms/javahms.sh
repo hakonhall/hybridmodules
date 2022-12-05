@@ -14,6 +14,10 @@ ARG... are passed to the main method of CLASS of module MODULE. CLASS must be
 exported by MODULE.
 
 Options:
+  --context-class-loader,-c MODULE
+      Set the current thread's context class loader to the one associated with
+      the hybrid module with the given name and version, instead of that
+      associated with --module.
   --java-options,-j TOK JAVA_OPTION... TOK
       All command-line arguments following TOK up to but not including the next
       TOK (JAVA_OPTION...) will be passed through to the java invocation.
@@ -74,13 +78,16 @@ function Main {
     (( $# > 0 )) || Fail "Missing '--module', try --help/-h?"
 
     local -a java_options=()
-    local -a module_graph=()
-    local -a module_path=()
+    local -a jhms_args=()
     local -a module=()
 
     while (( $# > 0 ))
     do
         case "$1" in
+            -c|--context-class-loader)
+                jhms_args+=("$1" "$2")
+                shift 2 || true
+                ;;
             --help|-h) Usage ;;
             --java-options|-J)
                 shift
@@ -111,11 +118,11 @@ function Main {
                 done
                 ;;
             --module-graph|-g)
-                module_graph=("$1" "$2")
+                jhms_args+=("$1" "$2")
                 shift 2 || true
                 ;;
             --module-path|-p)
-                module_path=("$1" "$2")
+                jhms_args+=("$1" "$2")
                 shift 2 || true
                 ;;
             --module|-m)
@@ -132,8 +139,7 @@ function Main {
         esac
     done
 
-    exec java "${java_options[@]}" -jar "$0" \
-         "${module_path[@]}" "${module_graph[@]}"  "${module[@]}" "$@"
+    exec java "${java_options[@]}" -jar "$0" "${jhms_args[@]}"  "${module[@]}" "$@"
 }
 
 Main "$@"

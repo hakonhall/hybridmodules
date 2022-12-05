@@ -14,16 +14,6 @@ public class RootHybridModule {
 
     RootHybridModule(HybridModule hybridModule) { this.root = hybridModule; }
 
-    /** Load Class from an unqualified exported package. */
-    public Class<?> loadClass(String name) throws ClassNotFoundException {
-        String packageName = PackageUtil.getPackageName(name);
-        if (!root.packageVisibleToAll(packageName)) {
-            throw new ClassNotFoundException(name);
-        }
-
-        return root.getClassLoader().loadExportedClass(name);
-    }
-
     /** Invoke {@code public static void main(String...)} in the main class of the module. */
     public void main(String... args) { main(null, args); }
 
@@ -50,9 +40,9 @@ public class RootHybridModule {
 
         Class<?> mainClass;
         try {
-            // ClassLoader.loadClass() is used instead of loadExportedClass() because the main method IS allowed to
-            // be defined in an internal class, for compatibility with JPMS modular JARs.
-            mainClass = root.getClassLoader().loadClass(mainClassName);
+            // JPMS allows invoking a main() method of a main class in an unexported package.  JHMS does not allow this:
+            // if the authors of the module wants to allow a main method to be invoked, export its package.
+            mainClass = root.getClassLoader().loadExportedClass(mainClassName);
         } catch (ClassNotFoundException e) {
             NoClassDefFoundError error = new NoClassDefFoundError(mainClassName + " not found in hybrid module " + root.id());
             error.initCause(e);
@@ -96,6 +86,19 @@ public class RootHybridModule {
             throw new UndeclaredThrowableException(e.getCause());
         }
     }
+
+    /** Load class from an unqualified exported package. */
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        String packageName = PackageUtil.getPackageName(name);
+        if (!root.packageVisibleToAll(packageName)) {
+            throw new ClassNotFoundException(name);
+        }
+
+        return root.getClassLoader().loadExportedClass(name);
+    }
+
+    /** Returns the class loader associated with the hybrid module. */
+    public HybridModuleClassLoader getClassLoader() { return root.getClassLoader(); }
 
     @Override
     public String toString() { return root.id().toString(); }
