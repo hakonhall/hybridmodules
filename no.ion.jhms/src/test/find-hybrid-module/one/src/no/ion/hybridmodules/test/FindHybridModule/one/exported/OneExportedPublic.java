@@ -14,4 +14,11 @@ public class OneExportedPublic {
     public String toString() {
         return getClass().getName();
     }
+
+    public static int intReturn(boolean aBoolean, String aString) {
+        return 10;
+    }
+    public static Integer integerReturn(boolean aBoolean, String aString) {
+        return 10;
+    }
 }

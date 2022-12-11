@@ -137,7 +137,7 @@ public class Main {
                 }
 
                 try {
-                    rootModule.main(mainClass, mainArgs);
+                    rootModule.mainIn(mainClass, mainArgs);
                 } catch (IllegalAccessError | IllegalArgumentException | NoClassDefFoundError e) {
                     userError(e.getMessage());
                 } // pass through UndeclaredThrowableException...
