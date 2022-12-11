@@ -78,6 +78,17 @@ public class HybridModuleContainer implements AutoCloseable {
             this.version = Optional.of(HybridModuleVersion.from(version));
             return this;
         }
+
+        /**
+         * Require a particular version of the root hybrid module, null meaning without version.
+         *
+         * <p>If a particular version is NOT required, there must be exactly one observable version of the module.
+         */
+        public ResolveParams requireVersion(ModuleDescriptor.Version version) {
+            Objects.requireNonNull(version, "version cannot be null");
+            this.version = Optional.of(HybridModuleVersion.from(version));
+            return this;
+        }
     }
 
     public RootHybridModule resolve(ResolveParams params) {

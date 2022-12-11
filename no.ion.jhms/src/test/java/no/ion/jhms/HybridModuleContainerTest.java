@@ -99,6 +99,92 @@ public class HybridModuleContainerTest {
     }
 
     @Test
+    public void test_callIn() {
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules("src/test/resources");
+            HybridModuleContainer.ResolveParams params = new HybridModuleContainer.ResolveParams("find.hybrid.module.one");
+            RootHybridModule root = container.resolve(params);
+            int result = root.callIn("no.ion.jhms.test.FindHybridModule.one.exported.OneExportedPublic",
+                                     "integerReturn",
+                                     Integer.class,
+                                     Argument.of(boolean.class, true),
+                                     Argument.of(String.class, "foo"));
+            assertEquals(result, 10);
+        }
+
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules("src/test/resources");
+            HybridModuleContainer.ResolveParams params = new HybridModuleContainer.ResolveParams("find.hybrid.module.one");
+            RootHybridModule root = container.resolve(params);
+            int result = root.callIn("no.ion.jhms.test.FindHybridModule.one.exported.OneExportedPublic",
+                                     "intReturn",
+                                     Integer.class,
+                                     Argument.of(boolean.class, true),
+                                     Argument.of(String.class, "foo"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Method no.ion.jhms.test.FindHybridModule.one.exported.OneExportedPublic.intReturn in hybrid module " +
+                         "find.hybrid.module.one@1.2.3 returns the primitive type int, not class java.lang.Integer.class", e.getMessage());
+        }
+
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules("src/test/resources");
+            HybridModuleContainer.ResolveParams params = new HybridModuleContainer.ResolveParams("find.hybrid.module.one");
+            RootHybridModule root = container.resolve(params);
+            int result = root.callIn("no.ion.jhms.test.FindHybridModule.one.exported.OneExportedPublic",
+                                     "integerReturn",
+                                     int.class,
+                                     Argument.of(boolean.class, true),
+                                     Argument.of(String.class, "foo"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Use intCallIn() to call a method that returns int", e.getMessage());
+        }
+
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules("src/test/resources");
+            HybridModuleContainer.ResolveParams params = new HybridModuleContainer.ResolveParams("find.hybrid.module.one");
+            RootHybridModule root = container.resolve(params);
+            int result = root.callIn("no.ion.jhms.test.FindHybridModule.one.exported.OneExportedPublic",
+                                     "intReturn",
+                                     int.class,
+                                     Argument.of(boolean.class, true),
+                                     Argument.of(String.class, "foo"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Use intCallIn() to call a method that returns int", e.getMessage());
+        }
+    }
+
+    @Test
+    public void test_intCallIn() {
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules("src/test/resources");
+            HybridModuleContainer.ResolveParams params = new HybridModuleContainer.ResolveParams("find.hybrid.module.one");
+            RootHybridModule root = container.resolve(params);
+            int result = root.intCallIn("no.ion.jhms.test.FindHybridModule.one.exported.OneExportedPublic",
+                                        "intReturn",
+                                        Argument.of(boolean.class, true),
+                                        Argument.of(String.class, "foo"));
+            assertEquals(result, 10);
+        }
+
+        try (var container = new HybridModuleContainer()) {
+            container.discoverHybridModules("src/test/resources");
+            HybridModuleContainer.ResolveParams params = new HybridModuleContainer.ResolveParams("find.hybrid.module.one");
+            RootHybridModule root = container.resolve(params);
+            int result = root.intCallIn("no.ion.jhms.test.FindHybridModule.one.exported.OneExportedPublic",
+                                        "integerReturn",
+                                        Argument.of(boolean.class, true),
+                                        Argument.of(String.class, "foo"));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("The method integerReturn in class no.ion.jhms.test.FindHybridModule.one.exported.OneExportedPublic " +
+                         "in hybrid module find.hybrid.module.one@1.2.3 has wrong return type: class java.lang.Integer", e.getMessage());
+        }
+    }
+
+    @Test
     public void testAccecssibility() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try (var container = new HybridModuleContainer()) {
             container.discoverHybridModules(Paths.get("src/test/resources"));

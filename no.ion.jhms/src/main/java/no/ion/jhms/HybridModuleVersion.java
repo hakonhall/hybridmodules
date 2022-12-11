@@ -10,6 +10,8 @@ class HybridModuleVersion implements Comparable<HybridModuleVersion> {
     /**
      * It is not possible to set an empty version with javac/jar. We therefore represent an absent version
      * as the empty string. This allows us to avoid special-casing null.
+     *
+     * TODO: Require ModuleDescriptor.Version, see (§2.1)
      */
     private final String versionString;
     private final Optional<ModuleDescriptor.Version> version;
@@ -22,6 +24,9 @@ class HybridModuleVersion implements Comparable<HybridModuleVersion> {
     }
     static HybridModuleVersion from(String nullableVersion) {
         return nullableVersion == null ? new HybridModuleVersion() : new HybridModuleVersion(nullableVersion);
+    }
+    static HybridModuleVersion from(ModuleDescriptor.Version nullableVersion) {
+        return nullableVersion == null ? new HybridModuleVersion() : new HybridModuleVersion(nullableVersion.toString(), Optional.of(nullableVersion));
     }
 
     private HybridModuleVersion() { this("", Optional.empty()); }
