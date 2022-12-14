@@ -1,15 +1,18 @@
-package no.ion;
+package no.ion.moduleinfo;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.module.ModuleDescriptor;
-import java.lang.module.ModuleFinder;
-import java.lang.module.ModuleReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 
 public class Main {
     private final ModuleDescriptor descriptor;
@@ -18,14 +21,46 @@ public class Main {
     private boolean bol = true;
 
     private static void usage() {
-        userError(
-                "Usage: module-info PATH\n" +
-                "Print module descriptor of modular JAR, including versions and main class");
+        userError("""
+Usage: module-info [-v|--valid] PATH
+Print module descriptor.
+
+PATH must be a path to a modular JAR, a module-info.class, or exploded module
+directory.
+
+Options:
+  -v,--valid  Print a valid module descriptor omitting main class and versions.""");
     }
 
     private Main(ModuleDescriptor descriptor, boolean makeValid) {
         this.descriptor = descriptor;
         this.makeValid = makeValid;
+    }
+
+    @FunctionalInterface
+    private interface IOThrowingSupplier<T> {
+        T get() throws IOException;
+    }
+
+    private static <T> T uncheck(IOThrowingSupplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @FunctionalInterface
+    private interface IOThrowingRunnable {
+        void get() throws IOException;
+    }
+
+    private static void uncheck(IOThrowingRunnable supplier) {
+        try {
+            supplier.get();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     public static void main(String... args) {
@@ -58,26 +93,48 @@ public class Main {
             userError("Too few arguments");
         }
 
-        Path path = Path.of(args[index]);
-        if (!Files.isRegularFile(path)) {
-            userError("There is no module JAR at " + path);
+        final Path path;
+        {
+            Path argPath = Path.of(args[index]);
+            if (Files.isDirectory(argPath)) {
+                path = argPath.resolve("module-info.class");
+                if (!Files.isRegularFile(path))
+                    userError("Not an exploded module directory: missing module-info.class: " + argPath);
+            } else {
+                if (!Files.isRegularFile(argPath))
+                    userError("No such file: " + argPath);
+                path = argPath;
+            }
         }
 
-        ModuleFinder finder = ModuleFinder.of(path);
-        Set<ModuleReference> references = finder.findAll();
-        switch (references.size()) {
-            case 0:
-                userError(path + " is not a modular JAR");
-                break; // for syntax only
-            case 1:
-                break;
-            default:
-                // This should never happen to my knowledge.
-                userError(path + " contains many modules");
+        final ModuleDescriptor descriptor;
+        if (path.getFileName().toString().endsWith(".jar")) {
+            JarFile jarFile = uncheck(() -> new JarFile(path.toFile()));
+            try {
+                ZipEntry moduleInfoEntry = jarFile.getEntry("module-info.class");
+                if (moduleInfoEntry == null)
+                    userError("Not a modular JAR: Missing module-info.class: " + path);
+                InputStream inputStream = uncheck(() -> jarFile.getInputStream(moduleInfoEntry));
+                try {
+                    descriptor = uncheck(() -> ModuleDescriptor.read(inputStream));
+                } finally {
+                    uncheck(inputStream::close);
+                }
+            } finally {
+                uncheck(jarFile::close);
+            }
+        } else if (path.getFileName().toString().equals("module-info.class")) {
+            InputStream inputStream = uncheck(() -> Files.newInputStream(path));
+            try {
+                descriptor = uncheck(() -> ModuleDescriptor.read(inputStream));
+            } finally {
+                uncheck(inputStream::close);
+            }
+        } else {
+            userError("Neither a JAR nor a module-info.class: " + path);
+            throw new IllegalStateException();  // Makes compiler happy
         }
 
-        ModuleReference reference = references.iterator().next();
-        ModuleDescriptor descriptor = reference.descriptor();
         new Main(descriptor, makeValid).run();
     }
 
