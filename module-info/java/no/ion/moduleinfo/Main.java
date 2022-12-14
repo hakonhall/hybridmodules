@@ -146,9 +146,9 @@ Options:
         indent();
 
         if (makeValid) {
-            descriptor.mainClass().ifPresent(mainClass -> println("// mainclass " + mainClass + ";"));
+            descriptor.mainClass().ifPresent(mainClass -> println("// mainClass " + mainClass + ";"));
         } else {
-            descriptor.mainClass().ifPresent(mainClass -> println("mainclass " + mainClass + ";"));
+            descriptor.mainClass().ifPresent(mainClass -> println("mainClass " + mainClass + ";"));
         }
 
         List<ModuleDescriptor.Requires> requiresList = descriptor.requires().stream()
