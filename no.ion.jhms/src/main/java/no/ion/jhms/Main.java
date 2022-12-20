@@ -6,10 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static no.ion.jhms.ExceptionUtil.uncheck;
+import static no.ion.jhms.ProgramUtil.failIf;
+import static no.ion.jhms.ProgramUtil.runContainer;
+import static no.ion.jhms.ProgramUtil.userError;
+import static no.ion.jhms.ProgramUtil.validateRootHybridModule;
 
 public class Main {
     public static final String MODULE_GRAPH_FILE_PREFIX = "file:";
@@ -83,24 +86,9 @@ public class Main {
             userError("Missing --module-path");
         }
 
-        if (hybridModuleName == null) {
+        if (hybridModuleName == null)
             userError("Missing --module");
-        } else {
-            int atIndex = hybridModuleName.indexOf('@');
-            if (atIndex == -1) {
-                try {
-                    BaseModule.validateModuleName(hybridModuleName);
-                } catch (IllegalArgumentException e) {
-                    userError(e.getMessage());
-                }
-            } else {
-                try {
-                    HybridModuleId.validateHybridModuleId(hybridModuleName);
-                } catch (IllegalArgumentException e) {
-                    userError(e.getMessage());
-                }
-            }
-        }
+        HybridModuleContainer.ResolveParams params = validateRootHybridModule(hybridModuleName);
 
         // Avoid closing container when returning from main(), since daemon threads may have been spawned.
         var container = new HybridModuleContainer();
@@ -111,7 +99,6 @@ public class Main {
             userError(e.getMessage());
         }
 
-        var params = new HybridModuleContainer.ResolveParams(hybridModuleName);
         RootHybridModule rootModule;
         try {
             rootModule = container.resolve(params);
@@ -121,30 +108,7 @@ public class Main {
         }
 
         if (moduleGraphParams == null) {
-            ClassLoader savedClassLoader = null;
-            try {
-                // JHMS §2.8 2.b.
-                if (contextId == null) {
-                    Thread thread = Thread.currentThread();
-                    savedClassLoader = thread.getContextClassLoader();
-                    thread.setContextClassLoader(rootModule.getClassLoader());
-                } else if (!contextId.isEmpty()) {
-                    var contextParams = new HybridModuleContainer.ResolveParams(contextId);
-                    HybridModuleClassLoader classLoader = container.resolve(contextParams).getClassLoader();
-                    Thread thread = Thread.currentThread();
-                    savedClassLoader = thread.getContextClassLoader();
-                    thread.setContextClassLoader(classLoader);
-                }
-
-                try {
-                    rootModule.mainIn(mainClass, mainArgs);
-                } catch (IllegalAccessError | IllegalArgumentException | NoClassDefFoundError e) {
-                    userError(e.getMessage());
-                } // pass through UndeclaredThrowableException...
-            } finally {
-                if (savedClassLoader != null)
-                    Thread.currentThread().setContextClassLoader(savedClassLoader);
-            }
+            runContainer(contextId, container, rootModule, mainClass, mainArgs);
         } else {
             for (String module : moduleGraphParams.modulesExcluded()) {
                 boolean observable;
@@ -205,16 +169,5 @@ public class Main {
                 });
 
         return params;
-    }
-
-    private static void userError(String message) {
-        System.err.println(message);
-        System.exit(1);
-    }
-
-    private static void failIf(boolean fail, Supplier<String> message) {
-        if (fail) {
-            userError(message.get());
-        }
     }
 }

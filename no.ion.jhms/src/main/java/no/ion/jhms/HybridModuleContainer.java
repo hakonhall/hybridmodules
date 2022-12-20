@@ -1,14 +1,26 @@
 package no.ion.jhms;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.module.FindException;
 import java.lang.module.ModuleDescriptor;
+import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLConnection;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Objects.compare;
 import static java.util.Objects.requireNonNull;
+import static no.ion.jhms.ExceptionUtil.uncheck;
 
 public class HybridModuleContainer implements AutoCloseable {
     private final PlatformModuleContainer platformModuleContainer;
@@ -39,6 +51,47 @@ public class HybridModuleContainer implements AutoCloseable {
     public void discoverHybridModules(String... paths) { discoverHybridModules(Stream.of(paths).map(Paths::get).collect(Collectors.toList()));}
     public void discoverHybridModules(Path... paths) { discoverHybridModules(Arrays.asList(paths)); }
     public void discoverHybridModules(List<Path> paths) { observableHybridModules.discoverHybridModules(paths); }
+
+    /**
+     * Make all modular JARs and exploded modules in the current class loader's META-INF/mod/ directory observable.
+     */
+    public void discoverEmbeddedHybridModules() {
+        getClass().getClassLoader()
+                  .resources("META-INF/mod/")
+                  .forEach(url -> {
+                      if (Objects.equals(url.getProtocol(), "file")) {
+                          String path = requireNonNull(url.getPath(), "Empty path of file url: " + url);
+                          discoverHybridModules(path);
+                      } else if (Objects.equals(url.getProtocol(), "jar")) {
+                          String urlPath = url.getPath();
+                          int separatorIndex = urlPath.indexOf("!/");
+                          if (separatorIndex == -1)
+                              throw new IllegalArgumentException("Invalid JAR URL: Missing separator: " + url);
+                          String jarFileUrlString = urlPath.substring(0, separatorIndex);
+                          URI jarFileUri = URI.create(jarFileUrlString);
+                          String entryPath = urlPath.substring(separatorIndex + 2);
+                          if (!Objects.equals("jar:" + jarFileUri + "!/" + entryPath, url.toString()))
+                              throw new IllegalArgumentException("Invalid JAR URL: " + url.toString());
+
+                          final URI uri;
+                          try {
+                              uri = url.toURI();
+                          } catch (URISyntaxException e) {
+                              throw new IllegalArgumentException("Invalid URI: " + url, e);
+                          }
+                          FileSystem fileSystem = uncheck(() -> FileSystems.newFileSystem(uri, Map.of()));
+                          try {
+                              Path modDirectory = fileSystem.getPath(entryPath);
+                              discoverHybridModules(modDirectory);
+                          } finally {
+                              uncheck(fileSystem::close);
+                          }
+                      } else {
+                          throw new IllegalArgumentException("/META-INF/mod/ resource in the " + getClass().getClassLoader() +
+                                                             " class loader is neither a file nor jar");
+                      }
+                  });
+    }
 
     /**
      * Returns true if {@code module} is the ID of an observable hybrid module, or the name of an
