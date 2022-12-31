@@ -1,4 +1,7 @@
 module no.mA@0.0.1 {
-    requires java.base@JAVAC_VERSION;
+
+    package no;
+
     requires transitive java.net.http@JAVAC_VERSION;
+
 }

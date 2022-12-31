@@ -1,1 +1,3 @@
-module no.ion.moduleinfo {}
+module no.ion.moduleinfo {
+    requires java.base;
+}
