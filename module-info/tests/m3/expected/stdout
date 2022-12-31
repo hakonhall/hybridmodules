@@ -1,4 +1,7 @@
 module no.mC@0.0.2 {
-    requires java.base@JAVAC_VERSION;
+
+    package no.m3;
+
     requires no.mB@0.0.2;
+
 }

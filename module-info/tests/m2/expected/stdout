@@ -1,4 +1,7 @@
 module no.mB@0.0.2 {
-    requires java.base@JAVAC_VERSION;
+
+    package no.m2;
+
     requires transitive no.mA@0.0.1;
+
 }

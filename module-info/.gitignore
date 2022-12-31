@@ -1,3 +1,4 @@
 #.gitignore
 no.ion.moduleinfo.jar
 module-info
+out/
