@@ -1,4 +1,4 @@
-# Library to read OSGi bundle JARs
+# Library and program to read OSGi bundle JARs
 
 ## TODO
 

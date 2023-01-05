@@ -1,0 +1,1 @@
+module no.ion.moduleinfo {}
