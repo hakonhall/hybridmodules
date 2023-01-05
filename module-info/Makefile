@@ -1,28 +1,26 @@
-.PHONY: all build-jar clean install tests out/no.ion.moduleinfo@0.1.0.jar
+# Phony targets are always built.
+.PHONY: target/no.ion.moduleinfo-1.0.0.jar tests
 
-all: module-info tests
+all: target/module-info
 
-module-info: module-info.sh out/no.ion.moduleinfo@0.1.0.jar
+target/module-info: bin/module-info.sh target/no.ion.moduleinfo-1.0.0.jar
 	cat $^ > $@
 	chmod +x $@
 
-out/no.ion.moduleinfo@0.1.0.jar:
-	modco -v 0.1.0 -s java -e .Main
+target/no.ion.moduleinfo-1.0.0.jar:
+	mvn package
 
-no.ion.moduleinfo.jar:
-	modc -m -o no.ion.moduleinfo.jar -e no.ion.moduleinfo.Main -s java
 
 install: ~/bin/module-info
 
-~/bin/module-info: module-info
-	rm -f $@
+~/bin/module-info: target/module-info
 	cp $< $@
+
 
 tests:
 	$(MAKE) -C $@
 
+
 clean:
 	$(MAKE) -C tests clean
-	rm -f no.ion.moduleinfo.jar
-	rm -f module-info
-	rm -rf target out
+	mvn clean
