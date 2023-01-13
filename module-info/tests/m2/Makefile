@@ -1,5 +1,6 @@
 all:
-	modc -p ../m1 -m -v 0.0.2 -o no.mB.jar -s java
+	javac -d target/classes -p ../m1 `find java -name '*.java'`
+	jar -c -f no.mB.jar --module-version 0.0.2 -C target/classes .
 	../../../diffcmd/diffcmd -n ../javac-version-normalizer \
 		../../target/module-info no.mB.jar
 

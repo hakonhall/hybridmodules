@@ -1,7 +1,8 @@
 all: intermediate.jar
 
 intermediate.jar:
-	modc -p ../m-2 -m -o $@ -s src
+	javac -d target/classes -p ../m-2 `find src -name '*.java'`
+	jar -c -f $@ -C target/classes .
 
 clean:
 	rm -f intermediate.jar

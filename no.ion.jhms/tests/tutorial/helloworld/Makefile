@@ -1,5 +1,6 @@
 helloworld.jar:
-	modc -m -o helloworld.jar -s classes
+	javac -d target/classes `find classes -name '*.java'`
+	jar -c -f $@ -C target/classes .
 
 clean:
 	rm -rf helloworld.jar target

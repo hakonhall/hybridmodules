@@ -3,7 +3,8 @@
 all: test.jar
 
 test.jar:
-	modc -p ../helloworld -m -o $@ -s classes
+	javac -d target/classes -p ../helloworld `find classes -name '*.java'`
+	jar -c -f $@ -C target/classes .
 
 clean:
 	rm -rf test.jar target
