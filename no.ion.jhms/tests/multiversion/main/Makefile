@@ -1,7 +1,8 @@
 all: main.jar
 
 main.jar:
-	modc -p ../m-1:../intermediate/target/intermediate -m -e main.Main -s src
+	javac -d target/classes -p ../m-1:../intermediate/target `find src -name '*.java'`
+	jar -c -f target/$@ -e main.Main -C target/classes .
 
 clean:
 	rm -rf main.jar target

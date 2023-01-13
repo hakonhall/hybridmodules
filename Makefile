@@ -8,9 +8,6 @@ all: doit
 install: target = install
 install: no.ion.jhms no.ion.jhms.bundle
 
-modc:
-	type modc &> /dev/null || { echo "modc not in PATH, please install it from https://github.com/hakonhall/modulec"; exit 1; }
-
 clean: target = clean
 clean: doit
 
