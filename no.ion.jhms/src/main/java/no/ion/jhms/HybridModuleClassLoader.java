@@ -6,29 +6,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import static no.ion.jhms.PackageUtil.getPackageName;
 
 /** Class loader responsible for loading classes from a modular JAR. */
 public class HybridModuleClassLoader extends ClassLoader {
-    /**
-     * The JVM apparently needed to resolve jdk.internal.reflect.SerializationConstructorAccessorImpl
-     * with a HybridModuleClassLoader.  Not entirely sure why: it was around the invocation on an interface.
-     * Likely triggered by internals of JVM.  But jdk.internal.reflect is not an (unqualified) exported package.
-     * Delegating to application class loader resolves the issue.
-     *
-     * <p>Consider always letting the parent class loader load a class before the hybrid module.</p>.
-     *
-     * <p>This serves the same purpose as OSGi's org.osgi.framework.bootdelegation.</p>
-     */
-    private static final Set<String> IMPLICITLY_EXPORTED_CLASSES = Set.of("jdk.internal.reflect.SerializationConstructorAccessorImpl",
-                                                                          "jdk.internal.reflect.ConstructorAccessorImpl");
 
     static {
         if (!ClassLoader.registerAsParallelCapable())
@@ -37,9 +26,6 @@ public class HybridModuleClassLoader extends ClassLoader {
 
     private final HybridModuleJar jar;
     private final HybridModule hybridModule;
-
-    /** The set of packages defined by this module. */
-    private final Set<String> packages = new TreeSet<>();
 
     /** The packages exported by this module. */
     private final Map<String, Set<String>> exports = new TreeMap<>();
@@ -51,7 +37,6 @@ public class HybridModuleClassLoader extends ClassLoader {
 
     HybridModuleClassLoader(HybridModuleJar jar,
                             HybridModule hybridModule,
-                            Set<String> packages,
                             TreeMap<String, HybridModule> hybridModulesByPackage,
                             TreeMap<String, PlatformModule> platformModulesByPackage,
                             Map<String, Set<String>> exports) {
@@ -65,7 +50,6 @@ public class HybridModuleClassLoader extends ClassLoader {
         this.hybridModulesByPackage = hybridModulesByPackage;
         this.platformModulesByPackage = platformModulesByPackage;
 
-        this.packages.addAll(packages);
         this.exports.putAll(exports);
     }
 
@@ -122,7 +106,10 @@ public class HybridModuleClassLoader extends ClassLoader {
 
     @Override
     public Enumeration<URL> findResources(String absoluteName) {
-        throw new UnsupportedOperationException(HybridModuleClassLoader.class.getSimpleName() + ".findResources(String): " + absoluteName);
+        try {
+            return Collections.enumeration(List.of(getResource(absoluteName)));
+        } catch (UncheckedIOException e) {}
+        return Collections.enumeration(List.of());
     }
 
     @Override
@@ -173,9 +160,15 @@ public class HybridModuleClassLoader extends ClassLoader {
 
         // If the class is in a readable platform module package
         String packageName = getPackageName(name);
-        PlatformModule platformModule = platformModulesByPackage.get(packageName);
-        if (platformModule != null || IMPLICITLY_EXPORTED_CLASSES.contains(name)) {
+        if (platformModulesByPackage.containsKey(packageName)) {
             return getParent().loadClass(name);
+        }
+
+        // Some special classes must be loaded by the platform class loader
+        if (tryLoadingWithPlatformClassLoaderHack(name)) {
+            try {
+                return getParent().loadClass(name);
+            } catch (ClassNotFoundException ignored) {}
         }
 
         // If the class is in a readable hybrid module package
@@ -188,7 +181,38 @@ public class HybridModuleClassLoader extends ClassLoader {
             }
         }
 
-        throw new ClassNotFoundException(name);
+        throw new ClassNotFoundException(name + ": its package is not exported by any module read by hybrid module " + this.hybridModule.id());
+    }
+
+    /**
+     * It has been observed that various JDK classes in packages OUTSIDE those exported by 'requires'
+     * at compile time, needs to be resolved at run time.  This method returns true for such class names
+     * (and others unfortunately).  If the loading fails, the failure should be ignored to allow the
+     * hybrid module and its dependencies to load it.
+     *
+     * <p>Example 1: The JVM apparently needed to resolve jdk.internal.reflect.SerializationConstructorAccessorImpl
+     * with a HybridModuleClassLoader.  Not entirely sure why: it was around the invocation on an interface.
+     * Likely triggered by internals of JVM.  But jdk.internal.reflect is not an (unqualified) exported package.
+     * Delegating to application class loader resolves the issue.</p>
+     *
+     * <p>Example 2: jdk.internal.reflect.ConstructorAccessorImpl is another case.</p>
+     *
+     * <p>Example 3: Jimfs tries to add a file system provider and loops over the JRE's provides.  The JRE apparently
+     * tries to load all file system providers with the caller's class loader (which seems like a bug),
+     * and an exception is thrown because jdk.internal.jrtfs.JrtFileSystemProvider isn't even in an exported
+     * package, and its module may not be in the read modules even.  Passing loading through to the
+     * platform class loader allows the class to be loaded.</p>
+     *
+     * <p>Therefore, I have found all implementations of module services in OpenJDK 17.  All 123
+     * match com.sun.*, sun.*, or jdk.* except one special case: org.jcp.xml.dsig.internal.dom.XMLDSigRI.</p>
+     *
+     * <p>This serves the same purpose as OSGi's org.osgi.framework.bootdelegation.</p>
+     */
+    private boolean tryLoadingWithPlatformClassLoaderHack(String className) {
+        return className.startsWith("com.sun.") ||
+               className.startsWith("sun.") ||
+               className.startsWith("jdk.") ||
+               className.equals("org.jcp.xml.dsig.internal.dom.XMLDSigRI");
     }
 
     private Class<?> defineClassInJar(String name) throws ClassNotFoundException {

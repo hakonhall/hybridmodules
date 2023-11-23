@@ -89,7 +89,7 @@ function Main {
                 shift 2 || true
                 ;;
             --help|-h) Usage ;;
-            --java-options|-J)
+            --java-options|-j)
                 shift
                 case "$1" in
                     '(') local end_token=')' ;;
