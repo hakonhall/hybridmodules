@@ -3,10 +3,10 @@
 #   [all]     Package JAR, build javahms, and run tests.
 all: build-jar target/javahms tests
 
-build-jar target/no.ion.jhms-3.0.0.jar:
+build-jar target/no.ion.jhms-3.1.jar:
 	mvn -nsu package
 
-target/javahms: bin/javahms.sh target/no.ion.jhms-3.0.0.jar
+target/javahms: bin/javahms.sh target/no.ion.jhms-3.1.jar
 	cat $^ > $@
 	chmod +x $@
 

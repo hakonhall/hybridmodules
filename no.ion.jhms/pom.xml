@@ -6,7 +6,7 @@
 
     <groupId>no.ion.jhms</groupId>
     <artifactId>jhms</artifactId>
-    <version>3.0.0</version>
+    <version>3.1</version>
 
     <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

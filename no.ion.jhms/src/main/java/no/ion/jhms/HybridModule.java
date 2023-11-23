@@ -106,11 +106,11 @@ class HybridModule extends BaseModule {
                 throw new ResolutionException("Hybrid module " + jar.hybridModuleId() + " requires " + platformModule.name() + " twice");
             }
 
-            platformReads.putIfAbsent(platformModule.name(), platformModule);
+            platformModule.readClosure().forEach(pm -> platformReads.putIfAbsent(pm.name(), pm));
             transitiveByRequires.put(platformModule.name(), transitive);
 
             if (transitive) {
-                platformReadClosure.putIfAbsent(platformModule.name(), platformModule);
+                platformModule.readClosure().forEach(pm -> platformReadClosure.putIfAbsent(pm.name(), pm));
             }
         }
 
@@ -163,13 +163,11 @@ class HybridModule extends BaseModule {
                 }
             }
 
-            HybridModuleClassLoader classLoader = new HybridModuleClassLoader(
-                    jar,
-                    module,
-                    packages,
-                    hybridModuleByPackage,
-                    platformModuleByPackage,
-                    exports);
+            HybridModuleClassLoader classLoader = new HybridModuleClassLoader(jar,
+                                                                              module,
+                                                                              hybridModuleByPackage,
+                                                                              platformModuleByPackage,
+                                                                              exports);
 
             module.setHybridModuleClassLoader(classLoader);
 
